@@ -1,0 +1,358 @@
+---
+title: "Lab-Tools"
+author: "Brooke Anderson"
+date: "2023-07-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Learning regular expression tools
+
+The `stringr` package has excellent tools for leveraging regular expressions in R. We'll 
+use this lab to explore some of the tools in this package and learning how to 
+develop this package as one of your core tools. 
+
+Use the following resources as you work through the different tasks and figure out how 
+to solve them with functions from the `stringr` package: 
+
+- The `stringr` package cheatsheet: https://rstudio.github.io/cheatsheets/strings.pdf 
+- Vignettes for `stringr`: Available through the "Articles" section of the pkgdown
+site for the package: https://stringr.tidyverse.org/
+- Tab completion and helpfiles for the package: at the console, type `?stringr::`, 
+which will trigger tab completion to list all the functions in the package. When 
+you find one that sounds promising, you can click on it to get the helpfile. Often, 
+the examples at the end of the helpfile are a great place to start. 
+- For tidyverse packages, there is often a helpful chapter in "R for Data Science". 
+For `stringr`, the chapter is: https://r4ds.had.co.nz/strings.html 
+
+## Set up data
+
+We'll use the data from earlier labs. Let's start by running the code to set up 
+this dataset. 
+
+```{r}
+# Load required libraries ##############################################################
+library(readr)
+library(janitor)
+library(dplyr)
+library(lubridate)
+library(tidyr)
+library(purrr)
+library(stringr)
+library(ggplot2)
+
+# Define functions ####################################################################
+
+# To run this function, you will need to have the following functions installed:
+# readr, janitor, dplyr, lubridate
+read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
+  
+  # Read in data and clean column names
+  call_data <- readr::read_csv(file = file, id = "filename") %>% 
+    janitor::clean_names() %>% 
+    dplyr::rename(datetime_call = date_and_time_of_initial_call)
+  
+  # Limit to columns we'll need for our research question
+  call_data <- call_data %>% 
+    dplyr::select(datetime_call, property, location, species_description, 
+                  animal_class, final_ranger_action, filename)
+  
+  call_data <- call_data %>% 
+    # Convert date-time column to appropriate data type
+    dplyr::mutate(datetime_call = lubridate::mdy_hms(datetime_call)) %>%
+    # Add columns for the year and month of the call
+    dplyr::mutate(call_year = lubridate::year(datetime_call),
+                  call_month = lubridate::month(datetime_call,
+                                                label = TRUE, 
+                                                abbr = FALSE)) 
+  
+  if(remove_partial_years == TRUE) {
+    call_data <- call_data %>% 
+      dplyr::filter(call_year %in% c(2019, 2020))
+  }
+  
+  return(call_data)
+}
+
+# Run analysis ########################################################################
+
+# Create a vector with the names of all the files
+borough_files <- list.files(path = "../data", full.names = TRUE)
+
+# Read in data from all files, bind them together, and extract borough names from 
+# the filenames
+ny_calls <- borough_files %>% 
+  map(.f = read_and_clean_call_data, remove_partial_years = TRUE) %>% 
+  bind_rows() %>% 
+  mutate(borough = filename, 
+         borough = str_remove(borough, "../data/"), 
+         borough = str_remove(borough, "_animal_response.csv"), 
+         borough = str_replace(borough, "_", " "))
+```
+
+## Exploring and learning `stringr`
+
+Tasks we're trying to do: 
+
+- Filter the data to certain types of animals. For example, filter to all animal response
+calls that involved snakes or alligators. 
+- Filter to all calls that came from a playground (may be listed in `property` or `location`)
+
+
+
+###  Filter the data to certain types of animals. 
+
+First, see if you can filter the data to certain types of animals. For example, to 
+start, see if you can filter the data to animal response calls that involved snakes.
+
+Start by taking a look at the data to see which column to search for this information. 
+There are two columns related to the type of animal in a call, `species_description` 
+and `animal_class`. From looking at the data, it looks like `animal_class` gives
+broader descriptions of the type of animal ("Birds" or "Small Mammals", for 
+example). It looks like what we'll need to search is intead `species_description`, 
+which gives the specific type of data (e.g., "Canada Goose", "Racoon"). 
+
+Let's see if there's a way to look for rows in the dataframe where the word "snake" 
+is included in the `species_description` column. We can start by looking for rows
+where this column is exactly equal to the word "Snake" by using the `filter` function
+from `dplyr` with a logical expression: 
+
+```{r}
+ny_calls %>% 
+  filter(species_description == "Snake")
+```
+
+This doesn't identify anything. This could mean that there aren't any calls with snakes, 
+but it could also mean that the snake listings include more details about the species,
+so that the value in this column includes the word "snake" or "Snake" but also includes
+some other words. 
+
+Next, we can look through the `stringr` cheatsheet (https://rstudio.github.io/cheatsheets/strings.pdf) to see if there's anything promising. 
+We are looking for a function that can identify which values in a string include a certain
+string, without that string necessarily be the full value. Start by looking at the 
+large categories on the first page of the cheatsheet ("Detect Matches", "Subset Strings", 
+and so on). What we are trying to do here is to detect a string, so we can start looking 
+in that section. 
+
+There are five functions listed in the "Detect Matches" section: `str_detect`,
+`str_starts`, `str_which`, `str_locate`, and `str_count`. If we read the
+descriptions of these, two sound promising. The first is `str_detect`, which
+detects if a match exist in each string in the vector, returning `TRUE` if it
+does and `FALSE` otherwise. The second is `str_which`, which returns the indexes of 
+the strings in a vector that have a match. 
+
+Let's try out the examples for these two functions to see which would be a better fit
+for the task we're trying to do. Let's start with the help file of `str_detect`. You 
+can pull that up in your R session by running: 
+
+```{r eval = FALSE}
+?str_detect
+```
+
+Scroll down to the Examples section. It starts with the following code: 
+
+```{r}
+fruit <- c("apple", "banana", "pear", "pineapple")
+str_detect(fruit, "a")
+```
+
+In this first example, the `str_detect` has looked for strings in the vector that 
+include the letter "a". All four values include an "a", so it returns a vector where 
+each value is `TRUE`. 
+
+One of the later examples is: 
+
+```{r}
+str_detect(fruit, "b")
+```
+
+In this case, the call is looking for values that include a "b" in the string. In this
+case the second value ("banana") in the `fruit` string includes a "b", but none of 
+the other values do, so the vector that's returned has `TRUE` for its second value and
+`FALSE` for all the others. 
+
+The other examples use more complex regular expression patterns. We'll get to those
+ideas later, but for now, we're trying to match a straightforward pattern (either "Snake" 
+or "snake"), so we'll save the more complex patterns for later. 
+
+Next, let's look at the helpfile for `str_which`. Again, you can find that with: 
+
+```{r eval = FALSE}
+?str_which
+```
+
+Here is the first example in that helpfile: 
+
+```{r}
+fruit <- c("apple", "banana", "pear", "pineapple")
+str_which(fruit, "a")
+```
+
+In this case, the function again is finding which strings include an "a". However, instead
+of returning a vector with `TRUE` / `FALSE` for whether each value includes an "a", it 
+returns a number. Based on the Description at the top of this help file, this lists
+the positions of the values that have a match. In other words, the result in the example
+is saying that the values in the `fruit` string with an "a" in them are the first, second, 
+third, and fourth values. 
+
+If we've understood correctly, then if we run 
+`str_which(fruit, "b")`, the result should be just `2`, since only the second value in 
+the `fruit` string ("banana") includes a "b". Let's try that out and see if we've 
+understood: 
+
+```{r}
+str_which(fruit, "b")
+```
+
+Now that we understand the two functions, we can decide which would work better.
+As a reminder, our aim in this task is to take a dataframe and reduce it to only the 
+rows that include "Snake" or "snake" in its value for the `species_description` column. 
+When you want to pull out certain rows from a dataframe, the `filter` function from 
+the `dplyr` package is often a good way to do that. In fact, this is what we tried 
+earlier, when we looked for exact matches of that column with the string "Snake". 
+The `filter` function works based on a logical statement---it will check some logical and
+keep each row where the logic evaluates to `TRUE` and remove the ones where it evaluates
+to `FALSE`. Based on this understanding of `filter`, we probably want to use `str_detect`, 
+since it returns `TRUE` / `FALSE` values, which `filter` needs. 
+
+Let's try that out. We'll start by looking for rows where the string "Snake" is included
+in `species_description`: 
+
+```{r}
+ny_snake_calls <- ny_calls %>% 
+  filter(str_detect(species_description, pattern = "Snake"))
+
+ny_snake_calls
+```
+
+That seems to have worked well. However, it could miss a listing where the word "snake" is 
+in lowercase. There are several ways we could handle that. One way is to create a more 
+complex regular expression pattern to include in `str_detect`. Essentially, we want to 
+look for two patterns, either "Snake" or "snake". Another way we can express this is that
+we want to look for either "S" or "s" followed by "nake". 
+
+The second page of the `stringr` cheatsheet provides help on specifying regular expression
+patterns. Again, this page is divided into sections and subsections. In the "Regular 
+Expressions" section, one of the subsections is "Alternates". That's where we're interested
+in here---a pattern where at one spot (the first letter) the pattern could have one of 
+two letters ("S" or "s"---regular expressions are case-sensitive). Based on this subsection, 
+if we want to express that a pattern could include "one of" several values, we should 
+use square brackets to express that in the pattern. 
+
+The cheatsheet includes examples in this subsection, to help us see how the patterns work. 
+It sets up all the examples by defining a function: 
+
+```{r}
+alt <- function(rx) str_view("abcde", rx)
+```
+
+If we look at this, we can see that it's defining a function that will run `str_view` on 
+the string "abcde", with the pattern that we input using the parameter `rx`. If we look 
+on the first page of the cheatsheet, we can see what the `str_view` function does. It's 
+listed in the "Helpers" section, which says it will give an HTML rendering of the matches. 
+Let's try just that function with a simple example, using the string "abcde" and matching 
+to the pattern "a": 
+
+```{r}
+str_view("abcde", pattern = "a")
+```
+
+You can see that this uses formatting to show the part of the string that's a match. 
+It looks like this is a function that we can use to test out different patterns to 
+see if they're matching what we want. Let's try it with an example relevant to our
+task: 
+
+```{r}
+snake_examples <- c("Snake", "snake", "Snake (Unknown)", "Garter Snake", 
+                    "Chicken", "Squirrel")
+str_view(snake_examples, pattern = "Snake")
+```
+
+We can see that the pattern "Snake" identifies all the examples we want except the 
+one in lowercase ("snake") and excludes the values we don't want ("Chicken" and 
+"Squirrel"). 
+
+Next, we can try the example for using the "one of" alternate pattern with square
+brackets from the cheatsheet: 
+
+```{r}
+alt <- function(rx) str_view("abcde", rx)
+alt("[abe]") 
+```
+
+We can see that the square brackets let us pick out any one of the letters a, b, and e
+in these examples. Let's try it with out example. First, in the `snake_examples`, 
+let's see if we can pick out every "s", regardless of if it's uppercase or lowercase: 
+
+```{r}
+str_view(snake_examples, pattern = "[sS]")
+```
+
+Now we are getting the lowercase value ("snake"), but it's a little too inclusive because
+we're picking up a value we don't want ("Squirrel"). Let's try expanding our pattern so 
+it captures a string that starts with "S" or "s" and then ends with "nake": 
+
+```{r}
+str_view(snake_examples, pattern = "[sS]nake")
+```
+
+This gets exactly what we want. Let's update our filtering call with the full dataset
+to use this pattern: 
+
+```{r}
+ny_snake_calls <- ny_calls %>% 
+  filter(str_detect(species_description, pattern = "[sS]nake"))
+
+ny_snake_calls
+```
+
+This pattern works in our call. In this case, it looks like "Snake" is always capitalized
+in `species_description`, so our results haven't changed. However, often our data won't be 
+that clean. 
+
+For example, one of our other tasks is to find calls that came from playgrounds. 
+If we explore the data some, we see that sometimes playgrounds are listed as the `property`
+that the call came from. In other cases, the call might come from a bigger property 
+(e.g., "Central Park"), with the playground listed in `location`. It looks like the 
+values in the `location` column aren't as clean and consistent as the ones in the 
+`species_description` column, so there's a good chance that we need to look for both 
+"Playground" and "playground". 
+
+Let's look for examples of these listings in both columns. As we're exploring, we can 
+use the `pull` function from `dplyr` as a way to pull out one column of a dataframe as 
+a vector and work with it alone. 
+
+```{r}
+ny_calls %>% 
+  pull(property) %>% 
+  str_view(pattern = "[Pp]layground")
+```
+
+```{r}
+ny_calls %>% 
+  pull(location) %>% 
+  str_view(pattern = "[Pp]layground")
+```
+
+It looks like the `property` column is consistent in always using "Playground", but 
+the `location` column is not, and there it's important that we look for both 
+"Playground" and "playground". 
+
+Now that we have the patterns we want to use, we can use them along with `filter` to 
+get animal response calls that came from playgrounds: 
+
+```{r}
+playground_animal_calls <- ny_calls %>% 
+  filter(str_detect(property, pattern = "Playground") | 
+           str_detect(location, pattern = "[pP]layground"))
+playground_animal_calls
+```
+
+Other things you might want to try: 
+
+- Find all calls where the `location` column seems to include a latitude and longitude
+- Identify all rows where the `location` column is listed as `"N/A"`, `"N/a"`, `"n/A"`, or `"n/a"`
+

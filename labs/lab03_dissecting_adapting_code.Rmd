@@ -1,0 +1,318 @@
+---
+title: "Lab-Finding and Adapting Code"
+author: "Brooke Anderson"
+date: "2023-07-11"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, messages = FALSE, warnings = FALSE)
+```
+
+To prepare for this lab, make sure that you've run the final script from the last 
+lab in your current R session. As a reminder, that code is: 
+
+```{r}
+# Load required libraries
+library(readr)
+library(janitor)
+library(dplyr)
+library(lubridate)
+
+## Define functions ######################################################################
+
+# To run this function, you will need to have the following functions installed:
+# readr, janitor, dplyr, lubridate
+read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
+  
+  # Read in data and clean column names
+  call_data <- readr::read_csv(file = file) %>% 
+    janitor::clean_names() %>% 
+    dplyr::rename(datetime_call = date_and_time_of_initial_call)
+  
+  # Limit to columns we'll need for our research question
+  call_data <- call_data %>% 
+    dplyr::select(datetime_call, property, location, species_description, 
+                  animal_class, final_ranger_action)
+  
+  call_data <- call_data %>% 
+    # Convert date-time column to appropriate data type
+    dplyr::mutate(datetime_call = lubridate::mdy_hms(datetime_call)) %>%
+    # Add columns for the year and month of the call
+    dplyr::mutate(call_year = lubridate::year(datetime_call),
+                  call_month = lubridate::month(datetime_call,
+                                                label = TRUE, 
+                                                abbr = FALSE)) 
+  
+  if(remove_partial_years == TRUE) {
+    call_data <- call_data %>% 
+      dplyr::filter(call_year %in% c(2019, 2020))
+  }
+  
+  return(call_data)
+}
+
+# To run this function, you will need to have the following packages installed:
+# dplyr, tibble
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month) %>% 
+    dplyr::rename(month = .wt)
+  
+  all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
+                                         "May", "June", "July", "August", "September", 
+                                         "October", "November", "December"), 
+                               order = 1:12)
+  
+  monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
+    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+    dplyr::arrange(order) %>% 
+    dplyr::select(-order)
+  
+  return(monthly_calls)
+}
+
+## Analysis #####################################################################
+
+# Read in data and clean data
+man_animal_resp <- read_and_clean_call_data(file = "../data/Manhattan_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+
+# Filter to data on reptiles and amphibians in Central Park
+man_animal_resp <- man_animal_resp %>% 
+  filter(property == "Central Park") %>%  
+  filter(animal_class == "Terrestrial Reptile or Amphibian")
+
+# Count number of response calls per month
+monthly_man_animal_response <- count_monthly_calls(man_animal_resp) 
+monthly_man_animal_response
+```
+
+In that last lab, one of the tasks that we did was create a way to get a summary
+of counts of calls by months that included rows with zeros. We ultimate did that
+using a function we created called `count_monthly_calls`. 
+
+This function seems to work pretty well to complete that task. However, there are a 
+couple of issues with the way we've talked that problem. First, the logic of the 
+code isn't as clearly linked to the logic of the task as we might want (in other 
+words, the solution is currently a bit of a kludge). The code will be easier to 
+understand and maintain if we can find a better way to link its logic with the logic 
+of the task. 
+
+Second, while the code works well for the table we created, once we try to plot the
+data, we might not be completely happy with how it works. Let's take a look at 
+plotting the monthly counts as a bar chart: 
+
+```{r}
+library(ggplot2)
+monthly_man_animal_response %>% 
+  ggplot(aes(x = n, y = month)) + 
+  geom_col()
+```
+
+This creates a bar chart, but take a look at the y-axis: the months are in alphabetical
+order. The visualization would be much better if the months show up in the order they 
+occur in the year. This would help to identify seasonal patterns.
+
+Let's try to search for some examples of how to do this task. We'll dissect the code 
+examples we can find and adapt them to our current task. Our aim will be to find a 
+solution that (1) has code with logic that aligns better to the logic of the task and
+(2) preserves the order of the months so that they show up in their order by year 
+when we plot the results. 
+
+We'll start by trying to find some advice and examples of how we can solve the task. 
+A reasonable Google search to start with is something like, "R count rows by group include
+levels with no counts". Here are some promising leads that come up with that search:
+
+- https://stackoverflow.com/questions/42017926/r-group-by-show-count-of-all-factor-levels-even-when-zero-dplyr
+- https://community.rstudio.com/t/dplyr-count-include-a-0-for-factor-levels-not-in-the-data/26462/4 
+- https://dplyr.tidyverse.org/reference/count.html, specifically the part in the 
+Examples that says "When factors are involved, `.drop = FALSE` can be used to retain factor
+levels that don't appear in the data"
+- https://kieranhealy.org/blog/archives/2018/11/19/zero-counts-in-dplyr/
+
+We won't have the chance to work through all of these in the lab today. Let's try out 
+the first two. We'll start by dissect the examples to decide which one we want to adapt
+for our task (or if we want to combine elements of both). 
+
+## Dissecting code
+
+Let's start by looking at the Stack Overflow thread (https://stackoverflow.com/questions/42017926/r-group-by-show-count-of-all-factor-levels-even-when-zero-dplyr). The example code in the question is: 
+
+```{r eval = FALSE}
+set.seed(1)
+dat <- data.frame(ID = sample(letters,50,rep=TRUE))
+dat %>% 
+  group_by(ID) %>%
+  summarise(no_rows = length(ID))
+```
+
+This is followed by the question: 
+
+> "I have the above code which creates a random sample of letters. However can I make the summarised output show all count levels even when there is zero.
+
+> When I run the above code sometimes I get 20 rows and sometimes I get 25, etc. I want this to return 26 rows every time."
+
+Let's try out the example code and see what happens. The code first sets a seed:
+
+```{r}
+set.seed(1)
+```
+
+If you aren't familiar with this function, open its helpfile to see more on what
+it's doing (which you can do by running `?set.seed` at the console). If this
+isn't helpful (the helpfile in this case uses pretty technical language), you
+can instead try googling to find out more. Essentially, this function call
+allows you to ensure that any step that uses random number generation (like
+`sample`, which should pull a new sample of your vector every time you use it)
+will instead always result in the same "random" sample. This is often used in
+questions about code examples that include random number generation, because it
+ensures that everyone who runs the code will get the same results.
+
+The next line creates a dataframe: 
+
+```{r}
+dat <- data.frame(ID = sample(letters,50,rep=TRUE))
+```
+
+You can check to see what the created dataframe looks like: 
+
+```{r}
+head(dat)
+```
+
+You can see that this has created a dataframe with a single column called "ID". This column
+has a letter in it for each row. This column was created with a piece of code that 
+was embedded in the line we just looked at, specifically, 
+
+```{r eval = FALSE}
+sample(letters,50,rep=TRUE)
+```
+
+Let's dissect this to see what it's doing. It's often helpful to start from the inside
+and work out. At the inside of this function is a call to `letters`. This looks like
+an object, but the person who posted the question doesn't have any code that defines
+this object before we use it. Let's check out that object to see what's going on: 
+
+```{r}
+letters
+```
+
+This seems to be an object with the 26 lowercase letters in the Roman alphabet. It must
+be an object that comes with base R, because we haven't done anything to create the object. 
+If it is, it will probably have a helpfile, so let's try to pull that up with `?letters`. 
+
+That call pulls up a helpfile that confirms that this is a built-in constant that comes
+with base R. When people write code questions, they'll often use something like these
+built-in constants, or a dataframe that comes with a package that the question uses, 
+because that helps set up the example code in the question as quickly as possible.
+
+Now let's look at how that object's being used to make the column in the example 
+dataframe: 
+
+```{r}
+sample(letters,50,rep=TRUE)
+```
+
+This call looks like it's pulling a sample from `letters`, so we end up with a sample 
+of 50 lowercase letters. If you're not familiar with the `sample` function, you can 
+pull up the help function for `sample`. 
+
+From that helpfile, you can confirm that the `sample` function takes a sample from 
+a vector (in this case, from the `letters` vector). We can also use that helpfile to
+figure out what the parameters are doing (the `50` and the `rep=TRUE`). The `50` is 
+put in the second position of the function call, so it will be the value given for 
+the second argument of the function call. Based on the Usage section of the helpfile, 
+that argument is `size`. If you look for `size` under Arguments, you can see that this
+argument sets how many values to sample from the vector. This makes sense: we saw when
+we ran the code that it's sampling 50 values from the set of letters. 
+
+The other argument in the call in the example is `rep=TRUE`. If we look through
+the Arguments section, there is not an argument called "rep". However, there is
+one that starts with "rep", the argument `replace`. It turns out that you can
+use just the first few letters of an argument when you call a function. This can
+be messy, though, because it only works if there's only one argument that starts
+with those letters. Also, it can make it harder to understand what the call is
+doing ("replace" is clearer, for example, than "rep"). If we look at the
+Arguments section, we can see that `replace` is used to say whether the object
+should be sampled with replacement. In other words, in our example should we be
+able to have more than one copies of the same letter in the vector we're
+creating? For our example, we have to allow replacement in the sampling, because 
+there are only 26 letters in `letters` and we want to make a vector that has
+50 values, so there will have to be some letters that show up more than once. 
+
+Now we can revisit how this is creating the example dataframe: 
+
+```{r}
+set.seed(1)
+dat <- data.frame(ID = sample(letters,50,rep=TRUE))
+```
+
+Again, if you aren't clear on how the `data.frame` function works, or what `ID = `
+is doing in this call, you can use helpfiles to help figure it out. 
+
+We've now determined that the example code has created a simple dataframe with a single
+column, called "ID", that has a sample of 50 letters, where some letters show up 
+more than once and some may never show up. Since it includes random number generation 
+(in `sample`), the exact letters that show up would change if we didn't set the seed, 
+but if we set the same seed right before we run the function call, we'll get the same
+dataframe of `dat` as the person who posted the question did. 
+
+Now let's look at the next part of the code: 
+
+```{r eval = FALSE}
+dat %>% 
+  group_by(ID) %>%
+  summarise(no_rows = length(ID))
+```
+
+This looks like it's very similar to what we're trying to do when we run the `count`
+function in our code. In fact, if we look up the help file for `count` and read the 
+Description, it states that: 
+
+> "`df %>% count(a, b)` is roughly equivalent to `df %>% group_by(a, b) %>% summarise(n = n())`"
+
+If you wanted, you could dissect this code the same way we did with earlier code
+(for example, look up helpfiles for `length`, `summarise`, and `group_by`). For
+now, let's see the output of the example code:
+
+```{r}
+dat %>% 
+  group_by(ID) %>%
+  summarise(no_rows = length(ID))
+```
+
+We can see that this is counting up the number of times that each letter shows up 
+in the `ID` column in the dataframe. If you look through the data (and set the same 
+seed as the example), you can see that it's missing some of the letters, including
+"l" and "p".
+
+This is good---we have found an answered question that tackles the same task we're 
+trying to do. In this case, we're looking at a dataframe with a column that has 
+the possibility of taking 26 different values (the 26 letters), but has some that didn't
+show up in the sample, and these are missed when counting the values. This is 
+analogous to our task---we have a column (`call_month`) that can in theory take 
+12 different values (the months and then year), but in practice sometimes no calls are
+reported in one of those months, and we would like the summary to still list those months
+with a count of 0 rather than exclude those months from the summary. 
+
+Now let's look at the top-ranked solutions that was provided (the solution that starts, 
+"In the accepted answer by akrun ..."). It repeats the set-up of the `dat` dataframe and
+then has the following code: 
+
+```{r eval = FALSE}
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>%
+  count(ID, name = "no_rows", .drop = F) %>%
+  print.data.frame()
+```
+
+
+
+
+
+
+
+
+
+

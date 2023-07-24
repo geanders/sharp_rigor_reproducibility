@@ -1,0 +1,548 @@
+---
+title: "Lab-Leveraging File System Structure"
+author: "Brooke Anderson"
+date: "2023-07-23"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Reading in data from multiple files
+
+In an earlier lab, we looked at how we could write a function to read in and clean
+data from a file in a certain format. Here, we'll look at how we can pair that with 
+a mapping function from the `purrr` package, as well as with system calls in R and 
+the file system to work efficiently with data from many files.
+
+Here are the functions we defined in an earlier lab and lecture: 
+
+```{r}
+library(dplyr)
+
+# To run this function, you will need to have the following functions installed:
+# readr, janitor, dplyr, lubridate
+read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
+  
+  # Read in data and clean column names
+  call_data <- readr::read_csv(file = file) %>% 
+    janitor::clean_names() %>% 
+    dplyr::rename(datetime_call = date_and_time_of_initial_call)
+  
+  # Limit to columns we'll need for our research question
+  call_data <- call_data %>% 
+    dplyr::select(datetime_call, property, location, species_description, 
+                  animal_class, final_ranger_action)
+  
+  call_data <- call_data %>% 
+    # Convert date-time column to appropriate data type
+    dplyr::mutate(datetime_call = lubridate::mdy_hms(datetime_call)) %>%
+    # Add columns for the year and month of the call
+    dplyr::mutate(call_year = lubridate::year(datetime_call),
+                  call_month = lubridate::month(datetime_call,
+                                                label = TRUE, 
+                                                abbr = FALSE)) 
+  
+  if(remove_partial_years == TRUE) {
+    call_data <- call_data %>% 
+      dplyr::filter(call_year %in% c(2019, 2020))
+  }
+  
+  return(call_data)
+}
+
+# To run this function, you will need to have the following packages installed:
+# dplyr, tibble
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month) %>% 
+    dplyr::rename(month = .wt)
+  
+  all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
+                                         "May", "June", "July", "August", "September", 
+                                         "October", "November", "December"), 
+                               order = 1:12)
+  
+  monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
+    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+    dplyr::arrange(order) %>% 
+    dplyr::select(-order)
+  
+  return(monthly_calls)
+}
+```
+
+We have several files with a similar type of data. We have a file from each of the 
+five boroughs of New York. All files follow the same format (CSVs, same column types 
+with the same column names, etc.). The file names are: 
+
+- "Bronx_animal_response.csv"
+- "Brooklyn__animal_response.csv"
+- "Manhattan_animal_response.csv"
+- "Queens_animal_response.csv"
+- "Staten_animal_response.csv"
+
+We could use the function that we wrote to read in the data from each file. Already, 
+this will make our code more efficient than if we wrote the code to read and clean 
+each file separately:
+
+```{r}
+bronx_calls <- read_and_clean_call_data("../data/Bronx_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+brooklyn_calls <- read_and_clean_call_data("../data/Brooklyn_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+manhattan_calls <- read_and_clean_call_data("../data/Manhattan_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+queens_calls <- read_and_clean_call_data("../data/Queens_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+staten_island_calls <- read_and_clean_call_data("../data/Staten_Island_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+```
+
+At this point, you could run code to separately generate monthly counts of calls
+for reptiles and amphibians for each borough:
+
+```{r}
+# Filter to data on reptiles and amphibians in the Bronx
+bronx_calls <- bronx_calls %>% 
+  filter(animal_class == "Terrestrial Reptile or Amphibian")
+
+# Count number of response calls per month in the Bronx
+monthly_bronx_calls <- count_monthly_calls(bronx_calls) 
+monthly_bronx_calls
+
+# Filter to data on reptiles and amphibians in Brooklyn
+brooklyn_calls <- brooklyn_calls %>% 
+  filter(animal_class == "Terrestrial Reptile or Amphibian")
+
+# Count number of response calls per month in Brooklyn
+monthly_brooklyn_calls <- count_monthly_calls(brooklyn_calls) 
+monthly_brooklyn_calls
+
+# Filter to data on reptiles and amphibians in Manhattan
+manhattan_calls <- manhattan_calls %>% 
+  filter(animal_class == "Terrestrial Reptile or Amphibian")
+
+# Count number of response calls per month in Manhattan
+monthly_manhattan_calls <- count_monthly_calls(manhattan_calls) 
+monthly_manhattan_calls
+
+# Filter to data on reptiles and amphibians in Queens
+queens_calls <- queens_calls %>% 
+  filter(animal_class == "Terrestrial Reptile or Amphibian")
+
+# Count number of response calls per month in Queens
+monthly_queens_calls <- count_monthly_calls(queens_calls) 
+monthly_queens_calls
+
+# Filter to data on reptiles and amphibians in Staten Island
+staten_island_calls <- staten_island_calls %>% 
+  filter(animal_class == "Terrestrial Reptile or Amphibian")
+
+# Count number of response calls per month in Staten Island
+monthly_staten_island_calls <- count_monthly_calls(staten_island_calls) 
+monthly_staten_island_calls
+```
+
+Notice how often we're having to copy and paste this code. We could remove a lot of 
+this if we bind all the data together into one big dataframe after we read it in but 
+before we do anything else. 
+
+If you have several dataframes that all have the same format in terms of the number
+of columns, names of those columns, and types of data in those columns, you can join them
+into one big dataframe with the function `bind_rows` from the `dplyr` package:
+
+```{r}
+library(dplyr)
+ny_calls <- bind_rows(bronx_calls, brooklyn_calls, manhattan_calls, 
+                      queens_calls, staten_island_calls)
+ny_calls
+```
+
+However, as we did this, we lost the information about which borough each call
+came from. To keep track of which borough each call comes from, we'll add a
+"borough" column to each dataframe before we bind them together.
+
+```{r}
+bronx_calls <- bronx_calls %>% 
+  mutate(borough = "Bronx")
+brooklyn_calls <- brooklyn_calls %>% 
+  mutate(borough = "Brooklyn")
+manhattan_calls <- manhattan_calls %>% 
+  mutate(borough = "Manhattan")
+queens_calls <- queens_calls %>% 
+  mutate(borough = "Queens")
+staten_island_calls <- staten_island_calls %>% 
+  mutate(borough = "Staten Island")
+
+ny_calls <- bind_rows(bronx_calls, brooklyn_calls, manhattan_calls, 
+                      queens_calls, staten_island_calls)
+ny_calls
+```
+
+At this point, you could use grouping and mapping to get the monthly calls for
+reptiles and amphibians from each borough, directly after reading in the data from 
+each borough and binding them with `bind_rows`:
+
+```{r}
+library(tidyr)
+library(purrr)
+
+ny_monthly_calls <- ny_calls %>% 
+  filter(animal_class == "Terrestrial Reptile or Amphibian") %>% 
+  nest(.by = borough) %>% 
+  mutate(monthly_counts = map(data, count_monthly_calls)) %>% 
+  select(borough, monthly_counts) %>% 
+  unnest(cols = c(monthly_counts))
+ny_monthly_calls
+```
+
+At this point, it's very easy to use the data to create a plot to visualize the 
+results: 
+
+```{r}
+library(ggplot2)
+ny_monthly_calls %>% 
+  ggplot(aes(x = n, y = month)) + 
+  geom_col() + 
+  facet_wrap(~ borough)
+```
+
+
+At this point, the full script would look like this: 
+
+```{r eval = FALSE}
+# Load required libraries ##############################################################
+library(readr)
+library(janitor)
+library(dplyr)
+library(lubridate)
+library(tidyr)
+library(purrr)
+library(ggplot2)
+
+# Define functions ####################################################################
+
+# To run this function, you will need to have the following functions installed:
+# readr, janitor, dplyr, lubridate
+read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
+  
+  # Read in data and clean column names
+  call_data <- readr::read_csv(file = file) %>% 
+    janitor::clean_names() %>% 
+    dplyr::rename(datetime_call = date_and_time_of_initial_call)
+  
+  # Limit to columns we'll need for our research question
+  call_data <- call_data %>% 
+    dplyr::select(datetime_call, property, location, species_description, 
+                  animal_class, final_ranger_action)
+  
+  call_data <- call_data %>% 
+    # Convert date-time column to appropriate data type
+    dplyr::mutate(datetime_call = lubridate::mdy_hms(datetime_call)) %>%
+    # Add columns for the year and month of the call
+    dplyr::mutate(call_year = lubridate::year(datetime_call),
+                  call_month = lubridate::month(datetime_call,
+                                                label = TRUE, 
+                                                abbr = FALSE)) 
+  
+  if(remove_partial_years == TRUE) {
+    call_data <- call_data %>% 
+      dplyr::filter(call_year %in% c(2019, 2020))
+  }
+  
+  return(call_data)
+}
+
+# To run this function, you will need to have the following packages installed:
+# dplyr, tibble
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month) %>% 
+    dplyr::rename(month = .wt)
+  
+  all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
+                                         "May", "June", "July", "August", "September", 
+                                         "October", "November", "December"), 
+                               order = 1:12)
+  
+  monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
+    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+    dplyr::arrange(order) %>% 
+    dplyr::select(-order)
+  
+  return(monthly_calls)
+}
+
+# Run analysis ########################################################################
+
+# Read in data from each borough
+bronx_calls <- read_and_clean_call_data("../data/Bronx_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+brooklyn_calls <- read_and_clean_call_data("../data/Brooklyn_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+manhattan_calls <- read_and_clean_call_data("../data/Manhattan_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+queens_calls <- read_and_clean_call_data("../data/Queens_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+staten_island_calls <- read_and_clean_call_data("../data/Staten_Island_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+
+# Add a column for borough and bind data together into one dataframe
+bronx_calls <- bronx_calls %>% 
+  mutate(borough = "Bronx")
+brooklyn_calls <- brooklyn_calls %>% 
+  mutate(borough = "Brooklyn")
+manhattan_calls <- manhattan_calls %>% 
+  mutate(borough = "Manhattan")
+queens_calls <- queens_calls %>% 
+  mutate(borough = "Queens")
+staten_island_calls <- staten_island_calls %>% 
+  mutate(borough = "Staten Island")
+
+ny_calls <- bind_rows(bronx_calls, brooklyn_calls, manhattan_calls, 
+                      queens_calls, staten_island_calls)
+
+# Filter to reptiles and amphibians and get monthly counts by borough
+ny_monthly_calls <- ny_calls %>% 
+  filter(animal_class == "Terrestrial Reptile or Amphibian") %>% 
+  nest(.by = borough) %>% 
+  mutate(monthly_counts = map(data, count_monthly_calls)) %>% 
+  select(borough, monthly_counts) %>% 
+  unnest(cols = c(monthly_counts))
+
+# Visualize the results
+ny_monthly_calls %>% 
+  ggplot(aes(x = n, y = month)) + 
+  geom_col() + 
+  facet_wrap(~ borough)
+```
+
+This is more efficient that copying and pasting the full code for each borough.
+However, we can make it more efficient by leveraging the way we've organized our
+project directory, as well as system files. We can create a vector with all the
+file names and then use the idea of mapping functions from an earlier stage of the
+script to make the code more efficient. 
+
+First, we have structured our project directory so that all the data files are in the 
+same directory, and they are the only files in that directory. Also, we've designed
+the filenames to start with the borough, so we can extract the borough information from 
+the filenames. 
+
+In R, the `list.files` function works as a system call that will list all the files in 
+a given directory. To list all the files in a directory called "data" that is a 
+subdirectory of the parent directory you're working in, you can run: 
+
+```{r}
+list.files(path = "../data")
+```
+
+We can use this call to create a vector with the filenames of the files for all boroughs: 
+
+```{r}
+borough_files <- list.files(path = "../data")
+borough_files
+```
+
+If the files are in a different directory than your working directory, you'll want
+to make sure they are listed with their full pathname if we want to work with them 
+in further code, which you can do with the parameter `full.names`: 
+
+```{r}
+borough_files <- list.files(path = "../data", full.names = TRUE)
+borough_files
+```
+
+Now that we have these as a vector, we can map over that vector to read in all the files. 
+We'll make one change in our function to read and clean the data. We want to make sure
+the filenames are included when we read in the data, so we can change the `read_csv`
+call in the function, using its `id` parameter to include the filename as a column in 
+the final data (we'll also need to make sure we select this column when we clean out
+the columns we don't need):
+
+```{r}
+# To run this function, you will need to have the following functions installed:
+# readr, janitor, dplyr, lubridate
+read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
+  
+  # Read in data and clean column names
+  call_data <- readr::read_csv(file = file, id = "filename") %>% 
+    janitor::clean_names() %>% 
+    dplyr::rename(datetime_call = date_and_time_of_initial_call)
+  
+  # Limit to columns we'll need for our research question
+  call_data <- call_data %>% 
+    dplyr::select(datetime_call, property, location, species_description, 
+                  animal_class, final_ranger_action, filename)
+  
+  call_data <- call_data %>% 
+    # Convert date-time column to appropriate data type
+    dplyr::mutate(datetime_call = lubridate::mdy_hms(datetime_call)) %>%
+    # Add columns for the year and month of the call
+    dplyr::mutate(call_year = lubridate::year(datetime_call),
+                  call_month = lubridate::month(datetime_call,
+                                                label = TRUE, 
+                                                abbr = FALSE)) 
+  
+  if(remove_partial_years == TRUE) {
+    call_data <- call_data %>% 
+      dplyr::filter(call_year %in% c(2019, 2020))
+  }
+  
+  return(call_data)
+}
+
+
+bronx_calls <- read_and_clean_call_data("../data/Bronx_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+bronx_calls
+```
+
+Now let's apply this function across all the borough files: 
+
+```{r}
+ny_calls <- borough_files %>% 
+  map(.f = read_and_clean_call_data, remove_partial_years = TRUE)
+ny_calls
+```
+
+This results in a list, where each element is the data from a different borough. 
+If we want to bind them into a single dataframe, we can use `bind_rows`: 
+
+```{r}
+ny_calls <- ny_calls %>% 
+  bind_rows()
+```
+
+We can use regular expressions to extract the borough name from the "filename" column. 
+Here's an example of what the values in the filename look like: 
+
+```{r}
+ny_calls %>% 
+  pull(filename) %>% 
+  sample(5)
+```
+
+They follow a similar pattern: the borough name is between "../data/" and
+"_animal_response.csv". There are a few ways we could tackle extracting the
+borough names; one is to get rid of everything we don't want, which we can do
+with the `str_remove` function from the `stringr` package. Since "Staten Island"
+is two words, we'll also want to replace the underscore between Staten and
+Island with a space, which we can do with `str_replace` (also from the `stringr`
+package). We'll put the results in a new column called `borough`:
+
+```{r}
+library(stringr)
+ny_calls <- ny_calls %>% 
+  mutate(borough = filename, 
+         borough = str_remove(borough, "../data/"), 
+         borough = str_remove(borough, "_animal_response.csv"), 
+         borough = str_replace(borough, "_", " "))
+```
+
+Here's a sample of the results: 
+
+```{r}
+ny_calls %>% 
+  pull(borough) %>% 
+  sample(10)
+```
+
+Now we can proceed with the code to analyze the full dataset. With these changes, 
+our full script would look like this: 
+
+```{r eval = FALSE}
+# Load required libraries ##############################################################
+library(readr)
+library(janitor)
+library(dplyr)
+library(lubridate)
+library(tidyr)
+library(purrr)
+library(stringr)
+library(ggplot2)
+
+# Define functions ####################################################################
+
+# To run this function, you will need to have the following functions installed:
+# readr, janitor, dplyr, lubridate
+read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
+  
+  # Read in data and clean column names
+  call_data <- readr::read_csv(file = file, id = "filename") %>% 
+    janitor::clean_names() %>% 
+    dplyr::rename(datetime_call = date_and_time_of_initial_call)
+  
+  # Limit to columns we'll need for our research question
+  call_data <- call_data %>% 
+    dplyr::select(datetime_call, property, location, species_description, 
+                  animal_class, final_ranger_action, filename)
+  
+  call_data <- call_data %>% 
+    # Convert date-time column to appropriate data type
+    dplyr::mutate(datetime_call = lubridate::mdy_hms(datetime_call)) %>%
+    # Add columns for the year and month of the call
+    dplyr::mutate(call_year = lubridate::year(datetime_call),
+                  call_month = lubridate::month(datetime_call,
+                                                label = TRUE, 
+                                                abbr = FALSE)) 
+  
+  if(remove_partial_years == TRUE) {
+    call_data <- call_data %>% 
+      dplyr::filter(call_year %in% c(2019, 2020))
+  }
+  
+  return(call_data)
+}
+
+# To run this function, you will need to have the following packages installed:
+# dplyr, tibble
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month) %>% 
+    dplyr::rename(month = .wt)
+  
+  all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
+                                         "May", "June", "July", "August", "September", 
+                                         "October", "November", "December"), 
+                               order = 1:12)
+  
+  monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
+    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+    dplyr::arrange(order) %>% 
+    dplyr::select(-order)
+  
+  return(monthly_calls)
+}
+
+# Run analysis ########################################################################
+
+# Create a vector with the names of all the files
+borough_files <- list.files(path = "../data", full.names = TRUE)
+
+# Read in data from all files, bind them together, and extract borough names from 
+# the filenames
+ny_calls <- borough_files %>% 
+  map(.f = read_and_clean_call_data, remove_partial_years = TRUE) %>% 
+  bind_rows() %>% 
+  mutate(borough = filename, 
+         borough = str_remove(borough, "../data/"), 
+         borough = str_remove(borough, "_animal_response.csv"), 
+         borough = str_replace(borough, "_", " "))
+
+# Filter to reptiles and amphibians and get monthly counts by borough
+ny_monthly_calls <- ny_calls %>% 
+  filter(animal_class == "Terrestrial Reptile or Amphibian") %>% 
+  nest(.by = borough) %>% 
+  mutate(monthly_counts = map(data, count_monthly_calls)) %>% 
+  select(borough, monthly_counts) %>% 
+  unnest(cols = c(monthly_counts))
+
+# Visualize the results
+ny_monthly_calls %>% 
+  ggplot(aes(x = n, y = month)) + 
+  geom_col() + 
+  facet_wrap(~ borough)
+```
+
