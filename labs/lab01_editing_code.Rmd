@@ -41,12 +41,17 @@ R Project and it will be easier to navigate between the data and the labs.
 
 To download the entire repo as a zipped file, take the following steps: 
 
-1. Go to ...
-2. Towards the top right part of the page, there's a button that says "..."
+1. Go to https://github.com/geanders/sharp_rigor_reproducibility
+2. Towards the top right part of the page, there's a green button that says "Code". 
+If you click on the arrow on this button, one of the options is "Download ZIP". 
+Select this option.
 3. Navigate in your file directory to the location where you downloaded the
-file. [Need to unzip?] Click on the file "... . Rproj". This should open 
-an RStudio session, opened to a project called "sharp_rigor_reproducibility"
-(you should be able to see this name on the top bar of the window). 
+zipped file. You will need to unzip this file based on how your operating 
+system unzips files (for a Mac, this is often just double-clicking on the zipped 
+file). Once it is unzipped, open the directory for the unzipped version. Click on the file
+"sharp_rigor_reproducibility.Rproj". This should open an RStudio session, opened
+to a project called "sharp_rigor_reproducibility" (you should be able to see
+this name on the top bar of the window).
 
 ## Introduction to the example data
 

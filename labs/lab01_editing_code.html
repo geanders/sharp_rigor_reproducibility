@@ -389,14 +389,18 @@ will be easier to navigate between the data and the labs.</p>
 <p>To download the entire repo as a zipped file, take the following
 steps:</p>
 <ol style="list-style-type: decimal">
-<li>Go to …</li>
-<li>Towards the top right part of the page, there’s a button that says
-“…”</li>
+<li>Go to <a href="https://github.com/geanders/sharp_rigor_reproducibility" class="uri">https://github.com/geanders/sharp_rigor_reproducibility</a></li>
+<li>Towards the top right part of the page, there’s a green button that
+says “Code”. If you click on the arrow on this button, one of the
+options is “Download ZIP”. Select this option.</li>
 <li>Navigate in your file directory to the location where you downloaded
-the file. [Need to unzip?] Click on the file “… . Rproj”. This should
-open an RStudio session, opened to a project called
-“sharp_rigor_reproducibility” (you should be able to see this name on
-the top bar of the window).</li>
+the zipped file. You will need to unzip this file based on how your
+operating system unzips files (for a Mac, this is often just
+double-clicking on the zipped file). Once it is unzipped, open the
+directory for the unzipped version. Click on the file
+“sharp_rigor_reproducibility.Rproj”. This should open an RStudio
+session, opened to a project called “sharp_rigor_reproducibility” (you
+should be able to see this name on the top bar of the window).</li>
 </ol>
 </div>
 <div id="introduction-to-the-example-data" class="section level2">
@@ -429,6 +433,23 @@ reading and joining data from multiple files. If you’d like to see later
 how we prepared the example data from the original data, we’ve included
 the original data in the lab repo in the “raw_data” subdirectory and the
 script to convert it in the “prepare_data” subdirectory.)</p>
+<p>Each file is a CSV, so it can be read into R using the
+<code>read_csv</code> function from the <code>readr</code> package
+(included as part of the umbrella <code>tidyverse</code> package). Here
+is an example of the data from Manhattan:</p>
+<pre class="r"><code>library(readr)
+
+man_animal_response &lt;- read_csv(&quot;../data/Manhattan_animal_response.csv&quot;)
+
+man_animal_response</code></pre>
+<p>There is one row per response, where each response is a case where
+the caller felt an animal might need some kind of help. For each rescue,
+there’s information that includes the date and time of both the call and
+the ranger response, the location (including the larger park or other
+area and the specific location within that), information about the
+animal (including its species, condition, and age), and information
+about the response (including how long it lasted and the final
+action).</p>
 </div>
 <div id="opening-a-lab-rmarkdown-file" class="section level2">
 <h2>Opening a lab RMarkdown file</h2>
