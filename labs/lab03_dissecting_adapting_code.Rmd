@@ -12,7 +12,7 @@ knitr::opts_chunk$set(echo = TRUE, messages = FALSE, warnings = FALSE)
 To prepare for this lab, make sure that you've run the final script from the last 
 lab in your current R session. As a reminder, that code is: 
 
-```{r}
+```{r include = FALSE}
 # Load required libraries
 library(readr)
 library(janitor)
@@ -119,6 +119,8 @@ examples we can find and adapt them to our current task. Our aim will be to find
 solution that (1) has code with logic that aligns better to the logic of the task and
 (2) preserves the order of the months so that they show up in their order by year 
 when we plot the results. 
+
+## Finding example code
 
 We'll start by trying to find some advice and examples of how we can solve the task. 
 A reasonable Google search to start with is something like, "R count rows by group include
@@ -306,6 +308,257 @@ dat %>%
   count(ID, name = "no_rows", .drop = F) %>%
   print.data.frame()
 ```
+
+Let's work out way through this code to understand how it works. Then we'll see 
+if we can apply it to our question. 
+
+This piece of code is a pipeline---it uses the pipe symbol (`%>%`) to chain together
+several calls, sending the output from one as input into the next. This type of 
+pipeline can be a great way to include code in your script, as we discussed in the
+lecture on editing code. However, when you dissect code that's in a pipeline like 
+this, you'll want to tease it apart so you can understand each step. 
+
+Let's take the pipeline apart and look at it piece by piece. Let's start by looking
+at only the first function call in the pipeline. The dataframe `dat` is piped into 
+a `mutate` call, and a `factor` call is nested within the `mutate`. 
+
+```{r eval = FALSE}
+dat %>%
+  mutate(ID = factor(ID, levels = letters))
+```
+
+Let's work from the inside out for the function call. The innermose call is to `factor`. 
+Let's use the helpful to see what that does (`?factor`).
+
+Based on the helpfile, the `factor` function will input a vector and change it to a 
+factor. This is one of the classes of data that values in a vector can have in R 
+(others include numeric, character strings, dates, date-times, and so on). If you 
+aren't familiar with factors and how they work, there is a chapter in **R for Data 
+Science** that you might find very helpful (https://r4ds.had.co.nz/factors.html). 
+
+Factors are very helpful when you have a value that can only take one of a set of 
+values. As one example, the original data for the animal response calls includes 
+a variable with the animal's age, which can only be "Juvenile" or "Adult". In the
+StackOverflow example we're looking at here, the values in the sample of letters can
+only be one of the 26 lowercase letters in the Roman alphabet. In the task we're 
+trying to write a function for, the variable can only take one of twelve values, 
+the twelve months in the year. 
+
+It is a good strategy, when dissecting code, to look carefully at the object 
+that the function call operates on, carefully comparing what it looks like before
+and after the function call. Here, the larger function call is `mutate`, which 
+operates on the `dat` object. However, right now we're focusing on the call of 
+the `factor` function, which is nested inside the `mutate`. That call operates
+on one of the columns in the `dat` dataframe, specifically the `ID` column. 
+
+It may be helpful if we zoom in to look at just that column, before and after
+the `factor` call. We can extract the column either with the `$` operator (e.g., 
+`dat$ID`) or with the `pull` function from `dplyr`. I'll use the second so you can
+try that, if you're not familiar with it:
+
+```{r}
+# Look at the ID column from dat before we run the factor call
+dat %>% 
+  pull(ID) 
+
+# Look at the ID column from dat after we run the factor call
+dat %>% 
+  pull(ID) %>% 
+  factor(levels = letters)
+```
+
+Before the `factor` call, this column is a character string, with each value in quotation
+marks (you could also use the `class` function to check that the column is stored 
+as character strings at this point). After we run the call, the column is a factor 
+class. You can tell that because the quotation marks are gone, and also R records it 
+not only with the values for each element of the vector, but also includes a "Levels" 
+section, where it lists all the values that the factor is allowed to have. 
+
+This is great, because it establishes a "memory" of all the possible values of the factor. 
+This is what R can draw on to include values with counts of zero when we want to 
+summarize the counts later. 
+
+Let's see how this function call was able to provide the information about the levels---notice
+that the "Levels" include letters (like "m") that aren't included as values in the 
+vector itself. 
+
+The `factor` call includes one argument in addition to the vector that we're asking it 
+to change to a factor. Specifically, it includes the argument `levels = letters`. We 
+already know that `letters` is a built-in vector in R that gives the 26 lowercase letters. 
+To figure out the `levels` part, we can take a look at the helpfile for `factor` and 
+scroll down to the Arguments section. Under `levels`, it says: 
+
+> "`levels`: an optional vector of the unique values (as character strings) that x might have taken. The default is the unique set of values taken by as.character(x), sorted into increasing order of x. Note that this set can be specified as smaller than sort(unique(x))."
+
+Based on this, the function call is using the built-it `letters` vector to tell R which 
+set of values the new factor could take, forcing it to include ones like "m" that aren't
+listed in the data but are possible. This also says that, if we don't include this, 
+the levels will be set as the unique values in the data---in other words, if we didn't 
+include this part, the factor levels would not have included missing but possible values
+like "m". 
+
+This seems like it will be very helpful with our task---we want R to "remember" that 
+animal calls could be reported in any of the twelve months, and then provide a 0 value
+for months without calls, rather than dropping them out from the summary. 
+
+Now that we know what the `factor` call is doing, it's pretty straightforward to 
+figure out what the `mutate` call that it's nested in is doing. The `mutate` function 
+is typically used to create a new column or change an existing one. In this case, 
+it's changing the `ID` column in the `dat` dataframe, converting it from a character
+class to a factor class, where the factor has as levels the 26 lowercase letters in the 
+`letters` vector. Again, we can run the object that's being operated on (`dat` in this
+case) before and after the function call to compare and make sure we understand
+what's going on:
+
+```{r}
+# Check the dat dataframe before the mutate call
+dat
+
+# Check the dat dataframe after the mutate call
+dat %>%
+  mutate(ID = factor(ID, levels = letters))
+```
+
+In the handout for this lab, you might not see much of a difference between these two 
+printouts. Sometimes, it can be subtle to identify a change in the class of the object.
+
+However, if you open the RMarkdown file for this lab and run the code in that, or 
+run it from a console, you should be able to see that it prints out the class of the column
+right below the column name. From this annotation, you can see that the column is 
+changing from a character class (`<chr>`) to a factor class (`<fctr>`). You can also use 
+the `summary` function to get information about all columns in a dataframe, including
+their class of data: 
+
+```{r}
+# Check the dat dataframe before the mutate call
+dat %>% 
+  summary()
+
+# Check the dat dataframe after the mutate call
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>% 
+  summary()
+```
+
+Now let's move to the next step in the pipeline from the example solution: 
+
+```{r}
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>%
+  count(ID, name = "no_rows", .drop = F)
+```
+
+This is using a `count` function. We already know, from our original function, that 
+this function will count up the number observations in each group within a dataset. 
+This call is using some arguments that we didn't use in our earlier code, though. 
+Specifically, it uses `name = "no_rows"` and `.drop = F`. Let's figure out what 
+each of those are doing before we try to adapt this code for our own task. 
+
+First, let's look at `names = "no_rows"`. Let's start by comparing the output when 
+we include this argument versus when we leave it out: 
+
+```{r}
+# Check count call output when including `name = "no_rows"`
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>%
+  count(ID, name = "no_rows", .drop = F)
+
+# Check count call output when excluding `name = "no_rows"`
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>%
+  count(ID, .drop = F)
+```
+
+It looks like the output is very similar. In both cases, we get the counts by letter. The
+output is a dataframe with a column with the letter (`ID`, which was the name of the letter
+column in the input dataframe) and a column with the count for that letter. The only 
+difference is that the column is generically named `n` when we don't include the 
+argument `names = "no_rows"`, but set to `no_rows` when we do include that argument. 
+
+Based on this, it looks like the `names` argument lets us set the name of the column that
+gives the counts from the `count` call. If we look at the helpfile for the `count` function
+(`?count`), we can confirm this. It says: 
+
+> "`name`: The name of the new column in the output. If omitted, it will default to n. If there's already a column called n, it will use nn. If there's a column called n and nn, it'll use nnn, and so on, adding ns until it gets a new name."
+
+Now let's do the same assessment for the other argument, `.drop = F`. First, let's compare
+the output with and without this argument in the call: 
+
+```{r}
+# Check count call output when including `.drop = FALSE`
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>%
+  count(ID, name = "no_rows", .drop = F)
+
+# Check count call output when excluding `.drop = FALSE`
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>%
+  count(ID, name = "no_rows")
+```
+
+These outputs look pretty similar, as both give a dataframe that summarizes the count 
+by row. However, if we look carefully, we see that one has more rows that the other. 
+The output has 26 rows when we include `.drop = F`, but only 22 when we don't. 
+
+We know that there are 26 possible values (the 26 letters) for the thing we're counting, 
+so we want a dataframe of counts with a row for each possible value. However, we also
+know that there are some possible values that don't show up in the dataframe that we're 
+counting. Maybe these are the rows that are missing when we exclude `.drop = FALSE`?
+We can check by looking at a letter that we know is missing in the data, "m". Sure enough, 
+there's a row for "m" when we include `.drop = F`, with a count of 0, but not a row
+when we don't include that argument. Since we want to include all months in our summary
+counts, even if there were no animal calls recorded in that month, we will want to 
+include `.drop = F` in our own code.
+
+We're now at the final step of the pipeline in the example solution. In this case, 
+it's a fairly straightforward call to print out the dataset. This is helpful to demonstrate
+the full dataset in this StackOverflow question, but we likely won't need this last
+step in our own code function: 
+
+```{r}
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>%
+  count(ID, name = "no_rows", .drop = F) %>%
+  print.data.frame()
+```
+
+## Adapting code
+
+Now, we're ready to adapt this example to our own task. As a reminder, here's our current
+function to do this task: 
+
+```{r}
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month) %>% 
+    dplyr::rename(month = .wt)
+  
+  all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
+                                         "May", "June", "July", "August", "September", 
+                                         "October", "November", "December"), 
+                               order = 1:12)
+  
+  monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
+    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+    dplyr::arrange(order) %>% 
+    dplyr::select(-order)
+  
+  return(monthly_calls)
+}
+```
+
+Let's pull out the code within the function and set the input parameter (`call_data`)
+to a good example object. This will let us work line-by-line as we adapt the code. 
+
+```{r}
+# Rerun the code at the start of this lab if needed to set up the `man_animal_response`
+# object
+
+call_data <- man_animal_resp 
+
+
+```
+
 
 
 

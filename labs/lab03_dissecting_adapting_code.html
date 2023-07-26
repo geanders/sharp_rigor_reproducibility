@@ -360,119 +360,6 @@ display: none;
 <p>To prepare for this lab, make sure that you’ve run the final script
 from the last lab in your current R session. As a reminder, that code
 is:</p>
-<pre class="r"><code># Load required libraries
-library(readr)
-library(janitor)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;janitor&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     chisq.test, fisher.test</code></pre>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(lubridate)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre class="r"><code>## Define functions ######################################################################
-
-# To run this function, you will need to have the following functions installed:
-# readr, janitor, dplyr, lubridate
-read_and_clean_call_data &lt;- function(file, remove_partial_years = FALSE){
-  
-  # Read in data and clean column names
-  call_data &lt;- readr::read_csv(file = file) %&gt;% 
-    janitor::clean_names() %&gt;% 
-    dplyr::rename(datetime_call = date_and_time_of_initial_call)
-  
-  # Limit to columns we&#39;ll need for our research question
-  call_data &lt;- call_data %&gt;% 
-    dplyr::select(datetime_call, property, location, species_description, 
-                  animal_class, final_ranger_action)
-  
-  call_data &lt;- call_data %&gt;% 
-    # Convert date-time column to appropriate data type
-    dplyr::mutate(datetime_call = lubridate::mdy_hms(datetime_call)) %&gt;%
-    # Add columns for the year and month of the call
-    dplyr::mutate(call_year = lubridate::year(datetime_call),
-                  call_month = lubridate::month(datetime_call,
-                                                label = TRUE, 
-                                                abbr = FALSE)) 
-  
-  if(remove_partial_years == TRUE) {
-    call_data &lt;- call_data %&gt;% 
-      dplyr::filter(call_year %in% c(2019, 2020))
-  }
-  
-  return(call_data)
-}
-
-# To run this function, you will need to have the following packages installed:
-# dplyr, tibble
-count_monthly_calls &lt;- function(call_data) {
-  monthly_calls &lt;- call_data %&gt;% 
-    dplyr::count(.wt = call_month) %&gt;% 
-    dplyr::rename(month = .wt)
-  
-  all_months &lt;- tibble::tibble(month = c(&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, 
-                                         &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, 
-                                         &quot;October&quot;, &quot;November&quot;, &quot;December&quot;), 
-                               order = 1:12)
-  
-  monthly_calls &lt;- dplyr::full_join(monthly_calls, all_months, by = &quot;month&quot;) %&gt;% 
-    dplyr::mutate(n = if_else(is.na(n), 0, n)) %&gt;% 
-    dplyr::arrange(order) %&gt;% 
-    dplyr::select(-order)
-  
-  return(monthly_calls)
-}
-
-## Analysis #####################################################################
-
-# Read in data and clean data
-man_animal_resp &lt;- read_and_clean_call_data(file = &quot;../data/Manhattan_animal_response.csv&quot;, 
-                                            remove_partial_years = TRUE)</code></pre>
-<pre><code>## Rows: 960 Columns: 21</code></pre>
-<pre><code>## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (14): Date and Time of initial call, Date and time of Ranger response, P...
-## dbl  (3): Duration of Response, # of Animals, Hours spent monitoring
-## lgl  (4): PEP Response, Animal Monitored, Police Response, ESU Response
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<pre class="r"><code># Filter to data on reptiles and amphibians in Central Park
-man_animal_resp &lt;- man_animal_resp %&gt;% 
-  filter(property == &quot;Central Park&quot;) %&gt;%  
-  filter(animal_class == &quot;Terrestrial Reptile or Amphibian&quot;)
-
-# Count number of response calls per month
-monthly_man_animal_response &lt;- count_monthly_calls(man_animal_resp) 
-monthly_man_animal_response</code></pre>
-<pre><code>## # A tibble: 12 × 2
-##    month         n
-##    &lt;chr&gt;     &lt;dbl&gt;
-##  1 January       0
-##  2 February      1
-##  3 March         0
-##  4 April         0
-##  5 May           6
-##  6 June          3
-##  7 July          5
-##  8 August        2
-##  9 September     1
-## 10 October       0
-## 11 November      0
-## 12 December      0</code></pre>
 <p>In that last lab, one of the tasks that we did was create a way to
 get a summary of counts of calls by months that included rows with
 zeros. We ultimate did that using a function we created called
@@ -503,6 +390,8 @@ task. Our aim will be to find a solution that (1) has code with logic
 that aligns better to the logic of the task and (2) preserves the order
 of the months so that they show up in their order by year when we plot
 the results.</p>
+<div id="finding-example-code" class="section level2">
+<h2>Finding example code</h2>
 <p>We’ll start by trying to find some advice and examples of how we can
 solve the task. A reasonable Google search to start with is something
 like, “R count rows by group include levels with no counts”. Here are
@@ -520,6 +409,7 @@ that don’t appear in the data”</li>
 today. Let’s try out the first two. We’ll start by dissect the examples
 to decide which one we want to adapt for our task (or if we want to
 combine elements of both).</p>
+</div>
 <div id="dissecting-code" class="section level2">
 <h2>Dissecting code</h2>
 <p>Let’s start by looking at the Stack Overflow thread (<a href="https://stackoverflow.com/questions/42017926/r-group-by-show-count-of-all-factor-levels-even-when-zero-dplyr" class="uri">https://stackoverflow.com/questions/42017926/r-group-by-show-count-of-all-factor-levels-even-when-zero-dplyr</a>).
@@ -696,208 +586,515 @@ code:</p>
   mutate(ID = factor(ID, levels = letters)) %&gt;%
   count(ID, name = &quot;no_rows&quot;, .drop = F) %&gt;%
   print.data.frame()</code></pre>
-</div>
-<div id="data" class="section level2">
-<h2>Data</h2>
-<p>For this lab, we will use data from the Squirrel Census. We’ll only
-use a few of the columns, so we’ll start by reading the data into R and
-limiting our dataframe to the columns we’ll need:</p>
-<pre class="r"><code># Load required packages
-library(tidyverse)</code></pre>
-<pre><code>## ── Attaching core tidyverse packages ──────────────────────── tidyverse 2.0.0 ──
-## ✔ forcats 1.0.0     ✔ tibble  3.2.1
-## ✔ purrr   1.0.1     ✔ tidyr   1.3.0
-## ✔ stringr 1.5.0     
-## ── Conflicts ────────────────────────────────────────── tidyverse_conflicts() ──
-## ✖ dplyr::filter() masks stats::filter()
-## ✖ dplyr::lag()    masks stats::lag()
-## ℹ Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
-<pre class="r"><code># Read in data and limit to the columns we&#39;ll use for the exercise
-nyc_squirrels &lt;- read_csv(&quot;../raw_data/2018_Central_Park_Squirrel_Census_-_Squirrel_Data.csv&quot;) %&gt;% 
-  select(`Unique Squirrel ID`, Age, `Primary Fur Color`)</code></pre>
-<pre><code>## Rows: 3023 Columns: 31
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (14): Unique Squirrel ID, Hectare, Shift, Age, Primary Fur Color, Highli...
-## dbl  (4): X, Y, Date, Hectare Squirrel Number
-## lgl (13): Running, Chasing, Climbing, Eating, Foraging, Kuks, Quaas, Moans, ...
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
-<p>Here are the first few rows of the data:</p>
-<pre class="r"><code>nyc_squirrels</code></pre>
-<pre><code>## # A tibble: 3,023 × 3
-##    `Unique Squirrel ID` Age   `Primary Fur Color`
-##    &lt;chr&gt;                &lt;chr&gt; &lt;chr&gt;              
-##  1 37F-PM-1014-03       &lt;NA&gt;  &lt;NA&gt;               
-##  2 21B-AM-1019-04       &lt;NA&gt;  &lt;NA&gt;               
-##  3 11B-PM-1014-08       &lt;NA&gt;  Gray               
-##  4 32E-PM-1017-14       Adult Gray               
-##  5 13E-AM-1017-05       Adult Gray               
-##  6 11H-AM-1010-03       Adult Cinnamon           
-##  7 36H-AM-1010-02       Adult Gray               
-##  8 33F-AM-1008-02       Adult Gray               
-##  9 21C-PM-1006-01       Adult Gray               
-## 10 11D-AM-1010-03       Adult Gray               
-## # ℹ 3,013 more rows</code></pre>
-<p>This dataset includes a unique identifier for each squirrel
-(<code>Unique Squirrel ID</code>), whether the squirrel is an adult or
-juvenile (<code>Age</code>), and the primary fur color of the squirrel
-(<code>Primary Fur Color</code>).</p>
-</div>
-<div id="dissecting-and-adapting-code" class="section level2">
-<h2>Dissecting and adapting code</h2>
-<p>There are two main changes you want to make to this dataset. First,
-you want to change the values in the <code>Age</code> and
-<code>Primary Fur Color</code> columns so that they are always
-lowercase. In other words, you want every “Adult” to be changed to
-“adult”, every “Gray” to be changed to “gray”, and so on. Second, you
-want to extract some information that’s embedded in the squirrel IDs.
-These IDs are not randomly generated. Instead, they combine several
-elements, with each separated by a hyphen (“-”). The first component is
-the hectare ID where the squirrel was observed. The next component is
-whether the siting was in the morning (“AM”) or afternoon / night
-(“PM”). The next component is the month and date (“1017”, for example,
-is October 17). The final component is added to make sure that every
-squirrel siting in that hectare on that date and session (AM or PM) gets
-a unique ID (for example, “3” might be used for the third squirrel that
-was sited in the hectare on the date and session). You want to extract
-these pieces of information so that they’re in separate columns, where
-you can use each piece of information for things like filtering (e.g.,
-pulling all observations on a specific date), visualizing (e.g., using
-color in a plot to show if the squirrel was observed in the AM or PM
-session), and merging with other data (e.g., merging with spatial data
-on each hectare to create a map of sittings by hectare).</p>
-<p>In each case, there are many ways you could complete the task in R.
-Some of the ways are very clear and straightforward, while others are
-more complicated. In this laboratory, we will give you a few examples of
-how you can tackle these tasks. In these examples, we’ve tried to
-replicate advice you might get online when you search for help on these
-tasks.</p>
-<p>Use these examples to try out the advice on dissecting and adapting
-code. As a reminder, take the following steps to first dissect and then
-adapt the code:</p>
-<ol style="list-style-type: decimal">
-<li>Try out the example code on the dataset that’s used in the example.
-Make sure that you can get the example to work as it was originally
-written. If you can’t troubleshoot–do you have all the needed packages?
-Do you have a version of R and of the packages that will work for the
-example? If you need to download and load the example data, have you
-done so correctly?</li>
-<li>Go through each line in the example code. Make sure that you
-understand what is happening in each step. There are things you can do
-to help with this: look at what the objects look like after each
-function call; use help files for the functions that you don’t
-understand and make sure you understand why each parameter is set the
-way they are in the example.</li>
-<li>Try to adapt the code to work with your own data. Steps that can
-help include: compare the format of your data with the format of the
-example data to make sure the input from your data will have the
-appropriate format for the code; check your own data object after each
-function call; use code to explore your data at each step
-(<code>head</code>, <code>summary</code>, <code>pull</code> and
-<code>unique</code> to explore a specific categorical column).</li>
-<li>Once you have tried some different approaches, identify one that:
-has code that is as simple and easy to understand as possible; will
-likely work for other versions of your data (e.g., if a new category is
-added for a categorical variable); will be as easy as possible to
-maintain when you re-run or re-use your code in the future; fits in well
-with your primary toolset.</li>
-</ol>
-<div id="changing-capitalization" class="section level3">
-<h3>Changing capitalization</h3>
-<p>You need to change the capitalization in a column of your data so
-that all characters are in lowercase. When you Google how to do this,
-you come up with a forum thread where someone asked the following
-question:</p>
+<p>Let’s work out way through this code to understand how it works. Then
+we’ll see if we can apply it to our question.</p>
+<p>This piece of code is a pipeline—it uses the pipe symbol
+(<code>%&gt;%</code>) to chain together several calls, sending the
+output from one as input into the next. This type of pipeline can be a
+great way to include code in your script, as we discussed in the lecture
+on editing code. However, when you dissect code that’s in a pipeline
+like this, you’ll want to tease it apart so you can understand each
+step.</p>
+<p>Let’s take the pipeline apart and look at it piece by piece. Let’s
+start by looking at only the first function call in the pipeline. The
+dataframe <code>dat</code> is piped into a <code>mutate</code> call, and
+a <code>factor</code> call is nested within the <code>mutate</code>.</p>
+<pre class="r"><code>dat %&gt;%
+  mutate(ID = factor(ID, levels = letters))</code></pre>
+<p>Let’s work from the inside out for the function call. The innermose
+call is to <code>factor</code>. Let’s use the helpful to see what that
+does (<code>?factor</code>).</p>
+<p>Based on the helpfile, the <code>factor</code> function will input a
+vector and change it to a factor. This is one of the classes of data
+that values in a vector can have in R (others include numeric, character
+strings, dates, date-times, and so on). If you aren’t familiar with
+factors and how they work, there is a chapter in <strong>R for Data
+Science</strong> that you might find very helpful (<a href="https://r4ds.had.co.nz/factors.html" class="uri">https://r4ds.had.co.nz/factors.html</a>).</p>
+<p>Factors are very helpful when you have a value that can only take one
+of a set of values. As one example, the original data for the animal
+response calls includes a variable with the animal’s age, which can only
+be “Juvenile” or “Adult”. In the StackOverflow example we’re looking at
+here, the values in the sample of letters can only be one of the 26
+lowercase letters in the Roman alphabet. In the task we’re trying to
+write a function for, the variable can only take one of twelve values,
+the twelve months in the year.</p>
+<p>It is a good strategy, when dissecting code, to look carefully at the
+object that the function call operates on, carefully comparing what it
+looks like before and after the function call. Here, the larger function
+call is <code>mutate</code>, which operates on the <code>dat</code>
+object. However, right now we’re focusing on the call of the
+<code>factor</code> function, which is nested inside the
+<code>mutate</code>. That call operates on one of the columns in the
+<code>dat</code> dataframe, specifically the <code>ID</code> column.</p>
+<p>It may be helpful if we zoom in to look at just that column, before
+and after the <code>factor</code> call. We can extract the column either
+with the <code>$</code> operator (e.g., <code>dat$ID</code>) or with the
+<code>pull</code> function from <code>dplyr</code>. I’ll use the second
+so you can try that, if you’re not familiar with it:</p>
+<pre class="r"><code># Look at the ID column from dat before we run the factor call
+dat %&gt;% 
+  pull(ID) </code></pre>
+<pre><code>##  [1] &quot;y&quot; &quot;d&quot; &quot;g&quot; &quot;a&quot; &quot;b&quot; &quot;w&quot; &quot;k&quot; &quot;n&quot; &quot;r&quot; &quot;s&quot; &quot;a&quot; &quot;u&quot; &quot;u&quot; &quot;j&quot; &quot;v&quot; &quot;n&quot; &quot;j&quot; &quot;g&quot; &quot;i&quot;
+## [20] &quot;o&quot; &quot;u&quot; &quot;e&quot; &quot;i&quot; &quot;y&quot; &quot;n&quot; &quot;e&quot; &quot;e&quot; &quot;b&quot; &quot;j&quot; &quot;y&quot; &quot;l&quot; &quot;o&quot; &quot;a&quot; &quot;t&quot; &quot;c&quot; &quot;f&quot; &quot;j&quot; &quot;j&quot;
+## [39] &quot;f&quot; &quot;o&quot; &quot;t&quot; &quot;t&quot; &quot;z&quot; &quot;l&quot; &quot;y&quot; &quot;w&quot; &quot;f&quot; &quot;y&quot; &quot;h&quot; &quot;l&quot;</code></pre>
+<pre class="r"><code># Look at the ID column from dat after we run the factor call
+dat %&gt;% 
+  pull(ID) %&gt;% 
+  factor(levels = letters)</code></pre>
+<pre><code>##  [1] y d g a b w k n r s a u u j v n j g i o u e i y n e e b j y l o a t c f j j
+## [39] f o t t z l y w f y h l
+## Levels: a b c d e f g h i j k l m n o p q r s t u v w x y z</code></pre>
+<p>Before the <code>factor</code> call, this column is a character
+string, with each value in quotation marks (you could also use the
+<code>class</code> function to check that the column is stored as
+character strings at this point). After we run the call, the column is a
+factor class. You can tell that because the quotation marks are gone,
+and also R records it not only with the values for each element of the
+vector, but also includes a “Levels” section, where it lists all the
+values that the factor is allowed to have.</p>
+<p>This is great, because it establishes a “memory” of all the possible
+values of the factor. This is what R can draw on to include values with
+counts of zero when we want to summarize the counts later.</p>
+<p>Let’s see how this function call was able to provide the information
+about the levels—notice that the “Levels” include letters (like “m”)
+that aren’t included as values in the vector itself.</p>
+<p>The <code>factor</code> call includes one argument in addition to the
+vector that we’re asking it to change to a factor. Specifically, it
+includes the argument <code>levels = letters</code>. We already know
+that <code>letters</code> is a built-in vector in R that gives the 26
+lowercase letters. To figure out the <code>levels</code> part, we can
+take a look at the helpfile for <code>factor</code> and scroll down to
+the Arguments section. Under <code>levels</code>, it says:</p>
 <blockquote>
-<p>“I am working with the <code>storms</code> dataset that comes with
-the <code>dplyr</code> package, focusing on storms from 2014. One of the
-columns (<code>name</code>) gives the name of the storm. Right now, the
-values in this column are in title case (e.g.,”Arthur”). I would like to
-change this so every storm name is in all lowercase letters. How can I
-do this? Here is the example data:”</p>
+<p>“<code>levels</code>: an optional vector of the unique values (as
+character strings) that x might have taken. The default is the unique
+set of values taken by as.character(x), sorted into increasing order of
+x. Note that this set can be specified as smaller than
+sort(unique(x)).”</p>
 </blockquote>
-<pre class="r"><code>library(dplyr)
+<p>Based on this, the function call is using the built-it
+<code>letters</code> vector to tell R which set of values the new factor
+could take, forcing it to include ones like “m” that aren’t listed in
+the data but are possible. This also says that, if we don’t include
+this, the levels will be set as the unique values in the data—in other
+words, if we didn’t include this part, the factor levels would not have
+included missing but possible values like “m”.</p>
+<p>This seems like it will be very helpful with our task—we want R to
+“remember” that animal calls could be reported in any of the twelve
+months, and then provide a 0 value for months without calls, rather than
+dropping them out from the summary.</p>
+<p>Now that we know what the <code>factor</code> call is doing, it’s
+pretty straightforward to figure out what the <code>mutate</code> call
+that it’s nested in is doing. The <code>mutate</code> function is
+typically used to create a new column or change an existing one. In this
+case, it’s changing the <code>ID</code> column in the <code>dat</code>
+dataframe, converting it from a character class to a factor class, where
+the factor has as levels the 26 lowercase letters in the
+<code>letters</code> vector. Again, we can run the object that’s being
+operated on (<code>dat</code> in this case) before and after the
+function call to compare and make sure we understand what’s going
+on:</p>
+<pre class="r"><code># Check the dat dataframe before the mutate call
+dat</code></pre>
+<pre><code>##    ID
+## 1   y
+## 2   d
+## 3   g
+## 4   a
+## 5   b
+## 6   w
+## 7   k
+## 8   n
+## 9   r
+## 10  s
+## 11  a
+## 12  u
+## 13  u
+## 14  j
+## 15  v
+## 16  n
+## 17  j
+## 18  g
+## 19  i
+## 20  o
+## 21  u
+## 22  e
+## 23  i
+## 24  y
+## 25  n
+## 26  e
+## 27  e
+## 28  b
+## 29  j
+## 30  y
+## 31  l
+## 32  o
+## 33  a
+## 34  t
+## 35  c
+## 36  f
+## 37  j
+## 38  j
+## 39  f
+## 40  o
+## 41  t
+## 42  t
+## 43  z
+## 44  l
+## 45  y
+## 46  w
+## 47  f
+## 48  y
+## 49  h
+## 50  l</code></pre>
+<pre class="r"><code># Check the dat dataframe after the mutate call
+dat %&gt;%
+  mutate(ID = factor(ID, levels = letters))</code></pre>
+<pre><code>##    ID
+## 1   y
+## 2   d
+## 3   g
+## 4   a
+## 5   b
+## 6   w
+## 7   k
+## 8   n
+## 9   r
+## 10  s
+## 11  a
+## 12  u
+## 13  u
+## 14  j
+## 15  v
+## 16  n
+## 17  j
+## 18  g
+## 19  i
+## 20  o
+## 21  u
+## 22  e
+## 23  i
+## 24  y
+## 25  n
+## 26  e
+## 27  e
+## 28  b
+## 29  j
+## 30  y
+## 31  l
+## 32  o
+## 33  a
+## 34  t
+## 35  c
+## 36  f
+## 37  j
+## 38  j
+## 39  f
+## 40  o
+## 41  t
+## 42  t
+## 43  z
+## 44  l
+## 45  y
+## 46  w
+## 47  f
+## 48  y
+## 49  h
+## 50  l</code></pre>
+<p>In the handout for this lab, you might not see much of a difference
+between these two printouts. Sometimes, it can be subtle to identify a
+change in the class of the object.</p>
+<p>However, if you open the RMarkdown file for this lab and run the code
+in that, or run it from a console, you should be able to see that it
+prints out the class of the column right below the column name. From
+this annotation, you can see that the column is changing from a
+character class (<code>&lt;chr&gt;</code>) to a factor class
+(<code>&lt;fctr&gt;</code>). You can also use the <code>summary</code>
+function to get information about all columns in a dataframe, including
+their class of data:</p>
+<pre class="r"><code># Check the dat dataframe before the mutate call
+dat %&gt;% 
+  summary()</code></pre>
+<pre><code>##       ID           
+##  Length:50         
+##  Class :character  
+##  Mode  :character</code></pre>
+<pre class="r"><code># Check the dat dataframe after the mutate call
+dat %&gt;%
+  mutate(ID = factor(ID, levels = letters)) %&gt;% 
+  summary()</code></pre>
+<pre><code>##        ID    
+##  j      : 5  
+##  y      : 5  
+##  a      : 3  
+##  e      : 3  
+##  f      : 3  
+##  l      : 3  
+##  (Other):28</code></pre>
+<p>Now let’s move to the next step in the pipeline from the example
+solution:</p>
+<pre class="r"><code>dat %&gt;%
+  mutate(ID = factor(ID, levels = letters)) %&gt;%
+  count(ID, name = &quot;no_rows&quot;, .drop = F)</code></pre>
+<pre><code>##    ID no_rows
+## 1   a       3
+## 2   b       2
+## 3   c       1
+## 4   d       1
+## 5   e       3
+## 6   f       3
+## 7   g       2
+## 8   h       1
+## 9   i       2
+## 10  j       5
+## 11  k       1
+## 12  l       3
+## 13  m       0
+## 14  n       3
+## 15  o       3
+## 16  p       0
+## 17  q       0
+## 18  r       1
+## 19  s       1
+## 20  t       3
+## 21  u       3
+## 22  v       1
+## 23  w       2
+## 24  x       0
+## 25  y       5
+## 26  z       1</code></pre>
+<p>This is using a <code>count</code> function. We already know, from
+our original function, that this function will count up the number
+observations in each group within a dataset. This call is using some
+arguments that we didn’t use in our earlier code, though. Specifically,
+it uses <code>name = &quot;no_rows&quot;</code> and <code>.drop = F</code>. Let’s
+figure out what each of those are doing before we try to adapt this code
+for our own task.</p>
+<p>First, let’s look at <code>names = &quot;no_rows&quot;</code>. Let’s start by
+comparing the output when we include this argument versus when we leave
+it out:</p>
+<pre class="r"><code># Check count call output when including `name = &quot;no_rows&quot;`
+dat %&gt;%
+  mutate(ID = factor(ID, levels = letters)) %&gt;%
+  count(ID, name = &quot;no_rows&quot;, .drop = F)</code></pre>
+<pre><code>##    ID no_rows
+## 1   a       3
+## 2   b       2
+## 3   c       1
+## 4   d       1
+## 5   e       3
+## 6   f       3
+## 7   g       2
+## 8   h       1
+## 9   i       2
+## 10  j       5
+## 11  k       1
+## 12  l       3
+## 13  m       0
+## 14  n       3
+## 15  o       3
+## 16  p       0
+## 17  q       0
+## 18  r       1
+## 19  s       1
+## 20  t       3
+## 21  u       3
+## 22  v       1
+## 23  w       2
+## 24  x       0
+## 25  y       5
+## 26  z       1</code></pre>
+<pre class="r"><code># Check count call output when excluding `name = &quot;no_rows&quot;`
+dat %&gt;%
+  mutate(ID = factor(ID, levels = letters)) %&gt;%
+  count(ID, .drop = F)</code></pre>
+<pre><code>##    ID n
+## 1   a 3
+## 2   b 2
+## 3   c 1
+## 4   d 1
+## 5   e 3
+## 6   f 3
+## 7   g 2
+## 8   h 1
+## 9   i 2
+## 10  j 5
+## 11  k 1
+## 12  l 3
+## 13  m 0
+## 14  n 3
+## 15  o 3
+## 16  p 0
+## 17  q 0
+## 18  r 1
+## 19  s 1
+## 20  t 3
+## 21  u 3
+## 22  v 1
+## 23  w 2
+## 24  x 0
+## 25  y 5
+## 26  z 1</code></pre>
+<p>It looks like the output is very similar. In both cases, we get the
+counts by letter. The output is a dataframe with a column with the
+letter (<code>ID</code>, which was the name of the letter column in the
+input dataframe) and a column with the count for that letter. The only
+difference is that the column is generically named <code>n</code> when
+we don’t include the argument <code>names = &quot;no_rows&quot;</code>, but set to
+<code>no_rows</code> when we do include that argument.</p>
+<p>Based on this, it looks like the <code>names</code> argument lets us
+set the name of the column that gives the counts from the
+<code>count</code> call. If we look at the helpfile for the
+<code>count</code> function (<code>?count</code>), we can confirm this.
+It says:</p>
+<blockquote>
+<p>“<code>name</code>: The name of the new column in the output. If
+omitted, it will default to n. If there’s already a column called n, it
+will use nn. If there’s a column called n and nn, it’ll use nnn, and so
+on, adding ns until it gets a new name.”</p>
+</blockquote>
+<p>Now let’s do the same assessment for the other argument,
+<code>.drop = F</code>. First, let’s compare the output with and without
+this argument in the call:</p>
+<pre class="r"><code># Check count call output when including `.drop = FALSE`
+dat %&gt;%
+  mutate(ID = factor(ID, levels = letters)) %&gt;%
+  count(ID, name = &quot;no_rows&quot;, .drop = F)</code></pre>
+<pre><code>##    ID no_rows
+## 1   a       3
+## 2   b       2
+## 3   c       1
+## 4   d       1
+## 5   e       3
+## 6   f       3
+## 7   g       2
+## 8   h       1
+## 9   i       2
+## 10  j       5
+## 11  k       1
+## 12  l       3
+## 13  m       0
+## 14  n       3
+## 15  o       3
+## 16  p       0
+## 17  q       0
+## 18  r       1
+## 19  s       1
+## 20  t       3
+## 21  u       3
+## 22  v       1
+## 23  w       2
+## 24  x       0
+## 25  y       5
+## 26  z       1</code></pre>
+<pre class="r"><code># Check count call output when excluding `.drop = FALSE`
+dat %&gt;%
+  mutate(ID = factor(ID, levels = letters)) %&gt;%
+  count(ID, name = &quot;no_rows&quot;)</code></pre>
+<pre><code>##    ID no_rows
+## 1   a       3
+## 2   b       2
+## 3   c       1
+## 4   d       1
+## 5   e       3
+## 6   f       3
+## 7   g       2
+## 8   h       1
+## 9   i       2
+## 10  j       5
+## 11  k       1
+## 12  l       3
+## 13  n       3
+## 14  o       3
+## 15  r       1
+## 16  s       1
+## 17  t       3
+## 18  u       3
+## 19  v       1
+## 20  w       2
+## 21  y       5
+## 22  z       1</code></pre>
+<p>These outputs look pretty similar, as both give a dataframe that
+summarizes the count by row. However, if we look carefully, we see that
+one has more rows that the other. The output has 26 rows when we include
+<code>.drop = F</code>, but only 22 when we don’t.</p>
+<p>We know that there are 26 possible values (the 26 letters) for the
+thing we’re counting, so we want a dataframe of counts with a row for
+each possible value. However, we also know that there are some possible
+values that don’t show up in the dataframe that we’re counting. Maybe
+these are the rows that are missing when we exclude
+<code>.drop = FALSE</code>? We can check by looking at a letter that we
+know is missing in the data, “m”. Sure enough, there’s a row for “m”
+when we include <code>.drop = F</code>, with a count of 0, but not a row
+when we don’t include that argument. Since we want to include all months
+in our summary counts, even if there were no animal calls recorded in
+that month, we will want to include <code>.drop = F</code> in our own
+code.</p>
+<p>We’re now at the final step of the pipeline in the example solution.
+In this case, it’s a fairly straightforward call to print out the
+dataset. This is helpful to demonstrate the full dataset in this
+StackOverflow question, but we likely won’t need this last step in our
+own code function:</p>
+<pre class="r"><code>dat %&gt;%
+  mutate(ID = factor(ID, levels = letters)) %&gt;%
+  count(ID, name = &quot;no_rows&quot;, .drop = F) %&gt;%
+  print.data.frame()</code></pre>
+<pre><code>##    ID no_rows
+## 1   a       3
+## 2   b       2
+## 3   c       1
+## 4   d       1
+## 5   e       3
+## 6   f       3
+## 7   g       2
+## 8   h       1
+## 9   i       2
+## 10  j       5
+## 11  k       1
+## 12  l       3
+## 13  m       0
+## 14  n       3
+## 15  o       3
+## 16  p       0
+## 17  q       0
+## 18  r       1
+## 19  s       1
+## 20  t       3
+## 21  u       3
+## 22  v       1
+## 23  w       2
+## 24  x       0
+## 25  y       5
+## 26  z       1</code></pre>
+</div>
+<div id="adapting-code" class="section level2">
+<h2>Adapting code</h2>
+<p>Now, we’re ready to adapt this example to our own task. As a
+reminder, here’s our current function to do this task:</p>
+<pre class="r"><code>count_monthly_calls &lt;- function(call_data) {
+  monthly_calls &lt;- call_data %&gt;% 
+    dplyr::count(.wt = call_month) %&gt;% 
+    dplyr::rename(month = .wt)
+  
+  all_months &lt;- tibble::tibble(month = c(&quot;January&quot;, &quot;February&quot;, &quot;March&quot;, &quot;April&quot;, 
+                                         &quot;May&quot;, &quot;June&quot;, &quot;July&quot;, &quot;August&quot;, &quot;September&quot;, 
+                                         &quot;October&quot;, &quot;November&quot;, &quot;December&quot;), 
+                               order = 1:12)
+  
+  monthly_calls &lt;- dplyr::full_join(monthly_calls, all_months, by = &quot;month&quot;) %&gt;% 
+    dplyr::mutate(n = if_else(is.na(n), 0, n)) %&gt;% 
+    dplyr::arrange(order) %&gt;% 
+    dplyr::select(-order)
+  
+  return(monthly_calls)
+}</code></pre>
+<p>Let’s pull out the code within the function and set the input
+parameter (<code>call_data</code>) to a good example object. This will
+let us work line-by-line as we adapt the code.</p>
+<pre class="r"><code># Rerun the code at the start of this lab if needed to set up the `man_animal_response`
+# object
 
-data(storms)
-storms_2014 &lt;- storms %&gt;% 
-  filter(year == 2014) %&gt;% 
-  select(name, year, month, day, hour, lat, long, status)
-
-storms_2014</code></pre>
-<pre><code>## # A tibble: 300 × 8
-##    name    year month   day  hour   lat  long status             
-##    &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;              
-##  1 Arthur  2014     6    28    18  32   -78.2 other low          
-##  2 Arthur  2014     6    29     0  31.2 -77.8 other low          
-##  3 Arthur  2014     6    29     6  30.5 -77.4 other low          
-##  4 Arthur  2014     6    29    12  30   -77.2 other low          
-##  5 Arthur  2014     6    29    18  29.7 -77.2 other low          
-##  6 Arthur  2014     6    30     0  29.5 -77.5 other low          
-##  7 Arthur  2014     6    30     6  29.2 -78   other low          
-##  8 Arthur  2014     6    30    12  28.7 -78.4 other low          
-##  9 Arthur  2014     6    30    18  28.1 -78.7 other low          
-## 10 Arthur  2014     7     1     0  27.7 -78.9 tropical depression
-## # ℹ 290 more rows</code></pre>
-<div id="example-answer-1" class="section level4">
-<h4>Example Answer 1</h4>
-<p>One way you can do this is to use the <code>case_when</code> function
-to change each name to its lowercase version.</p>
-<p>Based on the data, there are only nine unique storm names in the
-data:</p>
-<pre class="r"><code>storms_2014 %&gt;% pull(name) %&gt;% unique()</code></pre>
-<pre><code>## [1] &quot;Arthur&quot;    &quot;Two&quot;       &quot;Bertha&quot;    &quot;Cristobal&quot; &quot;Dolly&quot;     &quot;Edouard&quot;  
-## [7] &quot;Fay&quot;       &quot;Gonzalo&quot;   &quot;Hanna&quot;</code></pre>
-<p>You can write code using the <code>case_when</code> function from the
-<code>dplyr</code> package. This will let you go through each of these
-eleven names and change it to its lowercase version:</p>
-<pre class="r"><code>storms_2014_new &lt;- storms_2014 %&gt;% 
-  mutate(new_name = 
-           case_when(
-             name == &quot;Arthur&quot; ~ &quot;arthur&quot;, 
-             name == &quot;Two&quot; ~ &quot;two&quot;, 
-             name == &quot;Bertha&quot; ~ &quot;bertha&quot;, 
-             name == &quot;Cristobal&quot; ~ &quot;cristobal&quot;, 
-             name == &quot;Dolly&quot; ~ &quot;dolly&quot;, 
-             name == &quot;Edouard&quot; ~ &quot;edouard&quot;, 
-             name == &quot;Fay&quot; ~ &quot;fay&quot;, 
-             name == &quot;Gonzalo&quot; ~ &quot;gonzalo&quot;, 
-             name == &quot;Hanna&quot; ~ &quot;hanna&quot;, 
-             .default = as.character(name)
-           ))
-
-storms_2014_new</code></pre>
-<pre><code>## # A tibble: 300 × 9
-##    name    year month   day  hour   lat  long status              new_name
-##    &lt;chr&gt;  &lt;dbl&gt; &lt;dbl&gt; &lt;int&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;fct&gt;               &lt;chr&gt;   
-##  1 Arthur  2014     6    28    18  32   -78.2 other low           arthur  
-##  2 Arthur  2014     6    29     0  31.2 -77.8 other low           arthur  
-##  3 Arthur  2014     6    29     6  30.5 -77.4 other low           arthur  
-##  4 Arthur  2014     6    29    12  30   -77.2 other low           arthur  
-##  5 Arthur  2014     6    29    18  29.7 -77.2 other low           arthur  
-##  6 Arthur  2014     6    30     0  29.5 -77.5 other low           arthur  
-##  7 Arthur  2014     6    30     6  29.2 -78   other low           arthur  
-##  8 Arthur  2014     6    30    12  28.7 -78.4 other low           arthur  
-##  9 Arthur  2014     6    30    18  28.1 -78.7 other low           arthur  
-## 10 Arthur  2014     7     1     0  27.7 -78.9 tropical depression arthur  
-## # ℹ 290 more rows</code></pre>
-</div>
-<div id="example-answer-2" class="section level4">
-<h4>Example Answer 2</h4>
-<p>You can use regular expressions to change the first letter of each
-value from uppercase to lowercase:</p>
-</div>
-<div id="example-answer-3" class="section level4">
-<h4>Example Answer 3</h4>
-</div>
-<div id="example-answer-4" class="section level4">
-<h4>Example Answer 4</h4>
-</div>
-</div>
-<div id="extracting-information-in-a-single-column" class="section level3">
-<h3>Extracting information in a single column</h3>
-</div>
+call_data &lt;- man_animal_resp </code></pre>
 </div>
 
 
