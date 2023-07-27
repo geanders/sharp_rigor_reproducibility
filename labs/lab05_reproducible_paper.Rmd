@@ -1,0 +1,11 @@
+---
+title: "Lab-Reproducible Paper"
+author: "Brooke Anderson"
+date: "2023-07-27"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
