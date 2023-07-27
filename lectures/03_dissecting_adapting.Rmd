@@ -9,3 +9,37 @@ output: beamer_presentation
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
+# Finding example code
+
+## Help forums
+
+StackOverflow
+
+RStudio (posit?)
+
+## Vignettes and helpfiles
+
+## Cheatsheets
+
+## Blogs and articles
+
+## ChatGPT (?), other AI
+
+## Finding code for specialized tasks
+
+How to find and evaluate R packages: article
+
+# Dissecting example code
+
+# Adapting example code
+
+## Adapting example code
+
+Two steps: 
+
+1. Get it to work
+2. Edit it to make it more robust and reproducible
+
+## Getting example code to work on your task
+
+## Editing example code for rigor and reproducibility

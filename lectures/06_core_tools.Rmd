@@ -2,7 +2,6 @@
 title: "Complex and tidy data structures in R"
 subtitle: "Workflows with transitions from Bioconductor to the tidyverse"
 author: "Brooke Anderson"
-date: "2/25/2021"
 output: beamer_presentation
 ---
 
