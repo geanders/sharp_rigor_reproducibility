@@ -1,13 +1,38 @@
 ---
-title: "Lab-Finding and Adapting Code"
+title: "Lab 3---Finding, Dissectingm and Adapting Code"
 author: "Brooke Anderson"
 date: "2023-07-11"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE, messages = FALSE, warnings = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
+
+# Introduction to this lab
+
+In this lab, we're going to revisit some of our code from the earlier labs. We'll 
+identify a kluge (check the previous lecture for the definition of this) and see if
+we can find and adapt example code to fix it. 
+
+This lab is long, and it's created that way intentionally. This first major
+section of the lab walks through how you can dissect and understand a code
+example that you find in a coding forum or other resource. If you have been
+coding in R for a long time, or use R very frequently, you may already have a
+good idea how to do this and may do it often. 
+
+For everyone, please start by working through the lab up to the section called,
+"Dissecting code". When you get to that section, you can choose how to proceed.
+If you would like more advice on how to dissect and understand example code that
+you find, you will find it helpful to work through this section carefully. If
+you do that, you may not get to the section on "Adapting code", but are welcome
+to try it out on your own after the workshop. 
+
+On the other hand, if you feel you are experienced in dissecting example code,
+feel free to skim through this section (just make sure you try out the example
+code and make sure you've got an idea of what it does). You may find that there 
+are more new tips and advice in the "Adapting code" section, and so you may want
+to budget more of the lab time to work on that section.
 
 To prepare for this lab, make sure that you've run the final script from the last 
 lab in your current R session. As a reminder, that code is: 
@@ -88,6 +113,8 @@ monthly_man_animal_response <- count_monthly_calls(man_animal_resp)
 monthly_man_animal_response
 ```
 
+# Identifying a kluge in our code
+
 In that last lab, one of the tasks that we did was create a way to get a summary
 of counts of calls by months that included rows with zeros. We ultimate did that
 using a function we created called `count_monthly_calls`. 
@@ -95,7 +122,7 @@ using a function we created called `count_monthly_calls`.
 This function seems to work pretty well to complete that task. However, there are a 
 couple of issues with the way we've talked that problem. First, the logic of the 
 code isn't as clearly linked to the logic of the task as we might want (in other 
-words, the solution is currently a bit of a kludge). The code will be easier to 
+words, the solution is currently a bit of a kluge). The code will be easier to 
 understand and maintain if we can find a better way to link its logic with the logic 
 of the task. 
 
@@ -106,25 +133,33 @@ plotting the monthly counts as a bar chart:
 ```{r}
 library(ggplot2)
 monthly_man_animal_response %>% 
-  ggplot(aes(x = n, y = month)) + 
+  ggplot(aes(x = month, y = n)) + 
   geom_col()
 ```
 
 This creates a bar chart, but take a look at the y-axis: the months are in alphabetical
 order. The visualization would be much better if the months show up in the order they 
-occur in the year. This would help to identify seasonal patterns.
+occur in the year. This would help to identify seasonal patterns. As we work through 
+this problem, we'll see that it's somewhat related to the fact that our current solution
+is a kluge---when we link the logic of this part of the code more closely to the task
+we're doing, we'll be able to sort out this problem.
 
-Let's try to search for some examples of how to do this task. We'll dissect the code 
-examples we can find and adapt them to our current task. Our aim will be to find a 
-solution that (1) has code with logic that aligns better to the logic of the task and
-(2) preserves the order of the months so that they show up in their order by year 
-when we plot the results. 
+Let's start by trying to search for some examples of how to do this task. We'll
+then dissect one of the code examples and adapt it to our current task. Our aim
+will be to find a solution that (1) has code with logic that aligns better to
+the logic of the task and (2) preserves the order of the months so that they
+show up in their order by year when we plot the results. In this lab, we'll only
+go through this process for one of the code examples that we find, but in your
+own work, you'll often want to work through a few examples to see which is the
+best solution for your task.
 
 ## Finding example code
 
 We'll start by trying to find some advice and examples of how we can solve the task. 
 A reasonable Google search to start with is something like, "R count rows by group include
-levels with no counts". Here are some promising leads that come up with that search:
+levels with no counts". 
+
+Here are some promising leads that come up with that search:
 
 - https://stackoverflow.com/questions/42017926/r-group-by-show-count-of-all-factor-levels-even-when-zero-dplyr
 - https://community.rstudio.com/t/dplyr-count-include-a-0-for-factor-levels-not-in-the-data/26462/4 
@@ -133,13 +168,25 @@ Examples that says "When factors are involved, `.drop = FALSE` can be used to re
 levels that don't appear in the data"
 - https://kieranhealy.org/blog/archives/2018/11/19/zero-counts-in-dplyr/
 
+Notice that these come from a variety of sources. They include examples from help forums
+like StackOverflow, but also a blog post and information from the help documentation 
+for a package. It is often the case that you can find helpful example code across these
+different types of resources.
+
 We won't have the chance to work through all of these in the lab today. Let's try out 
-the first two. We'll start by dissect the examples to decide which one we want to adapt
-for our task (or if we want to combine elements of both). 
+the first one. You're welcome to try out the approaches we'll cover with some of the 
+other examples after the workshop. 
 
 ## Dissecting code
 
-Let's start by looking at the Stack Overflow thread (https://stackoverflow.com/questions/42017926/r-group-by-show-count-of-all-factor-levels-even-when-zero-dplyr). The example code in the question is: 
+We're going to work through the example solution in the Stack Overflow thread
+(https://stackoverflow.com/questions/42017926/r-group-by-show-count-of-all-factor-levels-even-when-zero-dplyr).
+This example comes from an online help forum where someone posted a reproducible
+example of their problem and then other people responded with potential
+solutions. We'll first dissect the code, and then we'll adapt it to our own
+task. 
+
+We'll start by reading the The example code in the question is:
 
 ```{r eval = FALSE}
 set.seed(1)
@@ -155,7 +202,14 @@ This is followed by the question:
 
 > When I run the above code sometimes I get 20 rows and sometimes I get 25, etc. I want this to return 26 rows every time."
 
-Let's try out the example code and see what happens. The code first sets a seed:
+Let's try out the example code and see what happens. First, try running the whole piece of 
+code. Does it work on your computer? If not, are there packages that it uses that you 
+don't have installed or loaded? Let us know if you're having problems getting the code 
+to run before you start dissecting it. 
+
+Next, let's dissect the code line by line. With each step, we'll make sure that we 
+understand what the function call is doing and how it's advancing us toward the 
+solution. The code first sets a seed:
 
 ```{r}
 set.seed(1)
@@ -164,12 +218,15 @@ set.seed(1)
 If you aren't familiar with this function, open its helpfile to see more on what
 it's doing (which you can do by running `?set.seed` at the console). If this
 isn't helpful (the helpfile in this case uses pretty technical language), you
-can instead try googling to find out more. Essentially, this function call
-allows you to ensure that any step that uses random number generation (like
-`sample`, which should pull a new sample of your vector every time you use it)
-will instead always result in the same "random" sample. This is often used in
-questions about code examples that include random number generation, because it
-ensures that everyone who runs the code will get the same results.
+can instead try googling to find out more. (We'll also be talking more about 
+random number generation in a later lecture.) 
+
+Essentially, this function call allows you to ensure that any step that uses
+random number generation (like `sample`, which should pull a new sample of your
+vector every time you use it) will instead always result in the same "random"
+sample. This is often used in questions about code examples that include random
+number generation, because it ensures that everyone who runs the code will get
+the same results.
 
 The next line creates a dataframe: 
 
@@ -548,16 +605,349 @@ count_monthly_calls <- function(call_data) {
 ```
 
 Let's pull out the code within the function and set the input parameter (`call_data`)
-to a good example object. This will let us work line-by-line as we adapt the code. 
+to a good example object. This will let us work line-by-line as we adapt the code.
 
 ```{r}
 # Rerun the code at the start of this lab if needed to set up the `man_animal_response`
 # object
 
+# Set the argument(s) of the function to a good example input
 call_data <- man_animal_resp 
 
+# Pull out the code in the interior of the function to work through it line by line
+monthly_calls <- call_data %>% 
+  dplyr::count(.wt = call_month) %>% 
+  dplyr::rename(month = .wt)
 
+all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
+                                       "May", "June", "July", "August", "September", 
+                                       "October", "November", "December"), 
+                             order = 1:12)
+
+monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
+  dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+  dplyr::arrange(order) %>% 
+  dplyr::select(-order)
 ```
+
+Once we've figured out how to adapt the code for our task, we'll use what we've found to 
+update our function. 
+
+Let's see if we can adapt the example solution to the kluge-y part of our code. First, 
+let's fine the part of our code that's a kluge. It's the code where we're trying
+to make sure that all the months get reported in the final summary, even if they had no 
+animal calls (in which case we want them reported with a count of 0). 
+
+In our current code, we do that by making a dataframe called `all_months` that lists
+all of the months and their order over the year. We then use a `full_join` function 
+to force this dataset to be merged with out monthly call counts, and then we use the
+`order` column to reorder this dataframe so it follows the day in the year. 
+
+This solution is kluge-y because the logic in the code doesn't follow the logic of 
+the problem. The problem is that we have a variable that can take a discrete set of 
+ordered values, and we want R to remember those possible values and use them when we
+work with that variable. Right now, we've got code that instead tries to artificially 
+make a completely new dataframe, tack on some numbers for the order, and use a `full_join` 
+function and an `arrange` function to force the information into our summary and use 
+it to reorder by time in the year. 
+
+Let's look at the code again and identify all the lines that are part of our kluge 
+(I've added the comment `#kluge` at the end of each of those lines): 
+
+```{r}
+# Code in the interior of the function 
+monthly_calls <- call_data %>% 
+  dplyr::count(.wt = call_month) %>% 
+  dplyr::rename(month = .wt)
+
+all_months <- tibble::tibble(month = c("January", "February", "March", "April",       #kluge
+                                       "May", "June", "July", "August", "September",  #kluge
+                                       "October", "November", "December"),            #kluge
+                             order = 1:12)                                            #kluge
+
+monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>%        #kluge
+  dplyr::mutate(n = if_else(is.na(n), 0, n)) %>%                                      #kluge
+  dplyr::arrange(order) %>%                                                           #kluge
+  dplyr::select(-order)                                                               #kluge
+```
+
+It turns out this is a lot of the function! We can probably make this function's
+code much easier to understand and debug if we can find a solution that matches
+the logic of our task better. Keep in mind that we might also end up editing
+some of the code that's outside the kluge as we work towards our solution.
+
+Let's go back now and look at the code for the example solution, which we understand
+very well now that we've dissected it: 
+
+```{r eval = FALSE}
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>%
+  count(ID, name = "no_rows", .drop = F) %>%
+  print.data.frame()
+```
+
+A good first step in adapting this code is to compare the objects that we start
+with, comparing the input for our task with the input for the solution. In our
+task, we're working with the object `call_data`. In the example code, the input
+is the dataframe `dat`. Let's
+look at the beginning of each of those dataframes:
+
+```{r}
+head(call_data)
+
+head(dat)
+```
+
+Both are dataframes, although if you look carefully at `call_data` (you can use the `class`
+function), you'll see that it's a more specialized type of dataframe called a "tibble"
+(abbreviated with `"tbl_df"` in the output from `class(call_data)`). In many cases, a 
+tibble works just like you'd expect a dataframe to, but this is something we should 
+keep in mind as we adapt the code, as sometimes small differences like that can cause 
+problems. 
+
+Next, let's look at what's inside the two dataframes. The `dat` dataframe has a
+single column called `ID`, which is currently in a character class. This is the
+column that's being counted in the count summary we want to create. The
+`call_data` dataframe has six columns, and one of them (`month`) similar gives
+the values we want to count in the count summary. However, this column has an
+"ordered" class rather than a character class. An "ordered" class is a
+specialized type of "factor" class. Again, maybe this won't make a difference
+when we adapt the example code, but we should keep an eye on this difference as
+we work, because it could be an issue. Conversely, it may be that we can skip a
+step or two from the example code, if our input is already in the needed class.
+
+Now let's check the code. Here's the first line of the code solution:
+
+```{r eval = FALSE}
+dat %>%
+  mutate(ID = factor(ID, levels = letters))
+```
+
+If we compare the output to the original version of `dat`, we can see it's changed 
+the class of the `ID` column to a factor. When we compared `dat` and `call_data` 
+earlier, we saw that we might already have the column that we want to work with in 
+a factor class. Let's take a closer look at the `call_month` column:
+
+```{r}
+call_data %>% 
+ pull(call_month)
+```
+
+This looks good! The column already is a type of factor, so we don't need to convert it
+to one. Also, it lists as levels all twelve months of the year, so we won't need to 
+make a change to that---R will "remember" all the months, even if one or more don't have
+any calls. Even better, since it's an ordered factor, R is "remembering" the yearly 
+order of the factor levels (in other words, that January comes before February). 
+If we can maintain this memory throughout our code, this might solve the problem we
+had about month order when we plot the monthly counts data when we use our current version
+of the code. 
+
+Now let's move to the next line in the solution: 
+
+```{r eval = FALSE}
+dat %>%
+  mutate(ID = factor(ID, levels = letters)) %>%
+  count(ID, name = "no_rows", .drop = F) %>%
+```
+
+We can skip the `mutate`, as we just saw (since our column is already a factor with all 
+the possible levels). We'll move to the `count` function call. Here, we'll need to adapt
+the column name (`ID` will change to `call_month`). In our earlier code, we ended up 
+with "n" as the name of the column that is created with the number of monthly counts. 
+We can change the `name` argument to use that column name, at least for now. That way, we 
+won't have to change downstream code in our longer pipeline. 
+
+The adapted code will look like this:
+
+```{r}
+call_data %>% 
+  count(call_month, name = "n", .drop = F)
+```
+
+This gives us what we want! Now let's go back and update the full set of code for this 
+part of our pipeline: 
+
+```{r}
+# Original 
+monthly_calls <- call_data %>% 
+  dplyr::count(.wt = call_month) %>% 
+  dplyr::rename(month = .wt)
+
+all_months <- tibble::tibble(month = c("January", "February", "March", "April",       #kluge
+                                       "May", "June", "July", "August", "September",  #kluge
+                                       "October", "November", "December"),            #kluge
+                             order = 1:12)                                            #kluge
+
+monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>%        #kluge
+  dplyr::mutate(n = if_else(is.na(n), 0, n)) %>%                                      #kluge
+  dplyr::arrange(order) %>%                                                           #kluge
+  dplyr::select(-order)   
+
+# Updated
+monthly_calls <- call_data %>% 
+  count(call_month, name = "n", .drop = F)
+```
+
+This update has helped us clean out a lot of code, and it's maintained R's "memory" 
+of the order of the months, since the `call_month` column in the output is now an 
+ordered factor rather than a character. This should solve the problem we had with 
+the axis order when we plotted the output. 
+
+Let's use this solution now to update the function that we built to count monthly calls: 
+
+```{r}
+# Original function definition
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month) %>% 
+    dplyr::rename(month = .wt)
+  
+  all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
+                                         "May", "June", "July", "August", "September", 
+                                         "October", "November", "December"), 
+                               order = 1:12)
+  
+  monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
+    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+    dplyr::arrange(order) %>% 
+    dplyr::select(-order)
+  
+  return(monthly_calls)
+}
+
+# Improved function definition
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    count(call_month, name = "n", .drop = F)
+  
+  return(monthly_calls)
+}
+```
+
+At this point, we could make a few more minor edits if we wanted. First, 
+we could check that we're following style guidelines. Some style guidelines recommend
+that you always spell out `TRUE` and `FALSE`, rather than abbreviating them. We could
+change that, making the new function: 
+
+```{r}
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    count(call_month, name = "n", .drop = FALSE)
+  
+  return(monthly_calls)
+}
+```
+
+Second, we can check to make sure that all the arguments in the `count` function are
+necessary. We know that `.drop = FALSE` is necessary, because we learned when we 
+dissected the example code that it's used to include values of the call month for 
+which there were no calls in the data. 
+
+Do we need `name = "n"`, though? If you look at the helpful for `count`, under the
+Argument `name`, you'll see that the default for this parameter is "n". This means that, 
+if we want to name the column "n", we can just leave out this parameter and it will 
+use that name as the default. That change makes the function: 
+
+```{r}
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    count(call_month, .drop = FALSE)
+  
+  return(monthly_calls)
+}
+```
+
+We can also edit the function to use the `package::function` notation: 
+
+```{r}
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    dplyr::count(call_month, .drop = FALSE)
+  
+  return(monthly_calls)
+}
+```
+
+
+To wrap up, let's go back to our full code pipeline, including the plot, and 
+see how it works with our updated function. It should, although your output with now
+have a column named `call_month` instead of `month`, so you'll need to change that 
+name in the `ggplot2` function call (or you could change the function in the code 
+to rename the column to match the name we used before): 
+
+```{r}
+# Load required libraries
+library(readr)
+library(janitor)
+library(dplyr)
+library(lubridate)
+library(ggplot2)
+
+## Define functions ######################################################################
+
+# To run this function, you will need to have the following functions installed:
+# readr, janitor, dplyr, lubridate
+read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
+  
+  # Read in data and clean column names
+  call_data <- readr::read_csv(file = file) %>% 
+    janitor::clean_names() %>% 
+    dplyr::rename(datetime_call = date_and_time_of_initial_call)
+  
+  # Limit to columns we'll need for our research question
+  call_data <- call_data %>% 
+    dplyr::select(datetime_call, property, location, species_description, 
+                  animal_class, final_ranger_action)
+  
+  call_data <- call_data %>% 
+    # Convert date-time column to appropriate data type
+    dplyr::mutate(datetime_call = lubridate::mdy_hms(datetime_call)) %>%
+    # Add columns for the year and month of the call
+    dplyr::mutate(call_year = lubridate::year(datetime_call),
+                  call_month = lubridate::month(datetime_call,
+                                                label = TRUE, 
+                                                abbr = FALSE)) 
+  
+  if(remove_partial_years == TRUE) {
+    call_data <- call_data %>% 
+      dplyr::filter(call_year %in% c(2019, 2020))
+  }
+  
+  return(call_data)
+}
+
+# To run this function, you will need to have the following packages installed:
+# dplyr
+count_monthly_calls <- function(call_data) {
+  monthly_calls <- call_data %>% 
+    dplyr::count(call_month, .drop = FALSE)
+  
+  return(monthly_calls)
+}
+
+## Analysis #####################################################################
+
+# Read in data and clean data
+man_animal_resp <- read_and_clean_call_data(file = "../data/Manhattan_animal_response.csv", 
+                                            remove_partial_years = TRUE)
+
+# Filter to data on reptiles and amphibians in Central Park
+man_animal_resp <- man_animal_resp %>% 
+  filter(property == "Central Park") %>%  
+  filter(animal_class == "Terrestrial Reptile or Amphibian")
+
+# Count number of response calls per month
+monthly_man_animal_response <- count_monthly_calls(man_animal_resp) 
+monthly_man_animal_response
+
+# Plot results
+monthly_man_animal_response %>% 
+  ggplot(aes(x = call_month, y = n)) + 
+  geom_col()
+```
+
+
+
 
 
 
