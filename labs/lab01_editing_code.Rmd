@@ -156,12 +156,17 @@ please let me or a teaching assistant know if you're having any problems reading
 file in, as we may just need to change the filepath you're using. 
 
 ```{r}
+#load readr library, if you have not done it already
 library(readr)
 df <- read_csv("../data/Manhattan_animal_response.csv")
 df
+
+#load dplyr library, if you have not done it already
 library(dplyr)
 df <- filter(df, Property == "Central Park", `Animal Class` == "Terrestrial Reptile or Amphibian")
 df
+
+#load lubridate library, if you have not done it already
 library(lubridate)
 df2 <- mutate(df, `Date and Time of initial call` = mdy_hms(`Date and Time of initial call`))
 df2
@@ -234,8 +239,11 @@ change a long column name to something shorter.
 Here is an example of how the edited script might look: 
 
 ```{r}
+#load readr library, if you have not done it already
 library(readr)
 df <- read_csv("../data/Manhattan_animal_response.csv")
+
+#load janitor library
 library(janitor)
 df <- clean_names(df)
 
@@ -247,9 +255,12 @@ colnames(df)
 
 # How this changes later code
 
+#load dplyr library, if you have not done it already
 library(dplyr)
 df <- filter(df, property == "Central Park", animal_class == "Terrestrial Reptile or Amphibian")
 df
+
+#load lubridate library, if you have not done it already
 library(lubridate)
 df2 <- mutate(df, datetime_call = mdy_hms(datetime_call))
 df2
@@ -320,6 +331,10 @@ man_animal_resp <- filter(man_animal_resp, call_year %in% c(2019, 2020))
 # Don't need to change object name here, either
 man_animal_resp <- mutate(man_animal_resp, call_month = month(datetime_call, label = TRUE, abbr = FALSE))
 # Do use a new object name when you're summarizing data
+
+# use another column name for .wt say call_mon_freq?
+# monthly_man_animal_response <- count(man_animal_resp, call_mon_freq = call_month)
+
 monthly_man_animal_response <- count(man_animal_resp, .wt = call_month)
 monthly_man_animal_response
 ```
@@ -396,6 +411,10 @@ man_animal_resp <- filter(man_animal_resp, call_year %in% c(2019, 2020))
 
 # Count number of response calls per month
 man_animal_resp <- mutate(man_animal_resp, call_month = month(datetime_call, label = TRUE, abbr = FALSE))
+
+# use another column name for .wt say call_mon_freq?
+# monthly_man_animal_response <- count(man_animal_resp, call_mon_freq = call_month)
+
 monthly_man_animal_response <- count(man_animal_resp, .wt = call_month)
 monthly_man_animal_response
 ```
@@ -442,6 +461,9 @@ man_animal_resp <- filter(man_animal_resp, call_year %in% c(2019, 2020))
 
 # Count number of response calls per month
 man_animal_resp <- mutate(man_animal_resp, call_month = month(datetime_call, label = TRUE, abbr = FALSE))
+
+# use another column name for .wt say call_mon_freq?
+# monthly_man_animal_response <- count(man_animal_resp, call_mon_freq = call_month)
 monthly_man_animal_response <- count(man_animal_resp, .wt = call_month)
 monthly_man_animal_response
 ```
@@ -455,7 +477,7 @@ completed a function call when you start a new line, the new line will typically
 indented. If you're adding code that's nested within a function, the indentation will help 
 the new line align with other parts of the nested function all. 
 
-There are two ways that these new lines and intentation can help make the code easier
+There are two ways that these new lines and indentation can help make the code easier
 to understand and maintain. First, they can help you avoid long lines of code. Long lines
 are particularly a problem if they get so long that they run off the page (which means
 you have to scroll left and right to read your code) or wrap around without indentation. 
@@ -499,6 +521,10 @@ man_animal_resp <- mutate(man_animal_resp,
                           call_month = month(datetime_call, 
                                              label = TRUE, 
                                              abbr = FALSE))
+
+# use another column name for .wt say call_mon_freq?
+# monthly_man_animal_response <- count(man_animal_resp, call_mon_freq = call_month)
+
 monthly_man_animal_response <- count(man_animal_resp, 
                                      .wt = call_month)
 monthly_man_animal_response
@@ -559,6 +585,10 @@ monthly_man_animal_response <- man_animal_resp %>%
                             label = TRUE, 
                             abbr = FALSE)) %>% 
   count(.wt = call_month)
+
+# use another column name for .wt say call_mon_freq?
+# count(call_mon_freq = call_month)
+
 monthly_man_animal_response
 ```
 
