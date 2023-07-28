@@ -50,7 +50,8 @@ These include:
 
 - Change names to be good names
 - Break up monolithic code
-- Remove dead-end code
+- Remove dead-end code 
+- Add useful comments
 
 After the lecture, we'll have a lab, where you'll try applying some of these
 ideas in an example code script. 
@@ -154,7 +155,7 @@ df
 You can make a lot of improvements to the column names using `clean_names` from the
 `janitor` package:
 
-```{r}
+```{r clean_column_names}
 library(janitor)
 df <- clean_names(df)
 df
@@ -174,6 +175,9 @@ df
 
 ## Break up monolithic code
 
+One big aim of editing is to break up monolithic code to divide it 
+into separate blocks and clarify what each block does.
+
 Code that is easier to maintain and understand will often have 
 more white space and clearer structure. 
 
@@ -187,6 +191,8 @@ more white space and clearer structure.
 
 - Identify sections of code that go together to solve a discrete 
 part of your overall task
+- Move calls to be near others doing the same subtask. For example, 
+move all library calls (and function definitions) to the top of the code script
 - Separate these sections using white space between sections ("Returns
 are free" in R!)
 - Used code comments to document each section
@@ -200,31 +206,34 @@ are free" in R!)
 knitr::include_graphics("figures/robert_caro.jpeg")
 ```
 
+## Break up monolithic code
 
+Don't be afraid to split calls across lines. 
 
+In general, you should try to 
+keep each line of your code to 80 characters or fewer. 
 
+```{r out.width = "0.6\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/computer_card.jpg")
+```
 
+## Break up monolithic code
 
-## Editing code
+RStudio has a tool that can help with character lines and indenting: 
 
-Often, this means making the code **shorter** and **clearer**.
+```{r out.width = "0.3\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/reformat_code.png")
+```
 
+## Break up monolithic code
 
+There are also some packages that help to identify and fix some of these 
+formatting issues, as well as complying with a style guide. 
 
-## Edit out dead ends
+One example is the `lintr` package: 
 
-Writing code fast results in lots of dead ends.
+https://lintr.r-lib.org/
 
-Murder your darlings
-
-
-
-
-
-## Breaking up monolithic code
-
-One big aim of editing is to break up monolithic code to divide it 
-into separate blocks and clarify what each block does. 
 
 ## Breaking up monolithic code
 
@@ -232,17 +241,51 @@ In RMarkdown files, separate code into more code chunks.
 
 You may find it helpful to name these chunks (so you can find and fix bugs). 
 
-## Use whitespace to add structure
+````{verbatim echo = TRUE}
+```{r clean_column_names}
+library(janitor)
+df <- clean_names(df)
+df
+```
+````
 
-- Blank lines are free!
-- So is the Return key! (80 character limit)
+## Add useful comments
 
-## Add scaffolding and structure
+```{r out.width = "\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/not_expected_to_understand.jpg")
+```
 
-- Indent in appropriate places
-- Add code comments (at least one per block of code)
-- Use pipelines when appropriate
-- Move all library calls (and function definitions) to the top of the code script
+## Add useful comments
+
+Don't go overboard with your comments. If the code is self-documenting (clear
+on it's own by using good function names and object names), don't repeat with 
+a comment. 
+
+For example, you don't need the comment here: 
+
+```{r echo = TRUE, eval = FALSE}
+# Rename column `old_name` to `new_name`
+df <- df %>% 
+  rename(new_name = old_name)
+```
+
+
+## Edit out dead-ends
+
+Writing code fast results in lots of dead ends.
+
+There are a few types of "dead-ends" in code. They include: 
+
+- "Interactive" code
+- "Darlings"
+
+## Types of dead-ends: Interactive code
+
+## Types of dead-ends: Darlings
+
+```{r out.width = "\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/murder_your_darlings.jpg")
+```
 
 # Introduction to the labs
 

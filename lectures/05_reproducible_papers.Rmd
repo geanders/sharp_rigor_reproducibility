@@ -151,11 +151,11 @@ knitr::include_graphics("figures/random_digits.jpeg")
 
 ## Reproducing randomness
 
-[Random lava lamps, Geiger counters]
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/lava_lamps.jpeg")
+```
 
 ## Reproducing randomness
-
-[xckd random number generator]
 
 pseudorandom number generator
 
