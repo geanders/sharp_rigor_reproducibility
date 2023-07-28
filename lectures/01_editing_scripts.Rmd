@@ -1,30 +1,215 @@
 ---
-title: "Lecture 1"
+title: "Editing Code for Rigor and Reproducibility"
 author: "Brooke Anderson"
 output: beamer_presentation
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
-## Separate writing and editing
+## Separating writing and editing
 
-Write code fast, edit code slow.
+```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/writing_editing.png")
+```
+
+## Write your code fast...
+
+```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/piano-bugs-bunny.jpg")
+```
+
+## ... but edit it slowly.
+
+```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/archaeology.jpg")
+```
 
 ## Editing code
 
-The aims of editing code are to make it easier to maintain and 
-easier to understand.
+The aims of editing code are to make it **easier to understand**, which will 
+help make it **easier to maintain**.
+
+```{r out.width = "0.8\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/dazzle_camoflage.jpeg")
+```
+
+## Editing code
+
+```{r out.width = "0.8\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/code_lifespan.png")
+```
+
+xkcd Explained: https://www.explainxkcd.com/wiki/index.php/File:code_lifespan_2x.png
+
+## Editing code
+
+In this lecture, we'll cover several steps you can take to edit your code. 
+These include: 
+
+- Change names to be good names
+- Break up monolithic code
+- Remove dead-end code
+
+After the lecture, we'll have a lab, where you'll try applying some of these
+ideas in an example code script. 
+
+## Use good names
+
+```{r out.width = "0.7\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/lymphocytes.png")
+```
+
+## Use good names
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/lymphocytes_zoom.png")
+```
+
+## Use good names
+
+If you use good names, it makes your code self-documenting---in other words, the
+name by itself gives the reader information about what the code is doing.
+
+Edit your code to have good names for, among others: 
+
+- objects (e.g., dataframes, vectors)
+- columns in dataframes
+- functions
+- files
+
+The [tidyverse style guide](https://style.tidyverse.org/index.html) includes
+advice for naming things in R. 
+
+## Good names for objects
+
+One common edit will be changing the names of objects from 
+**metasyntactic variables** to better variable names.
+
+**Metasyntactic variables** are a fancy name for placeholder variable names.
+Common examples include:
+
+- foo, bar, baz (C, C#)
+- spam, ham, eggs (Python)
+- toto, tata, titi, tutu (French)
+- pippo, pluto, paperino (Italian)
+
+They're often used by coders when they're editing fast. That's fine, but be sure
+to edit them out in favor of better names.
+
+## Good names for objects
+
+Here are some suggestions drawn from the [tidyverse style guide for syntax](https://style.tidyverse.org/syntax.html). Consider selecting 
+object names that:
+
+- Convey what's in the object (e.g., `animal_calls` versus `foo`)
+- Use only lowercase (e.g., `animal_calls` versus `Animal_calls`)
+- Use underscores to make words in object name easier to read (e.g., `animal_calls`
+rather than `animalcalls`)
+- not too short, not too long (although tab completion can help)
+- Use nouns for objects that are data containers
+
+## Good names for columns
+
+- Consider all the guidelines from naming objects
+- There is one exception---it's fine to have the same column name in columns
+of different dataframes (whereas you can only one object with a given name per 
+R environment)
+- Avoid spaces in column names. You can force them to work, but it's a pain.
+
+```{r eval = FALSE, echo = TRUE}
+my_data %>% 
+  mutate(`A column with a long, Tricky name` = 
+           factor(`A column with a long, Tricky name`), 
+         better_name = as.numeric(better_name))
+```
+
+## Fixing column names
+
+Often, you'll have problems with column names when you read data in from an Excel
+file or other spreadsheet-based file. 
+
+There's an R package that can automate some basic improvements to the column
+names. The `janitor` package has a function called `clean_names` that:
+
+- Converts to lowercase
+- Replaces spaces with underscores
+- Removes special characters (anything expect letters, numbers, and underscores) 
+
+
+## Fixing column names
+
+Here's an example of a simple dataframw with bad column names:
+
+```{r}
+library(tibble)
+df <- tibble(`Column with Long name` = 1:3, 
+             `Shorter Name!` = c("a", "b", "c"))
+df
+```
+
+## Fixing column names
+
+You can make a lot of improvements to the column names using `clean_names` from the
+`janitor` package:
+
+```{r}
+library(janitor)
+df <- clean_names(df)
+df
+```
+
+## Fixing column names
+
+You can finish with customized changes with `rename` from `dplyr`:
+
+```{r}
+library(dplyr)
+df <- df %>% 
+  rename(longer_name = column_with_long_name)
+df
+```
+
+
+## Break up monolithic code
+
+Code that is easier to maintain and understand will often have 
+more white space and clearer structure. 
+
+[Cartoon view---code with structure versus code all in one piece]
+
+## Break up monolithic code
+
+[Image---monolith to stacked boxes to separated boxes]
+
+## Break up monolithic code
+
+- Identify sections of code that go together to solve a discrete 
+part of your overall task
+- Separate these sections using white space between sections ("Returns
+are free" in R!)
+- Used code comments to document each section
+
+## Break up monolithic code
+
+> "I can‘t start writing until I‘ve thought it through and can see it whole in my mind." 
+---Robert Caro
+
+```{r out.width = "\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/robert_caro.jpeg")
+```
+
+
+
+
+
 
 ## Editing code
 
 Often, this means making the code **shorter** and **clearer**.
 
-## Editing code
 
-Code that is easier to maintain and understand will often have 
-more white space and clearer structure. 
 
 ## Edit out dead ends
 
@@ -32,54 +217,9 @@ Writing code fast results in lots of dead ends.
 
 Murder your darlings
 
-## Use good names
 
-If you use good names, it makes your code self-documenting. 
 
-Edit your code to have good names for: 
 
-- objects
-- columns in dataframes
-- functions
-- files
-
-## Good names for objects
-
-- lowercase
-- name conveys what's inside
-- underscores to make easier to read
-- not too short, not too long (although tab completion can help)
-
-## Metasyntactic variables
-
-**Metasyntactic variables** are a fancy way to say placeholders. They're 
-often used by coders when they're editing fast.
-
-- foo, bar, baz (C, C#)
-- spam, ham, eggs (Python)
-- toto, tata, titi, tutu (French)
-- pippo, pluto, paperino (Italian)
-
-These are fine when you're writing code, but be sure to edit them 
-out in favor of better names. 
-
-## Good names for columns
-
-- Similar rules as for naming objects
-- Although it's fine to have the same column name in columns
-of different dataframes (only one object with a given name per 
-R environment)
-- Avoid spaces (you can force them to work, but it's a pain)
-
-## Fixing column names
-
-[R function to clean up column names: janitor library, clean_names function]
-
-What this does: 
-
-- Converts to lowercase
-- Replaces spaces with underscores
-- ...
 
 ## Breaking up monolithic code
 
@@ -104,4 +244,8 @@ You may find it helpful to name these chunks (so you can find and fix bugs).
 - Use pipelines when appropriate
 - Move all library calls (and function definitions) to the top of the code script
 
+# Introduction to the labs
 
+## Introduction to the labs
+
+The rest of the workshop will alternate between lectures and labs. 

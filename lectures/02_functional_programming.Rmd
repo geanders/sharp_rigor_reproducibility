@@ -1,12 +1,11 @@
 ---
 title: "Lecture 2"
 author: "Brooke Anderson"
-date: "2023-07-27"
 output: beamer_presentation
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
 # Encapsulating ideas with functions
@@ -39,7 +38,22 @@ Functions can be simple, just encapsulating a small, simple step.
 
 # Writing functions
 
-## Example: Getting monthly counts of animal response calls
+## Example: Implementing an xkcd comic
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/random_number.png")
+```
+
+## Example: Implementing an xkcd comic
+
+```{r echo = TRUE}
+get_random_number <- function(dice_roll = 4){
+  
+  random_number <- dice_roll 
+  
+  return(random_number)
+}
+```
 
 ## What is a function
 
@@ -103,54 +117,19 @@ created within the function code won't show up in your working environment.
 If the innards include more than one function call, then group them together with 
 curly brackets (`{` to start the code for the function, `}` to end it).
 
-## How to build a function
+# How to build a function
 
-## How to check the function code as you build it
+## Example: Getting monthly counts of animal response calls
 
-- Create example objects for each of your parameters
-- 
+As an example, we'll build a function for one of the tasks in the animal response
+call script we edited in the last lab. 
 
-## Adding package::function notation
+One of the tasks we did was to count the number of calls per month. We'll see 
+if we can build a function to do this task.
 
-`library(pkg)` and then `pkg_function(foo)`
-
-versus
-
-`pkg::pkg_function(foo)`
-
-## Adding package::function notation
-
-Why do this?
-
-More robust in new R sessions (isn't counting on previous calls in the session
-to load the package). Similarly, more robust when someone copies and pastes
-the function to use elsewhere (you or someone else). 
-
-## Adding help documentation
-
-- Describe what the function is meant to do
-- Document each parameter: What it does, what type of value it can take
-- Descripe what the output from the function will be
-- Consider adding an example of how to use it (ideally with a dataset
-that comes with R or an R package)
-
-Notice that this is getting similar to a helpfile for a function 
-in a package. 
-
-## Functions as part of a pipeline
-
-You can include your own functions in a pipeline of code, including one 
-based on a tidyverse approach. 
-
-## Functions as part of a pipeline
-
-To make it easier to use a function in a pipeline, plan to: 
-
-- Have the function operate on one of two object types: a dataframe or a vector 
-(which equates to a column in a dataframe)
-- Make sure that the output is the same type of object as the input. This 
-is a key characteristic of the small, simple tools approach of the tidyverse
-because it allows you to combine strings of function calls in different orders
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/example_function_goal.png")
+```
 
 ## How to name a function
 
@@ -160,11 +139,217 @@ because it allows you to combine strings of function calls in different orders
 - Similar to naming objects: Not too long or too short, all lowercase, 
 use underscores to help make them more readable
 
+## Identify relevant code in script
+
+```{r echo = FALSE}
+# Load required libraries
+library(readr)
+library(janitor)
+library(dplyr)
+library(lubridate)
+
+# Read in data and clean column names
+man_animal_resp <- read_csv("../data/Manhattan_animal_response.csv") %>% 
+  clean_names() %>% 
+  rename(datetime_call = date_and_time_of_initial_call)
+
+# Filter to data on reptiles and amphibians in Central Park
+man_animal_resp <- man_animal_resp %>% 
+  filter(property == "Central Park") %>%  
+  filter(animal_class == "Terrestrial Reptile or Amphibian")
+
+# Filter to years with data covering the full year (2018 and 2021 do not)
+man_animal_resp <- man_animal_resp %>% 
+  mutate(datetime_call = mdy_hms(datetime_call), 
+         call_year = year(datetime_call)) %>% 
+  filter(call_year %in% c(2019, 2020))
+
+# Count number of response calls per month
+man_animal_resp <- man_animal_resp %>% 
+  mutate(call_month = month(datetime_call, 
+                            label = TRUE, 
+                            abbr = FALSE))
+```
+
+If we look at the final script from the last lab, we can find the section
+where we calculate the number of response calls per month: 
+
+```{r echo = TRUE}
+# Count number of response calls per month
+monthly_man_animal_response <- man_animal_resp %>% 
+  count(.wt = call_month)
+```
+
+## Identify function elements in the code 
+
+Next, we need to identify how this code can be divided into a function, 
+specifically into the **API** versus the **innards** of the function. 
+
+We can pick out those parts in the code and highlight them: \medskip
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/id_function_parts.png")
+```
+
+## Convert the code to a function 
+
+Now that we've identified the parts, we can build the function from that. 
+
+```{r echo = TRUE}
+count_monthly_calls <- function(man_animal_resp) {
+  
+  monthly_man_animal_response <- man_animal_resp %>% 
+    count(.wt = call_month)
+  
+  return(monthly_man_animal_response)
+}
+```
+
+## Convert the code to a function
+
+Again, let's use highlighting to think about where the elements from 
+the script ended up in the function: 
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/function_elements.png")
+```
+
+## Edit to improve object names
+
+The input and output object names were specific to our code script. We can 
+edit the function to use better names. 
+
+We'll change the input parameter `man_animal_resp` to `call_data` and the output
+object from `monthly_man_animal_response` to `monthly_calls`:
+
+```{r echo = TRUE}
+count_monthly_calls <- function(call_data) {
+  
+  monthly_calls <- call_data %>% 
+    count(.wt = call_month)
+  
+  return(monthly_calls)
+}
+```
+
 ## How to name function arguments
 
 - Optional versus required arguments
 - Use common parameter names (easier for user to figure out what each does
 and to remember them)
+
+## How to check the function code as you build it
+
+You'll want to try the code out as you work on the function. 
+There are different ways to do that, but here's a simple method
+as you learn to write functions:
+
+- Create example objects for each of your parameters
+- Walk through the code inside the function line-by-line
+
+## How to check the function code as you build it
+
+Let's try that with our example code:
+
+```{r echo = TRUE}
+# Set an example for function input parameter(s)
+call_data <- man_animal_resp
+
+# Walk through code inside the function
+monthly_calls <- call_data %>% 
+    count(.wt = call_month)
+
+# Check out the code results as you go
+head(monthly_calls, 2)
+```
+
+## Adding package::function notation
+
+Next, we'll update the function to add something that will make
+the function more robust when you re-use it or others use it. 
+
+Often, within function code you'll use functions from packages rather
+than just base R. There are a few ways to call those functions. In your
+scripts, you probably load the library and the call the functions in it
+by name, doing something like: 
+
+```{r echo = TRUE, eval = FALSE}
+library(pkg)
+pkg_function(foo)
+```
+
+## Adding package::function notation
+
+However, you can use a different notation to call a function from a package: 
+
+```{r echo = TRUE, eval = FALSE}
+pkg::pkg_function(foo)
+```
+
+When you use this method, you must have the package installed, but you don't 
+need to have it loaded in your current session. Also, you can guarantee with 
+package the code gets the function from. If you're using a function that's 
+included in many packages, this notation will guarantee which one R uses. 
+
+## Adding package::function notation
+
+Let's make that change to our function. The `count` function comes from the 
+`dplyr` package, so we can use the notation `dplyr::count`: 
+
+```{r echo = TRUE}
+count_monthly_calls <- function(call_data) {
+  
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month)
+  
+  return(monthly_calls)
+}
+```
+
+## Adding help documentation
+
+- Describe what the function is meant to do
+- Document each parameter: What it does, what type of value it can take
+- Describe what the output from the function will be
+- Consider adding an example of how to use it (ideally with a dataset
+that comes with R or an R package)
+
+Notice that this is getting similar to a helpfile for a function 
+in a package. 
+
+## Adding help documentation
+
+Here's an example of documentation we might want to add to the code that defines
+our function:
+
+```{r echo = TRUE}
+# This funtion inputs a dataframe of animal call 
+# response data (`call_data`) and returns a 
+# dataframe with the counts of animal calls per 
+# month. The input dataframe should include a column
+# named `call_month` with the month of the call.
+# To run this function, you will need to have the 
+# following packages installed: dplyr
+count_monthly_calls <- function(call_data) {
+  
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month)
+  
+  return(monthly_calls)
+}
+```
+
+## Improving the function
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/example_function_improved.png")
+```
+
+## Improving the function
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/improved_function.png")
+```
 
 # Applying functions with `purrr`
 
@@ -185,4 +370,10 @@ dataframe: Applying the function along a vector of filenames
 - Applying a statistical test or model to many subsets of the data: Nesting
 the data by a grouping variable and applying the function to values in a list column 
 for each group
+
+## Using `purrr` for functional programming
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/StarTrekChess.jpeg")
+```
 

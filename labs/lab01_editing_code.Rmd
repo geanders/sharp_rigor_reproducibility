@@ -554,10 +554,11 @@ man_animal_resp <- man_animal_resp %>%
   filter(call_year %in% c(2019, 2020))
 
 # Count number of response calls per month
+man_animal_resp <- mutate(man_animal_resp, 
+                          call_month = month(datetime_call, 
+                                             label = TRUE, 
+                                             abbr = FALSE))
 monthly_man_animal_response <- man_animal_resp %>% 
-  mutate(call_month = month(datetime_call, 
-                            label = TRUE, 
-                            abbr = FALSE)) %>% 
   count(.wt = call_month)
 monthly_man_animal_response
 ```
