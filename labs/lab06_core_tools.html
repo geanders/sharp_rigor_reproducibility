@@ -512,11 +512,6 @@ ny_calls &lt;- borough_files %&gt;%
 all animal response calls that involved snakes or alligators.</li>
 <li>Filter to all calls that came from a playground (may be listed in
 <code>property</code> or <code>location</code>)</li>
-<li>Find all calls where the <code>location</code> column seems to
-include a latitude and longitude</li>
-<li>Identify all rows where the <code>location</code> column is listed
-as <code>&quot;N/A&quot;</code>, <code>&quot;N/a&quot;</code>, <code>&quot;n/A&quot;</code>, or
-<code>&quot;n/a&quot;</code></li>
 </ul>
 <div id="filter-the-data-to-certain-types-of-animals." class="section level3">
 <h3>Filter the data to certain types of animals.</h3>
@@ -841,6 +836,14 @@ playground_animal_calls</code></pre>
 ## # ℹ 89 more rows
 ## # ℹ 5 more variables: final_ranger_action &lt;chr&gt;, filename &lt;chr&gt;,
 ## #   call_year &lt;dbl&gt;, call_month &lt;ord&gt;, borough &lt;chr&gt;</code></pre>
+<p>Other things you might want to try:</p>
+<ul>
+<li>Find all calls where the <code>location</code> column seems to
+include a latitude and longitude</li>
+<li>Identify all rows where the <code>location</code> column is listed
+as <code>&quot;N/A&quot;</code>, <code>&quot;N/a&quot;</code>, <code>&quot;n/A&quot;</code>, or
+<code>&quot;n/a&quot;</code></li>
+</ul>
 </div>
 </div>
 

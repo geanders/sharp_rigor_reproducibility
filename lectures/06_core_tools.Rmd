@@ -1,6 +1,6 @@
 ---
-title: "Complex and tidy data structures in R"
-subtitle: "Workflows with transitions from Bioconductor to the tidyverse"
+title: "Developing and using a set of core tools in R" 
+subtitle: "Developing toolsets in the context of complex and tidy data structures"
 author: "Brooke Anderson"
 output: beamer_presentation
 ---
@@ -9,14 +9,12 @@ output: beamer_presentation
 knitr::opts_chunk$set(echo = FALSE)
 ```
 
-## Overview
+## What we'll talk about 
 
 1. Data structures in R
 2. The tidyverse approach
 3. The Bioconductor approach
 4. Transitioning across approaches in a workflow
-
-Slides are available at: \url{bit.ly/complex_tidy}
 
 # Data structures
 
@@ -135,16 +133,6 @@ By contrast, if you use a variety of data structures, you often have to learn
 different tools (functions) for each data structure, rather than being able to
 use a single set of tools for all your data.
 
-## More resources on the tidyverse approach
-
-There are lots of excellent resources on learning the tidyverse approach 
-in R, many of which are freely available online. 
-
-You may want to check: 
-
-- [*R for Data Science*](https://r4ds.had.co.nz/)
-- [Course book for ERHS 535](https://geanders.github.io/RProgrammingForResearch/)
-- [rstudio::conf talks](https://rstudio.com/resources/rstudioconf-2020/)
 
 # Bioconductor approach
 

@@ -156,5 +156,14 @@ knitr::include_graphics("figures/kluge_bike.jpg")
 > "The essence of proper kluge building is the designer who is so clever 
 that he outwits himself. ---“How to Design a Kluge”, *Datamation* magazine
 
+You want to edit out kludges because: 
+
+- They often use longer code than you need.
+- The logic of the code is not clearly linked to the logic of the problem
+- They are hard to maintain, understand, and debug
+
+Don't prioritize **concision** or **efficiency** over **clarity**.
+
+
 
 
