@@ -1,12 +1,12 @@
 ---
-title: "Lab-Leveraging File System Structure"
+title: "Lab---Leveraging File System Structure"
 author: "Brooke Anderson"
 date: "2023-07-23"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
 
 ## Reading in data from multiple files
@@ -16,7 +16,7 @@ data from a file in a certain format. Here, we'll look at how we can pair that w
 a mapping function from the `purrr` package, as well as with system calls in R and 
 the file system to work efficiently with data from many files.
 
-Here are the functions we defined in an earlier lab and lecture: 
+Here are the functions we defined in earlier labs: 
 
 ```{r}
 library(dplyr)
@@ -53,21 +53,10 @@ read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
 }
 
 # To run this function, you will need to have the following packages installed:
-# dplyr, tibble
+# dplyr
 count_monthly_calls <- function(call_data) {
   monthly_calls <- call_data %>% 
-    dplyr::count(.wt = call_month) %>% 
-    dplyr::rename(month = .wt)
-  
-  all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
-                                         "May", "June", "July", "August", "September", 
-                                         "October", "November", "December"), 
-                               order = 1:12)
-  
-  monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
-    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
-    dplyr::arrange(order) %>% 
-    dplyr::select(-order)
+    dplyr::count(call_month, .drop = FALSE)
   
   return(monthly_calls)
 }
@@ -83,9 +72,8 @@ with the same column names, etc.). The file names are:
 - "Queens_animal_response.csv"
 - "Staten_animal_response.csv"
 
-We could use the function that we wrote to read in the data from each file. Already, 
-this will make our code more efficient than if we wrote the code to read and clean 
-each file separately:
+We could use the function that we wrote (`read_and_clean_call_data`) to read in
+the data from each file: 
 
 ```{r}
 bronx_calls <- read_and_clean_call_data("../data/Bronx_animal_response.csv", 
@@ -100,8 +88,9 @@ staten_island_calls <- read_and_clean_call_data("../data/Staten_Island_animal_re
                                             remove_partial_years = TRUE)
 ```
 
-At this point, you could run code to separately generate monthly counts of calls
-for reptiles and amphibians for each borough:
+Already, this had made our code more efficient than if we wrote the code to read
+and clean each file separately. At this point, you could run code to separately
+generate monthly counts of calls for reptiles and amphibians for each borough:
 
 ```{r}
 # Filter to data on reptiles and amphibians in the Bronx
@@ -145,9 +134,9 @@ monthly_staten_island_calls <- count_monthly_calls(staten_island_calls)
 monthly_staten_island_calls
 ```
 
-Notice how often we're having to copy and paste this code. We could remove a lot of 
-this if we bind all the data together into one big dataframe after we read it in but 
-before we do anything else. 
+Notice, though, how often we're having to copy and paste this code, even when we
+use our function. We could remove a lot of this if we bind all the data together
+into one big dataframe after we read it in but before we do anything else.
 
 If you have several dataframes that all have the same format in terms of the number
 of columns, names of those columns, and types of data in those columns, you can join them
@@ -198,17 +187,24 @@ ny_monthly_calls <- ny_calls %>%
 ny_monthly_calls
 ```
 
-At this point, it's very easy to use the data to create a plot to visualize the 
+And now it's very easy to use the data to create a plot to visualize the 
 results: 
 
 ```{r}
 library(ggplot2)
 ny_monthly_calls %>% 
-  ggplot(aes(x = n, y = month)) + 
+  ggplot(aes(x = n, y = call_month)) + 
   geom_col() + 
+  scale_y_discrete(limits = rev) + 
   facet_wrap(~ borough)
 ```
 
+As a note, I've made some minor changes to the plotting code compared to when we
+plotted the values for a single borough in the last lab. Since the month names
+are long, I've put them on the y-axis, so they're easier to read, and I've
+reversed the order of that y-axis so it reads from January to December from top
+to bottom---use your dissecting tools if you're not clear on how these changes
+work!
 
 At this point, the full script would look like this: 
 
@@ -256,21 +252,10 @@ read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
 }
 
 # To run this function, you will need to have the following packages installed:
-# dplyr, tibble
+# dplyr
 count_monthly_calls <- function(call_data) {
   monthly_calls <- call_data %>% 
-    dplyr::count(.wt = call_month) %>% 
-    dplyr::rename(month = .wt)
-  
-  all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
-                                         "May", "June", "July", "August", "September", 
-                                         "October", "November", "December"), 
-                               order = 1:12)
-  
-  monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
-    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
-    dplyr::arrange(order) %>% 
-    dplyr::select(-order)
+    dplyr::count(call_month, .drop = FALSE)
   
   return(monthly_calls)
 }
@@ -314,8 +299,9 @@ ny_monthly_calls <- ny_calls %>%
 
 # Visualize the results
 ny_monthly_calls %>% 
-  ggplot(aes(x = n, y = month)) + 
+  ggplot(aes(x = n, y = call_month)) + 
   geom_col() + 
+  scale_y_discrete(limits = rev) + 
   facet_wrap(~ borough)
 ```
 
@@ -338,7 +324,14 @@ subdirectory of the parent directory you're working in, you can run:
 list.files(path = "../data")
 ```
 
-We can use this call to create a vector with the filenames of the files for all boroughs: 
+As a note, this call assumes that you have the files within a subdirectory of the parent
+directory of your current working directory, and that the subdirectory is named "data". 
+If you're unfamiliar with relative filepaths like this and are getting an error, let 
+us know and we'll have you make sure you have your directory arranged correctly for 
+this and the following code to work. 
+
+We can use this `list.files` call to create a vector with the filenames of the
+files for all boroughs:
 
 ```{r}
 borough_files <- list.files(path = "../data")
@@ -426,11 +419,12 @@ ny_calls %>%
 
 They follow a similar pattern: the borough name is between "../data/" and
 "_animal_response.csv". There are a few ways we could tackle extracting the
-borough names; one is to get rid of everything we don't want, which we can do
-with the `str_remove` function from the `stringr` package. Since "Staten Island"
-is two words, we'll also want to replace the underscore between Staten and
-Island with a space, which we can do with `str_replace` (also from the `stringr`
-package). We'll put the results in a new column called `borough`:
+borough names. One of the simplest (although probably not the shortest) is to
+get rid of everything we don't want, which we can do with the `str_remove`
+function from the `stringr` package. Since "Staten Island" is two words, we'll
+also want to replace the underscore between Staten and Island with a space,
+which we can do with `str_replace` (also from the `stringr` package). We'll put
+the results in a new column called `borough`:
 
 ```{r}
 library(stringr)
@@ -497,21 +491,10 @@ read_and_clean_call_data <- function(file, remove_partial_years = FALSE){
 }
 
 # To run this function, you will need to have the following packages installed:
-# dplyr, tibble
+# dplyr
 count_monthly_calls <- function(call_data) {
   monthly_calls <- call_data %>% 
-    dplyr::count(.wt = call_month) %>% 
-    dplyr::rename(month = .wt)
-  
-  all_months <- tibble::tibble(month = c("January", "February", "March", "April", 
-                                         "May", "June", "July", "August", "September", 
-                                         "October", "November", "December"), 
-                               order = 1:12)
-  
-  monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
-    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
-    dplyr::arrange(order) %>% 
-    dplyr::select(-order)
+    dplyr::count(call_month, .drop = FALSE)
   
   return(monthly_calls)
 }
@@ -541,8 +524,21 @@ ny_monthly_calls <- ny_calls %>%
 
 # Visualize the results
 ny_monthly_calls %>% 
-  ggplot(aes(x = n, y = month)) + 
+  ggplot(aes(x = n, y = call_month)) + 
   geom_col() + 
+  scale_y_discrete(limits = rev) + 
   facet_wrap(~ borough)
 ```
+
+Amazingly, this script isn't much longer than our earlier script where we were only 
+working with data from a single borough, using a single data file. This solution avoids
+a lot of copying and pasting. As you work with more and more files, this type of 
+solution will become even more helpful (imagine, for example, if you were working
+with files for all 50 states). 
+
+By using this functional programming solution, we've created a code script that
+is concise and will be easier to maintain, since we can make a change that
+applied to the data from all boroughs in a single place, rather than needing to
+make sure that, when we want to make a change in the code, we fix the code every
+where we've copy-and-pasted it throughout the script.
 
