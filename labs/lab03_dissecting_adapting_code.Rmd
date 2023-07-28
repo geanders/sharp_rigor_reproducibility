@@ -65,7 +65,8 @@ count_monthly_calls <- function(call_data) {
                                order = 1:12)
   
   monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
-    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+    dplyr::mutate(n = if_else(is.na(n), 0, as.numeric(n))) %>% 
+    #dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
     dplyr::arrange(order) %>% 
     dplyr::select(-order)
   
