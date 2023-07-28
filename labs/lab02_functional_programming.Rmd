@@ -73,6 +73,7 @@ You'll also find it use to have the code that defines this function handy. It is
 ```{r}
 # To run this function, you will need to have the following packages installed:
 # dplyr, tibble
+# if you find something with double colons (::), such as package_name::function_name, it implies package name follwed by function name.
 count_monthly_calls <- function(call_data) {
   monthly_calls <- call_data %>% 
     dplyr::count(.wt = call_month) %>% 
@@ -117,7 +118,8 @@ count_monthly_calls <- function(call_data) {
                                order = 1:12)
   
   monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
-    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+    dplyr::mutate(n = if_else(is.na(n), 0, as.numeric(n))) %>% 
+    #dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
     dplyr::arrange(order) %>% 
     dplyr::select(-order)
   
@@ -441,7 +443,8 @@ count_monthly_calls <- function(call_data) {
                                order = 1:12)
   
   monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>% 
-    dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
+    dplyr::mutate(n = if_else(is.na(n), 0, as.numeric(n))) %>% 
+    #dplyr::mutate(n = if_else(is.na(n), 0, n)) %>% 
     dplyr::arrange(order) %>% 
     dplyr::select(-order)
   
