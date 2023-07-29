@@ -8,7 +8,16 @@ output: beamer_presentation
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
-# Sharing code and data
+## What to include with a computationally reproducible paper?
+
+Remember, to be computationally reproducible, the reader must be able to start
+from the data that were collected and arrive at the same results, including 
+tables and figures. 
+
+- All data used in analysis in the paper
+- All code to get from these data to the results shown in the paper
+- Any environmental information (e.g., package versions) that are necessary 
+for the code to generate the results
 
 ## Sharing code and data
 
@@ -20,37 +29,17 @@ There are a few options for how you share the code and data for the paper, inclu
 - Personal / academic website 
 - R package plus script
 
-## Sharing code and data
+## What to include with a computationally reproducible paper?
 
-There are advantages to solutions that let you share everything as a directory: 
+It's also helpful to include: 
 
-- Relative pathnames work in scripts (because directory structure is preserved)
-- If you set up your directory as an R Project, it's designed to be self-contained
-(can interact with other things in the directory but doesn't rely on the computer's
-file directory outside of that)
+- Adequate documentation for the user to recreate the results from the 
+data using the code and environmental information
+- Guidance on how the code can reused (license)
 
-## Leveraging a sharing system before you publish
+## Data to include
 
-Some of these methods are platforms that you can use before you publish, and they 
-can help you work on code-heavy projects within your team. GitHub is one example, 
-but some agency-funded platforms now combine repositories with workspaces for coding. 
-
-For GitHub (and some of the agency-funded platforms), you can toggle between having
-your data and code be public or private. This allows you to work privately before you 
-publish, but then switch the repository to public when you publish the paper. 
-
-This can be much easier than trying to figure out how to post everything after publication.
-It also provides some helpful tools as you work on the paper.
-
-# Considerations about data
-
-## Processed data versus raw data
-
-A lot of health-related data can require extensive pre-processing to 
-extract the information you need to answer a scientific question. 
-
-It is helpful to include the original, raw data and the code used to get
-to the processed data. 
+[Image: raw data to processed data to right before tables / figures]
 
 ## Extremely large data
 
@@ -63,6 +52,33 @@ GitHub)
 
 ## Sensitive or protected data
 
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/repo_paper_journal.png")
+```
+
+https://journals.lww.com/epidem/Abstract/2022/03000/Differential_Mortality_Risks_Associated_With_PM2_5.3.aspx
+
+## Sensitive or protected data
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/repo_paper_personal_site.png")
+```
+
+http://www.ag-myresearch.com/2022_masselot_epidemiol.html
+
+## Sensitive or protected data
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/sensitive_data.png")
+```
+
+From the GitHub repository  
+https://github.com/PierreMasselot/Paper--2022--Epidemiology--PM2.5_components
+
+Masselot P, et al. Differential mortality risks associated to PM2.5 components: a multi-country multi-city study. Epidemiology. 2022.
+
+## Sensitive or protected data
+
 - Can include mock dataset (same format, different numbers) to use to test and 
 demonstrate the function of the code
 - Can use .gitignore to include the data in a git repo on a local computer 
@@ -71,6 +87,39 @@ repo, like one on GitHub
 - When working on a server for security reasons, it can be helpful to have 
 RStudio Server installed, as this provides a friendlier interface for working with 
 git version control on the server (avoids having to do much from the terminal)
+
+
+## Sensitive or protected data
+
+If you look through the repository for Masselot P, et al. 2022, you'll see that they
+listed all data in the ".gitignore" file. This would allow them to have the data on 
+their local computer but not share it publicly with the rest of the repo.
+
+```
+# Session Data files
+.RData
+**/*.RData
+
+# RStudio files
+.Rproj.user/
+
+# produced vignettes
+vignettes/*.html
+vignettes/*.pdf
+
+# Other
+Data/
+```
+
+https://github.com/PierreMasselot/Paper--2022--Epidemiology--PM2.5_components/blob/master/.gitignore
+
+## Processed data versus raw data
+
+A lot of health-related data can require extensive pre-processing to 
+extract the information you need to answer a scientific question. 
+
+It is helpful to include the original, raw data and the code used to get
+to the processed data. 
 
 ## Saving intermediate data
 
@@ -90,26 +139,113 @@ formats (e.g., ".csv" or ".txt" file).
 
 (Sandve et al.)
 
-# Considerations about Code
+## Types of shared documents
 
-## Navigating the code
+There are several formats that you can use to share the files that are needed
+to make an article reproducible. These include: 
 
-Can a reader or new user: 
+- A set of unstructured files
+- A compressed directory, providing both the files and their organization into 
+a directory. This can include an online repo maintained through a version
+control platform.
+- A container, including everything provided with a compressed directory
+as well as the code fo the software needed to run the code
+- An interactive platform, where the user can re-run code, as well as adapt
+and explore the code and data, through a web-based platform without needing
+to download the data
 
-- Find where the code is?
-- Find what order to run the code?
-- Use the filepaths that are included in the code? (Or are they absolute paths that will need to change on a new user's computer?)
-- Figure out which code was used to create specific figures and tables in the paper?
-- Figure out how to start from a raw dataset similar to the data used for the paper
-and get to the final results?
+## Set of unstructured files
 
-## Code License
+[Image---list of supplemental files from journal articles]
 
-Are others allowed to reuse your code? What are the rules for how they reuse it?
+## Compressed directory
 
-License choices
+[Image---GitHub]
 
-## Versions used in original analysis
+Full directory can be shared in one compressed file. 
+
+Includes not only all the files, but also maintains the organization of 
+those files into a directory. 
+
+## Compressed directory
+
+There are advantages to solutions that let you share everything as a directory: 
+
+- Relative pathnames work in scripts (because directory structure is preserved)
+- If you set up your directory as an R Project, it's designed to be self-contained
+(can interact with other things in the directory but doesn't rely on the computer's
+file directory outside of that)
+
+## Container
+
+Includes all files and directory organization. Also includes all software
+needed to run code (including operating system?). 
+
+Downsides: 
+
+- Can be very, very large
+- Can be somewhat of a black box, in terms of dissecting what's in the container
+- Can be hard to adapt parts for new tasks (often relies on code that might
+be out of date)
+
+## Considering containers
+
+Containers can get very large---stores not just info on the versions of each 
+piece of software used, but full source code (?)
+
+Works somewhat like a black box---harder for users to explore, change, adapt
+
+Can be useful, though, if using a large collection of different open-source
+software (command line tools, R, Python, etc., all in the same pipeline)
+
+## Interactive platform
+
+Not only shares the data and code, but allows it to be explores (e.g., change
+and test code) on the platform. 
+
+- NSF Disaster data platform
+- Galaxy?
+- Immunoport?
+
+## GitHub as a method for reproducible papers
+
+There are advantages and disadvantages to each method. However, if you 
+are new to making papers computationally reproducible, sharing through 
+GitHub or a similar platform might be a good place to start. 
+
+## GitHub as a method for reproducible papers
+
+- Allows you to set up the online copy of the project directory while
+you're working on the project
+- This can facilitate collaborative work on the project, as well as 
+provide a form of backup as you work
+- You can toggle the GitHub repo from private while you work on your project
+to public once you submit it for publication
+- This system is widely used, so there are many resources available to 
+help you navigate it
+
+## Leveraging a sharing system before you publish
+
+Some of these methods are platforms that you can use before you publish, and they 
+can help you work on code-heavy projects within your team. GitHub is one example, 
+but some agency-funded platforms now combine repositories with workspaces for coding. 
+
+For GitHub (and some of the agency-funded platforms), you can toggle between having
+your data and code be public or private. This allows you to work privately before you 
+publish, but then switch the repository to public when you publish the paper. 
+
+This can be much easier than trying to figure out how to post everything after publication.
+It also provides some helpful tools as you work on the paper.
+
+## GitHub as a method for reproducible papers
+
+Resources for git and GitHub with R and RStudio: 
+
+- [Jenny Bryan's webpage]
+- [something in R for data science?]
+- [something on RStudio stie]
+
+## Versions of software
 
 R base code changes from one version to another. 
 
@@ -138,6 +274,12 @@ although it takes a bit more work that installing the current version of
 the package).
 
 [Packrat alternatives]
+
+## Deprecated functions
+
+Future-proof your code (or at least make it robust for longer)
+
+## Absolute versus relative pathnames
 
 ## Reproducing randomness
 
@@ -207,28 +349,21 @@ sample(1:5)
 sample(1:5)
 ```
 
-# Considerations when writing the journal article
-
 ## RMarkdown for journal articles
 
 ## rticles templates
 
 ## How to collaborate when using RMarkdown
 
-# More advanced and complex approaches
+Guidelines: 
 
-## Considering containers
+- Be sure even treats the output (pdf, HTML, Word) as read-only. Only make edits
+to the RMarkdown file
+- If using git and GitHub may help to exclude the output file from tracking
+(e.g., include in .gitignore)
 
-[Docker. Galaxy? Workspaces on agency platforms?]
+Platforms: 
 
-## Considering containers
+- GitHub 
+- Overleaf?
 
-Containers can get very large---stores not just info on the versions of each 
-piece of software used, but full source code (?)
-
-Works somewhat like a black box---harder for users to explore, change, adapt
-
-Can be useful, though, if using a large collection of different open-source
-software (command line tools, R, Python, etc., all in the same pipeline)
-
-## Considering making a package
