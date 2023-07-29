@@ -1,7 +1,6 @@
 ---
 title: "Lab-Reproducible Paper"
 author: "Brooke Anderson"
-date: "2023-07-27"
 output: html_document
 ---
 
@@ -9,3 +8,85 @@ output: html_document
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+In this lab, we're giving you a few options for how you'd like to use your time. In following
+sections of this lab, we've provided you information about a published peer-reviewed paper
+that, while not fully reproducible, is very far along the spectrum toward being computationally
+reproducible. We include some prompts that help you explore the resources that the authors
+of the paper posted to help make it more computationally reproducible. This is a chance to 
+explore how one group of authors tackled the challenge of making their paper as 
+computationally reproducible as possible. 
+
+However, as an alternative, there are a few other ways that you might want to spend this 
+lab time, and any are fine: 
+
+- Many of the labs have moved quickly. If you feel you haven't finished as much of the 
+earlier labs as you'd like, you may use this time to continue an earlier lab.
+- The paper that we include later in this lab is from environmental epidemiology. If
+you would prefer, you can look for and investigate a paper in another discipline. 
+Try searching for a paper in your discipline with the added terms of "supplemental code" 
+and "supplemental data" or "reproducible". You should be able to follow many of the 
+prompts given below with an alternative paper (or you could select two or three papers
+and compare how well they allow for computational reproduction). If you find an 
+interesting example paper, let us know and we'll add a list of links to these 
+examples to the final version of the course materials.
+- Revisit code and data from one of your own projects or papers to explore your own 
+approaches and potential for computational reproducbility. We'll be happy to talk with 
+you about your own example as we circulate during the lab. 
+
+## Explore a peer-reviewed paper with elements of computational reproducibility
+
+If you chose the main option for this lab, you will be exploring a published peer-reviewed
+paper. In this paper, the authors have taken many good steps to make it more 
+computationally reproducible (if we think of reputability along a spectrum rather than 
+being binary). The paper uses health data that is sensitive and cannot be publicly posted, 
+and this prevents them from making the paper fully computationally reproducible. 
+
+Masselot P, et al. Differential mortality risks associated to PM2.5 components: a multi-country multi-city study. Epidemiology. 2022.
+
+Link to journal article on journal site: https://journals.lww.com/epidem/Abstract/2022/03000/Differential_Mortality_Risks_Associated_With_PM2_5.3.aspx
+
+Link to GitHub repo: https://github.com/PierreMasselot/Paper--2022--Epidemiology--PM2.5_components/blob/master/.gitignore
+
+We have a series of prompts for you to address as you explore this paper and how it has
+taken steps to be more computationally reproducible. These prompts are open-ended. There 
+aren't correct answers. Instead, they're meant to give you some guidance as you explore 
+this paper and the materials that are provided with it. We look forward to discussing your
+assessment with you as we circulate during this lab. 
+
+- Prompt
+
+
+## Compare with another paper
+
+If you'd like to explore another paper that is even more reproducible, you can explore another
+that includes some of the same authors: 
+
+Link to journal article: https://journals.lww.com/epidem/FullText/2019/05000/Hands_on_Tutorial_on_a_Modeling_Framework_for.3.aspx?casa_token=axYfBZ2mB5sAAAAA:N9j0zeu3vRJEBWNfICzlfRRvPTHxk5PkMrq7DcgjMrlSXi9P3q78zCKLfe4Ja0Uj7lFliBAyeGU9EjaaS1xfeUFY
+
+Link to article on author's website: http://www.ag-myresearch.com/2019_vicedo-cabrera_epidem.html
+
+Link to updated GitHub repo with paper's code and data: https://github.com/gasparrini/2019_vicedo-cabrera_Epidem_Rcodedata 
+
+- Take a look at the journal website that is linked above. See if you can discover from 
+this webpage how to find and explore the code and data. This one is a bit hard to find, 
+so feel free to ask if you can't find it. 
+- One of the authors has also included the paper on his website, as well as posted an 
+updated version of the code and data to a GitHub repo. Do you find it easier to 
+explore and download the data from one source or the other (the journal's website 
+versus the GitHub repo)? Why do you think the authors chose to include a GitHub repo
+if the code and data were posted as a supplement on the journal's webpage?
+- How are the code and data organized? Do you feel comfortable navigating to find the
+datasets versus the code? For the code, there are several separate R code scripts. Have the authors done anything that helps you figure out where to start?
+- To be fully computationally reproducible, a paper should include enough information about the
+environment in which the code was applied to the data to allow someone else to recreate
+that environment to the extent necessary to get the same results. With R code, that often 
+includes information on the version of R and of all packages used when the code was
+run for the paper. Can you find this information for this paper?
+
+## Further examples
+
+If you'd like more examples from environmental epidemiology, you may want to explore the 
+papers of Antonio Gasparrini: http://www.ag-myresearch.com/publications.html. He often 
+includes elements to improve the computational reproducibility of his papers, and his
+evolves across papers, so you can see some examples of different ways to tackle the 
+challenge of making a paper more computaionally reproducible. 
