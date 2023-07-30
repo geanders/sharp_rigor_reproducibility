@@ -53,6 +53,20 @@ file). Once it is unzipped, open the directory for the unzipped version. Click o
 to a project called "sharp_rigor_reproducibility" (you should be able to see
 this name on the top bar of the window).
 
+You should also make sure that you have all the packages that you'll need for the
+labs. Please install (or update if you have an older version) the following packages: 
+
+```
+dplyr
+ggplot2
+janitor
+lubridate
+purrr
+readr
+stringr
+tidyr
+```
+
 ## Introduction to the example data
 
 The example data are included in the "data" subdirectory of the lab repo. Once
@@ -455,7 +469,7 @@ completed a function call when you start a new line, the new line will typically
 indented. If you're adding code that's nested within a function, the indentation will help 
 the new line align with other parts of the nested function all. 
 
-There are two ways that these new lines and intentation can help make the code easier
+There are two ways that these new lines and indentation can help make the code easier
 to understand and maintain. First, they can help you avoid long lines of code. Long lines
 are particularly a problem if they get so long that they run off the page (which means
 you have to scroll left and right to read your code) or wrap around without indentation. 
