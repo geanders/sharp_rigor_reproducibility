@@ -246,7 +246,16 @@ knitr::include_graphics("figures/pipe_5.jpg")
 knitr::include_graphics("figures/pipe_full.jpg")
 ```
 
-## Can you spot the differences?
+## Spot the differences
+
+One method to figure out what a function call does is to see how it changes an 
+object.
+
+```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/spot_the_difference_halloween.jpg")
+```
+
+## Spot the differences
 
 If the function call outputs a revised version of the original object, compare
 that object before and after the call to make sure you understand how it's changed.
@@ -260,15 +269,12 @@ str_to_title(fruit)
 ```
 
 
-## Can you spot the differences?
-
-```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/spot_the_difference_halloween.jpg")
-```
-
 ## Try changing parameters
 
-```{r out.width = "0.7\\textwidth", fig.align = "center", echo = FALSE}
+Another way to figure out each function call in example code is to try playing
+around with parameter values in the call, to see how that changes the output.
+
+```{r out.width = "0.5\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/changing_stuff.jpeg")
 ```
 
@@ -281,25 +287,43 @@ Two steps:
 1. Get it to work
 2. Edit it to make it more robust and reproducible
 
-R coders often stop after the first step. This can lead to code that's 
-hard to debug and maintain and that's likely to fail in the future. 
+
 
 ## Adapting example code
+
+R coders often stop after the first step. This can lead to code that's 
+hard to debug and maintain and that's likely to fail in the future. 
 
 ```{r fig.show = "hold", out.width = "42%", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/hoping_this_will_work.jpeg")
 knitr::include_graphics("figures/jenga.jpg")
 ```
 
-## Adapting example code
+## Compare data 
 
-Practical approaches: 
+Compare your data to the example data. How does it compare in terms of: 
 
-- How does your data compare to the example data they use? How do you 
-need to change it's format (or the example code) so it will work with the
-example code?
-- Are there functions in the example code that are not in your normal set
-of tools? Could they be replaced with something in your usual toolset?
+- Type of data container (vector, dataframe, list)
+- Class of data in the object (numeric, character, etc.)
+- Object names
+- Dimensions of data
+
+## Compare data 
+
+The `class` function can be helpful in this assessment. Keep in mind that an object
+can have several levels of this class attribute, moving from a more specific class
+to a more generic class. 
+
+For example, if you have an object named `example_data` that is a tibble (a specialized
+type of dataframe), when you run `class` you will get: 
+
+```{r}
+example_data <- tibble::tibble(ID = 1:3)
+```
+
+```{r echo = TRUE}
+class(example_data)
+```
 
 ## Adapt to your tools
 
@@ -340,7 +364,10 @@ df <- df %>%
 
 ## What is a kluge? 
 
-From the Jargon File, a kluge is: 
+Finally, you should try to identify any kluges in the example data and 
+edit your code to remove them.
+
+From the Jargon File, a kluge is: \bigskip
 
 > "A clever programming trick intended to solve a particular nasty case in an expedient, 
 if not clear manner... Often involves ad-hackery..." 
@@ -394,7 +421,7 @@ You want to edit out kludges because:
 - They are hard to maintain, understand, and debug
 - Some are strongly predisposed to fail unpredictably and dramatically
 
-Don't prioritize **concision** or **efficiency** over **clarity**.
+Don't prioritize concision or efficiency over clarity.
 
 
 
