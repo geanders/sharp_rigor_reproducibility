@@ -8,97 +8,119 @@ output: beamer_presentation
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
-# Encapsulating ideas with functions
-
-## Advantages of writing functions
-
-- Fewer lines of code to do the task: Do not repeat yourself
-- Separates the code from the logic of the function from the application of it
-- More efficient across broader work: Functions can be reused
-- Can be documented clearly and throughly
-- A step on the path toward writing packages
-- Gets you in the habit of breaking up a complex coding task into discrete, 
-do-able steps
+# Advantages of writing functions
 
 ## Do Not Repeat Yourself
 
+Often, you'll want to do the same thing several times. For example, you might have
+data files from different locations or experiments, and you want to perform the 
+same analysis with all of them. 
+
+## Do Not Repeat Yourself
+
+In this scenario, your first draft of code might include a lot of repeated code, 
+places where you've cut-and-pasted, like: 
+
+```{r out.width = "0.6\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/repeated_code.png")
+```
+
+## Do Not Repeat Yourself
+
+There are several limitations to code that repeats in this way, including: 
+
+- As you evolve the code to do something lengthy or complexed, you waste a lot of
+time with copying-and-pasting
+- If you want to change some of your code, you'll have to change it everywhere you 
+copied-and-pasted it
+- The code becomes very long, so it takes longer to read and understand it
+
+Writing and using functions is one way to limit the amount of code you copy-and-paste.
+
 ## Encapsulating an idea with a function
 
-[Image---script with all the code]
+Another advantage of a function is that is separates the code that performs a 
+subtask from the application of that subtask. 
+
+In practice, this lets you encapsulate the "idea" and implementation that you
+need to perform a subtask, and then you can think more abstractly about that
+subtask within the code script you develop for your data.
 
 ## Encapsulating an idea with a function
 
-[Image--script with some parts encapsulated as functions]
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/code_gears.png")
+```
 
 ## Encapsulating an idea with a function
 
-Functions can be simple, just encapsulating a small, simple step. 
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/code_gears2.png")
+```
 
+## Encapsulating an idea with a function
 
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/code_gears3.png")
+```
+
+## Encapsulating an idea with a function
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/code_gears_overall.png")
+```
+
+## Encapsulating an idea with a function
+
+Encapsulation and abstraction are excellent tools for solving a complex problem
+by: 
+
+- breaking the problem into smaller steps
+- tackling each of those small steps with attention to detail
+- then combining the solutions for the small steps in a way that focuses on the big picture of the overall task
+
+## Advantages of writing functions
+
+There are also some other advantages of writing functions: 
+
+- More efficient across broader work, since functions can be reused
+- Each function can be documented clearly and throughly
+- Writing functions is a step on the path toward writing packages
+- Gets you in the habit of breaking up a complex coding task into discrete, 
+do-able steps
 
 # Writing functions
 
-## Example: Implementing an xkcd comic
+## Anatomy of a function
+
+There are two key elements in the anatomy of a function: the API and the innards.
+
+```{r out.width = "0.7\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/anatomy_overview.png")
+```
+
+## Anatomy of a function 
+
+The Application Programming Interface (API) of the function is the interface
+that you'll use when you apply the function---what do you put into and get 
+out of the function?
 
 ```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/random_number.png")
+knitr::include_graphics("figures/anatomy_api.png")
 ```
 
-## Example: Implementing an xkcd comic
+## Anatomy of a function 
 
-```{r echo = TRUE}
-get_random_number <- function(dice_roll = 4){
-  
-  random_number <- dice_roll 
-  
-  return(random_number)
-}
-```
+Inputs are set within parentheses in the `function` call, while the 
+output is specified by `return`. 
 
-## What is a function
-
-## Anatomy of a function
-
-Two key elements: API and innards
-
-## Anatomy of a function
-
-API: what you put in and what you get out. 
-
-This is all someone needs to know to be able to use the function (although
-it's always nice if they have an idea of what happens in between). 
-
-If the API stays stable, the function should work robustly in earlier code
-you wrote with it, even if you change some of the details of how the code 
-within the function runs.
-
-## Anatomy of a function
-
-Inputs are set within parentheses in the `function` call: 
-
-```{r eval = FALSE}
-do_my_task <- function(.data, keep_all = TRUE){
-  
-  [Function code]
-  
-  return(out)
-}
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/anatomy_api.png")
 ```
 
 ## Anatomy of a function
 
-The output is specified by `return`: 
-
-```{r eval = FALSE}
-do_my_task <- function(.data, keep_all = TRUE){
-  
-  [Function code]
-  
-  return(out)
-}
-```
-
-## Anatomy of a function
+For the function's API, it's help to know that: 
 
 - You can only output one thing from the function. If you have a lot you need 
 to get out, you can pack it into a list object to do so (this is what a 
@@ -106,18 +128,39 @@ lot of statistical tests and models return a list object)
 - There are ways to avoid using `return`, but it's helpful to use it as your 
 start writing functions, to make sure you're clear on what you're sending out 
 of the function.
+- If the API stays stable, the function should work robustly in earlier code
+you wrote with it, even if you change some of the details of how the code 
+within the function runs.
 
 ## Anatomy of a function
 
-Innards: What is run each time you call the function.
+The "innards" of the function are the code that is run each time you call the function.
 
-R will move to a different R environment when the function runs, so the objects
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/anatomy_api.png")
+```
+
+## Anatomy of a function
+
+For the innards of the function, it's helpful to know that: 
+
+- R will move to a different R environment when the function runs, so the objects
 created within the function code won't show up in your working environment. 
-
-If the innards include more than one function call, then group them together with 
+- If the innards include more than one function call, then group them together with 
 curly brackets (`{` to start the code for the function, `}` to end it).
 
+
 # How to build a function
+
+## Writing functions
+
+Functions can be simple, just encapsulating a single, simple (at least to 
+describe) step. 
+
+- `mutate`: Change or add a column in a dataframe
+- `rename`: Rename a column
+- `read_csv`: Read data from a comma-separated file into R
+- `str_to_lower`: Convert all characters in a character string to lowercase
 
 ## Example: Getting monthly counts of animal response calls
 
@@ -349,6 +392,24 @@ knitr::include_graphics("figures/example_function_improved.png")
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/improved_function.png")
+```
+
+
+## Example: Implementing an xkcd comic
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/random_number.png")
+```
+
+## Example: Implementing an xkcd comic
+
+```{r echo = TRUE}
+get_random_number <- function(dice_roll = 4){
+  
+  random_number <- dice_roll 
+  
+  return(random_number)
+}
 ```
 
 # Applying functions with `purrr`

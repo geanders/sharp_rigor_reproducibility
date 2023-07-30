@@ -50,6 +50,10 @@ https://www.makeuseof.com/21-tips-and-tricks-to-master-the-art-of-googling-as-a-
 knitr::include_graphics("figures/cheatsheet.png")
 ```
 
+## Navigating helpfiles
+
+
+
 ## Finding R packages
 
 ```{r out.width = "\\textwidth", echo = FALSE}
