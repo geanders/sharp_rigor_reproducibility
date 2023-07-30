@@ -11,6 +11,13 @@ knitr::opts_chunk$set(echo = FALSE)
 
 # Finding example code
 
+## Finding example code
+
+```{r out.width = "0.45\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/googling_error_message.jpeg")
+knitr::include_graphics("figures/copying_stackoverflow.jpeg")
+```
+
 ## Help forums
 
 StackOverflow
@@ -33,7 +40,9 @@ How to find and evaluate R packages: article
 
 ## Getting example code to work
 
-Start by trying the full piece of code. Does the example run? If not, 
+Start by trying the full piece of code. 
+
+Does the example run? If not, 
 try these steps first: 
 
 - Make sure you have all the packages that are used in the example 
@@ -62,7 +71,101 @@ dataframe), how does that object change from before to after the call?
 
 ## Dissecting nested code
 
-Work from the inside out
+In R, you'll often find examples of code (and write them yourself) 
+where a function call is nested within another function call. 
+
+For example, in the following example code, a `function1` call is nested 
+inside a `function2` call: 
+
+```{r echo = TRUE, eval = FALSE}
+function2(function1(my_data, n = 5), verbose = TRUE)
+```
+
+
+## Dissecting nested code
+
+If you are trying to figure out a line of code with nested code, dissect
+it from the inside out. 
+
+Start by figuring out what the innermost function call is doing. For the 
+moment, ignore everything about the other code in which it's estimated. 
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/nested_inner.jpg")
+```
+
+## Dissecting nested code
+
+Once you have figured out the innermost function call, you can think of 
+that part of the code line as the output from that function call. 
+
+Now you can proceed to figure out the outer function call.
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/nested_outer.png")
+```
+
+## Dissecting piped code
+
+Often, an example will include a series of piped functions calls. 
+
+```{r echo = TRUE, eval = FALSE}
+my_data <- my_data %>% 
+  rename(better_name = `Bad Name!`) %>% 
+  mutate(animal_species = fct(animal_species))
+```
+
+## Dissecting piped code
+
+In this type of piped code, the output of one function call is sent directly 
+as input into the next function call. 
+
+This type of code can be very clear and efficient in performing a series of
+simple steps. However, it's useful to have some strategies for how to dissect
+example code that is in a pipeline, as this isn't always as straightforward. 
+
+## Dissecting piped code
+
+It's a good strategy to dissect the code line by line. Figure out everything up to 
+the first pipe before you look at the next line up to the next pipe, and so on. 
+
+For the example code, you could start just by looking at the data input to the first
+pipe. In RStudio, you can do this by highlight only that dataframe name (`my_data`)
+and clicking the Run button (or using the keyboard shortcut for "Run"): 
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/pipe_1.jpg")
+```
+
+## Dissecting piped code
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/pipe_2.jpg")
+```
+
+## Dissecting piped code
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/pipe_3.jpg")
+```
+
+## Dissecting piped code
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/pipe_4.jpg")
+```
+
+## Dissecting piped code
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/pipe_5.jpg")
+```
+
+## Full process of dissecting piped code
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/pipe_full.jpg")
+```
 
 ## Can you spot the differences?
 
@@ -84,6 +187,12 @@ str_to_title(fruit)
 knitr::include_graphics("figures/spot_the_difference_halloween.jpg")
 ```
 
+## Try changing parameters
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/changing_stuff.jpeg")
+```
+
 # Adapting example code
 
 ## Adapting example code
@@ -95,6 +204,12 @@ Two steps:
 
 ## Adapting example code
 
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/hoping_this_will_work.jpeg")
+```
+
+## Adapting example code
+
 Practical approaches: 
 
 - How does your data compare to the example data they use? How do you 
@@ -103,9 +218,42 @@ example code?
 - Are there functions in the example code that are not in your normal set
 of tools? Could they be replaced with something in your usual toolset?
 
-## Getting example code to work on your task
+## Adapt to your tools
 
-## Editing example code for rigor and reproducibility
+We talked in the introductory lecture about how you should have a set of
+core tools that you know well and use often. 
+
+When you pull code from an example, it's useful to edit it to use your set
+of core tools if it doesn't already. 
+
+## Adapt to your tools
+
+You gain several advantages by editing code to use your own toolset: 
+
+- Bugs are less likely (especially since defaults can be different across
+R functions that other perform similar actions)
+- If there are bugs, you will catch them more quickly
+- The code will be easier for you to understand in the future
+
+## Adapt to your tools
+
+For example, you might find an example of how to change a column in your 
+data to a factor data class. 
+
+The example might be written using base R functions: 
+
+```{r echo = TRUE, eval = FALSE}
+df$borough <- as.factor(df$borough)
+```
+
+If you tend to use tidyverse tools as your core toolset, you could edit
+the example to use those tools: 
+
+```{r echo = TRUE, eval = FALSE}
+df <- df %>% 
+  mutate(borough = fct(borough))
+```
+
 
 ## What is a kluge? 
 
@@ -164,6 +312,6 @@ You want to edit out kludges because:
 
 Don't prioritize **concision** or **efficiency** over **clarity**.
 
-
+## Finding R packages
 
 

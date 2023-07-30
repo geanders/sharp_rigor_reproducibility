@@ -1,5 +1,5 @@
 ---
-title: "Lab-Reproducible Paper"
+title: "Lab---Exploring Reproducible Papers"
 author: "Brooke Anderson"
 output: html_document
 ---
@@ -38,8 +38,7 @@ you about your own example as we circulate during the lab.
 If you chose the main option for this lab, you will be exploring a published peer-reviewed
 paper. In this paper, the authors have taken many good steps to make it more 
 computationally reproducible (if we think of reputability along a spectrum rather than 
-being binary). The paper uses health data that is sensitive and cannot be publicly posted, 
-and this prevents them from making the paper fully computationally reproducible. 
+being binary).  
 
 Masselot P, et al. Differential mortality risks associated to PM2.5 components: a multi-country multi-city study. Epidemiology. 2022.
 
@@ -53,13 +52,25 @@ aren't correct answers. Instead, they're meant to give you some guidance as you 
 this paper and the materials that are provided with it. We look forward to discussing your
 assessment with you as we circulate during this lab. 
 
-- Prompt
-
+- The authors have shared materials related to this paper through a GitHub repo. Investigate
+that repo. Which materials have they provided among those necessary for a paper to be 
+fully reproducible (data, code to generate the published results from those data, enough 
+information about the environment to recreate elements of the environment that may affect
+the way the code runs)?
+- For any elements that the authors failed to include, why do you think they chose not to 
+include them?
+- There are several code scripts in this repo. Do the authors do anything to help you 
+navigate them (e.g., figure out what order to use them, figure out what each script does)?
+- Do the authors do anything in this repo to help you determine the specific piece of 
+code that generated each figure and table in the paper?
+- Do you think that the authors used GitHub to work on the analysis in this paper while
+they wrote it, or do you think they just used it to post the materials when the paper 
+was published?
 
 ## Compare with another paper
 
 If you'd like to explore another paper that is even more reproducible, you can explore another
-that includes some of the same authors: 
+by some of the same authors: 
 
 Link to journal article: https://journals.lww.com/epidem/FullText/2019/05000/Hands_on_Tutorial_on_a_Modeling_Framework_for.3.aspx?casa_token=axYfBZ2mB5sAAAAA:N9j0zeu3vRJEBWNfICzlfRRvPTHxk5PkMrq7DcgjMrlSXi9P3q78zCKLfe4Ja0Uj7lFliBAyeGU9EjaaS1xfeUFY
 

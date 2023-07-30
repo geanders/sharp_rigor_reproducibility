@@ -12,7 +12,7 @@
 <meta name="author" content="Brooke Anderson" />
 
 
-<title>Lab-Reproducible Paper</title>
+<title>Lab—Exploring Reproducible Papers</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -349,7 +349,7 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Lab-Reproducible Paper</h1>
+<h1 class="title toc-ignore">Lab—Exploring Reproducible Papers</h1>
 <h4 class="author">Brooke Anderson</h4>
 
 </div>
@@ -391,26 +391,56 @@ reproducibility</h2>
 <p>If you chose the main option for this lab, you will be exploring a
 published peer-reviewed paper. In this paper, the authors have taken
 many good steps to make it more computationally reproducible (if we
-think of reputability along a spectrum rather than being binary). The
-paper uses health data that is sensitive and cannot be publicly posted,
-and this prevents them from making the paper fully computationally
-reproducible.</p>
+think of reputability along a spectrum rather than being binary).</p>
 <p>Masselot P, et al. Differential mortality risks associated to PM2.5
 components: a multi-country multi-city study. Epidemiology. 2022.</p>
 <p>Link to journal article on journal site: <a href="https://journals.lww.com/epidem/Abstract/2022/03000/Differential_Mortality_Risks_Associated_With_PM2_5.3.aspx" class="uri">https://journals.lww.com/epidem/Abstract/2022/03000/Differential_Mortality_Risks_Associated_With_PM2_5.3.aspx</a></p>
 <p>Link to GitHub repo: <a href="https://github.com/PierreMasselot/Paper--2022--Epidemiology--PM2.5_components/blob/master/.gitignore" class="uri">https://github.com/PierreMasselot/Paper--2022--Epidemiology--PM2.5_components/blob/master/.gitignore</a></p>
+<p>We have a series of prompts for you to address as you explore this
+paper and how it has taken steps to be more computationally
+reproducible. These prompts are open-ended. There aren’t correct
+answers. Instead, they’re meant to give you some guidance as you explore
+this paper and the materials that are provided with it. We look forward
+to discussing your assessment with you as we circulate during this
+lab.</p>
+<ul>
+<li>The authors have shared materials related to this paper through a
+GitHub repo. Investigate that repo. Which materials have they provided
+among those necessary for a paper to be fully reproducible (data, code
+to generate the published results from those data, enough information
+about the environment to recreate elements of the environment that may
+affect the way the code runs)?</li>
+<li>For any elements that the authors failed to include, why do you
+think they chose not to include them?</li>
+<li>There are several code scripts in this repo. Do the authors do
+anything to help you navigate them (e.g., figure out what order to use
+them, figure out what each script does)?</li>
+<li>Do the authors do anything in this repo to help you determine the
+specific piece of code that generated each figure and table in the
+paper?</li>
+<li>Do you think that the authors used GitHub to work on the analysis in
+this paper while they wrote it, or do you think they just used it to
+post the materials when the paper was published?</li>
+</ul>
 </div>
 <div id="compare-with-another-paper" class="section level2">
 <h2>Compare with another paper</h2>
 <p>If you’d like to explore another paper that is even more
-reproducible, you can explore another that includes some of the same
-authors:</p>
+reproducible, you can explore another by some of the same authors:</p>
 <p>Link to journal article: <a href="https://journals.lww.com/epidem/FullText/2019/05000/Hands_on_Tutorial_on_a_Modeling_Framework_for.3.aspx?casa_token=axYfBZ2mB5sAAAAA:N9j0zeu3vRJEBWNfICzlfRRvPTHxk5PkMrq7DcgjMrlSXi9P3q78zCKLfe4Ja0Uj7lFliBAyeGU9EjaaS1xfeUFY" class="uri">https://journals.lww.com/epidem/FullText/2019/05000/Hands_on_Tutorial_on_a_Modeling_Framework_for.3.aspx?casa_token=axYfBZ2mB5sAAAAA:N9j0zeu3vRJEBWNfICzlfRRvPTHxk5PkMrq7DcgjMrlSXi9P3q78zCKLfe4Ja0Uj7lFliBAyeGU9EjaaS1xfeUFY</a></p>
+<p>Link to article on author’s website: <a href="http://www.ag-myresearch.com/2019_vicedo-cabrera_epidem.html" class="uri">http://www.ag-myresearch.com/2019_vicedo-cabrera_epidem.html</a></p>
+<p>Link to updated GitHub repo with paper’s code and data: <a href="https://github.com/gasparrini/2019_vicedo-cabrera_Epidem_Rcodedata" class="uri">https://github.com/gasparrini/2019_vicedo-cabrera_Epidem_Rcodedata</a></p>
 <ul>
 <li>Take a look at the journal website that is linked above. See if you
 can discover from this webpage how to find and explore the code and
 data. This one is a bit hard to find, so feel free to ask if you can’t
 find it.</li>
+<li>One of the authors has also included the paper on his website, as
+well as posted an updated version of the code and data to a GitHub repo.
+Do you find it easier to explore and download the data from one source
+or the other (the journal’s website versus the GitHub repo)? Why do you
+think the authors chose to include a GitHub repo if the code and data
+were posted as a supplement on the journal’s webpage?</li>
 <li>How are the code and data organized? Do you feel comfortable
 navigating to find the datasets versus the code? For the code, there are
 several separate R code scripts. Have the authors done anything that

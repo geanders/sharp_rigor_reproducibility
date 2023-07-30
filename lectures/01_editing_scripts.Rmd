@@ -8,6 +8,12 @@ output: beamer_presentation
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
+## Code no one can read
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/code_noone_can_read.jpeg")
+```
+
 ## Separating writing and editing
 
 ```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
@@ -185,7 +191,15 @@ more white space and clearer structure.
 
 ## Break up monolithic code
 
-[Image---monolith to stacked boxes to separated boxes]
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/breaking_up_code.png")
+```
+
+## Break up monolithic code
+
+```{r out.width = "0.7\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/organized_code_script.jpg")
+```
 
 ## Break up monolithic code
 

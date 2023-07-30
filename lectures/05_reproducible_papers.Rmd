@@ -8,6 +8,34 @@ output: beamer_presentation
 knitr::opts_chunk$set(echo = TRUE)
 ```
 
+## Barriers to reproducible papers
+
+In theory: 
+
+- Necessary to know what to include and how to share it
+- Data are very large
+- Data cannot ethically or legally be shared (e.g. private health data)
+- Necessary to know how to share important information about the 
+enviroment in which the code was run
+
+## Barriers to reproducible papers
+
+```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/bashful.png")
+```
+
+## Barriers to reproducible papers
+
+In practice: 
+
+- I don't want to share the code / data
+  + The code's too messy
+  + Someone might scoop my work
+  + Someone might find a bug
+- The code's available, but very hard to understand
+  + I'll put the code up, but it's not worth taking the time to clean it first
+  + Subconciously creating a barrier to prevent easy reproduction
+
 ## What to include with a computationally reproducible paper?
 
 Remember, to be computationally reproducible, the reader must be able to start
@@ -154,18 +182,18 @@ as well as the code fo the software needed to run the code
 and explore the code and data, through a web-based platform without needing
 to download the data
 
-## Set of unstructured files
-
-[Image---list of supplemental files from journal articles]
-
 ## Compressed directory
-
-[Image---GitHub]
 
 Full directory can be shared in one compressed file. 
 
 Includes not only all the files, but also maintains the organization of 
 those files into a directory. 
+
+## Compressed directory
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/github_reproducible_repo.png")
+```
 
 ## Compressed directory
 
@@ -175,6 +203,12 @@ There are advantages to solutions that let you share everything as a directory:
 - If you set up your directory as an R Project, it's designed to be self-contained
 (can interact with other things in the directory but doesn't rely on the computer's
 file directory outside of that)
+
+## Container
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/docker.png")
+```
 
 ## Container
 
@@ -273,13 +307,36 @@ CRAN packages, for example, are archived and avaiable for you to install,
 although it takes a bit more work that installing the current version of 
 the package).
 
-[Packrat alternatives]
+[Packrat alternatives---renv]
 
 ## Deprecated functions
 
 Future-proof your code (or at least make it robust for longer)
 
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/superceded.png")
+```
+
+## Deprecated functions
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/deprecated.png")
+```
+
 ## Absolute versus relative pathnames
+
+When you want to tell R about a file, you can either give it the file's full address
+(from the root directory of your computer) or you can give it directions from the 
+working directory. The first is an **absolute** filepath and the second is a **relative**
+filepath.
+
+```{r eval = FALSE}
+read_csv("/Users/ganders/my_proj/data/my_data.csv")
+read_csv("data/my_data.csv")
+```
+
+Which will be robust when someone else tries to run the code on their own computer?
+
 
 ## Reproducing randomness
 
