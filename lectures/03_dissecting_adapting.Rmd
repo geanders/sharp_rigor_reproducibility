@@ -1,7 +1,6 @@
 ---
 title: "Lecture 3"
 author: "Brooke Anderson"
-date: "2023-07-27"
 output: beamer_presentation
 ---
 
@@ -18,23 +17,57 @@ knitr::include_graphics("figures/googling_error_message.jpeg")
 knitr::include_graphics("figures/copying_stackoverflow.jpeg")
 ```
 
-## Help forums
+## The art of Googling for code
 
-StackOverflow
+- Learn some Google search operators 
+  + Quotation marks force a match to an exact term or phrase
+  + A negative sign excludes a word, returning only matches that don't include that word
+- If you get an error message, Google it (take out anything specific to 
+your problem, like a filepath or object name)
+- Hone your search terms
+  + Continue to learn precise coding vocabulary
+  + Pay attention to the language used by top responders in forums like StackOverflow
+  + Refine your search terms based on what Google returns from your first search
 
-RStudio (posit?)
+## The art of Googling for code
 
-## Vignettes and helpfiles
+- Advanced Google searching, including search operators: https://support.google.com/websearch/answer/2466433?hl=en
+- 21 Tips and Tricks to Master the Art of Googling as a Developer: 
+https://www.makeuseof.com/21-tips-and-tricks-to-master-the-art-of-googling-as-a-developer/
+- How to Google effectively as a developer: https://medium.com/@niamhpower/how-to-google-effectively-as-a-developer-4ebe363afe
+- Googling for code solutions can be tricky---here's how to get started: https://knightlab.northwestern.edu/2014/03/13/googling-for-code-solutions-can-be-tricky-heres-how-to-get-started/
+
+## Where you may find example code
+
+- Help forums: StackOverflow, Posit Community
+- Package documentation: vignettes, helpfiles, cheatsheets
+- Blog posts (especially those written with blogdown)
+- AI: e.g., ChatGPT (https://openai.com/blog/chatgpt)
 
 ## Cheatsheets
 
-## Blogs and articles
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/cheatsheet.png")
+```
 
-## ChatGPT (?), other AI
+## Finding R packages
 
-## Finding code for specialized tasks
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/ten_simple_rules.png")
+```
 
-How to find and evaluate R packages: article
+https://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1009884
+
+## Finding R packages
+
+This paper includes detailed suggestions for how to find and evaluate R packages, 
+so you can pick the best package to tackle your task. Some of the rules that
+are described include: 
+
+- Rule 4: Explore the availability and quality of help
+- Rule 5: Quantify how established it is
+- Rule 6: Seek evidence of peer acceptance and review
+- Rule 8: See how it’s developed
 
 # Dissecting example code
 
@@ -189,7 +222,7 @@ knitr::include_graphics("figures/spot_the_difference_halloween.jpg")
 
 ## Try changing parameters
 
-```{r out.width = "\\textwidth", echo = FALSE}
+```{r out.width = "0.7\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/changing_stuff.jpeg")
 ```
 
@@ -202,10 +235,14 @@ Two steps:
 1. Get it to work
 2. Edit it to make it more robust and reproducible
 
+R coders often stop after the first step. This can lead to code that's 
+hard to debug and maintain and that's likely to fail in the future. 
+
 ## Adapting example code
 
-```{r out.width = "\\textwidth", echo = FALSE}
+```{r fig.show = "hold", out.width = "42%", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/hoping_this_will_work.jpeg")
+knitr::include_graphics("figures/jenga.jpg")
 ```
 
 ## Adapting example code
@@ -257,15 +294,20 @@ df <- df %>%
 
 ## What is a kluge? 
 
-From the Jargon File: 
+From the Jargon File, a kluge is: 
 
-```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/kluge_jargon_file.png")
-```
+> "A clever programming trick intended to solve a particular nasty case in an expedient, 
+if not clear manner... Often involves ad-hackery..." 
+
+or
+
+> "Something that works for the wrong reason"
+
+http://catb.org/jargon/html/K/kluge.html
 
 ## What is a kluge?
 
-A kluge by Rube Goldberg:
+A classic example of a kluge is a Rube Goldberg machine.
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/rube_goldberg.jpeg")
@@ -273,31 +315,26 @@ knitr::include_graphics("figures/rube_goldberg.jpeg")
 
 ## What is a kluge?
 
-A kluge to make an iPhone speaker (MacGyver-style kluge):
+Kluges can also be clever, but put together in a way that uses 
+materials in unintended ways and that takes a while to understand. 
 
-```{r out.width = "\\textwidth", echo = FALSE}
+```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/speaker_kludge.jpeg")
 ```
 
+This type of kluge is famous from the TV series MacGyver.
+
 ## What is a kluge?
 
-A kluge for plowing a field (a "There I Fixed It"--style kluge): 
+Other kluges are clearly going to fall apart at some point, probably in 
+a dramatic and dangerous way.
 
-```{r out.width = "\\textwidth", echo = FALSE}
+```{r out.width = "0.49\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/kluge_plow.jpeg")
-```
-
-## What is a kluge?
-
-A kluge for fixing a bike (a "There I Fixed It"--style kluge): 
-
-```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/kluge_bike.jpg")
 ```
 
-## What is a kluge?
-
-> "There isn't much to say about the blog "There I Fixed It", other than that you should add it to your RSS reader immediately. It's a gallery of user-submitted hacks, the twist being that these hacks are disastrous, usually dangerously so, and many of them could quite possibly end in death." --- Wired Magazine, https://www.wired.com/2009/07/there-i-fixed-it-gallery-of-dangerous-hilarious-hacks/
+These types of kluges are often described with, "There I Fixed It". 
 
 ## Find and fix kluges
 
@@ -309,9 +346,9 @@ You want to edit out kludges because:
 - They often use longer code than you need.
 - The logic of the code is not clearly linked to the logic of the problem
 - They are hard to maintain, understand, and debug
+- Some are strongly predisposed to fail unpredictably and dramatically
 
 Don't prioritize **concision** or **efficiency** over **clarity**.
 
-## Finding R packages
 
 
