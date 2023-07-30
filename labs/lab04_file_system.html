@@ -946,11 +946,11 @@ look like:</p>
 <pre class="r"><code>ny_calls %&gt;% 
   pull(filename) %&gt;% 
   sample(5)</code></pre>
-<pre><code>## [1] &quot;../data/Staten_Island_animal_response.csv&quot;
-## [2] &quot;../data/Brooklyn_animal_response.csv&quot;     
-## [3] &quot;../data/Bronx_animal_response.csv&quot;        
-## [4] &quot;../data/Queens_animal_response.csv&quot;       
-## [5] &quot;../data/Queens_animal_response.csv&quot;</code></pre>
+<pre><code>## [1] &quot;../data/Manhattan_animal_response.csv&quot;    
+## [2] &quot;../data/Manhattan_animal_response.csv&quot;    
+## [3] &quot;../data/Queens_animal_response.csv&quot;       
+## [4] &quot;../data/Staten_Island_animal_response.csv&quot;
+## [5] &quot;../data/Manhattan_animal_response.csv&quot;</code></pre>
 <p>They follow a similar pattern: the borough name is between “../data/”
 and “_animal_response.csv”. There are a few ways we could tackle
 extracting the borough names. One of the simplest (although probably not
@@ -971,9 +971,9 @@ ny_calls &lt;- ny_calls %&gt;%
 <pre class="r"><code>ny_calls %&gt;% 
   pull(borough) %&gt;% 
   sample(10)</code></pre>
-<pre><code>##  [1] &quot;Staten Island&quot; &quot;Brooklyn&quot;      &quot;Manhattan&quot;     &quot;Staten Island&quot;
-##  [5] &quot;Queens&quot;        &quot;Manhattan&quot;     &quot;Brooklyn&quot;      &quot;Queens&quot;       
-##  [9] &quot;Manhattan&quot;     &quot;Queens&quot;</code></pre>
+<pre><code>##  [1] &quot;Brooklyn&quot;      &quot;Bronx&quot;         &quot;Manhattan&quot;     &quot;Queens&quot;       
+##  [5] &quot;Bronx&quot;         &quot;Manhattan&quot;     &quot;Manhattan&quot;     &quot;Queens&quot;       
+##  [9] &quot;Staten Island&quot; &quot;Staten Island&quot;</code></pre>
 <p>Now we can proceed with the code to analyze the full dataset. With
 these changes, our full script would look like this:</p>
 <pre class="r"><code># Load required libraries ##############################################################
