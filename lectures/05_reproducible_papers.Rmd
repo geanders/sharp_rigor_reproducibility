@@ -1,5 +1,5 @@
 ---
-title: "Lecture 5"
+title: "Preparing Data and Code for Publication"
 author: "Brooke Anderson"
 output: beamer_presentation
 ---
@@ -10,13 +10,17 @@ knitr::opts_chunk$set(echo = TRUE)
 
 ## Barriers to reproducible papers
 
-In theory: 
+In theory, some of the barriers to making published papers computationally 
+reproducible are: 
 
 - Necessary to know what to include and how to share it
 - Data are very large
 - Data cannot ethically or legally be shared (e.g. private health data)
 - Necessary to know how to share important information about the 
 enviroment in which the code was run
+- Must address randomness introduced by random number generation
+
+We will cover these topics in this session. 
 
 ## Barriers to reproducible papers
 
@@ -26,7 +30,8 @@ knitr::include_graphics("figures/bashful.png")
 
 ## Barriers to reproducible papers
 
-In practice: 
+In practice, though, some of the barriers keeping people from making published
+papers computationally reproducible are actually:
 
 - I don't want to share the code / data
   + The code's too messy
@@ -35,6 +40,9 @@ In practice:
 - The code's available, but very hard to understand
   + I'll put the code up, but it's not worth taking the time to clean it first
   + Subconciously creating a barrier to prevent easy reproduction
+  
+The other sessions of the workshop have focused on approaches that address
+these barriers.
 
 ## What to include with a computationally reproducible paper?
 
@@ -47,80 +55,90 @@ tables and figures.
 - Any environmental information (e.g., package versions) that are necessary 
 for the code to generate the results
 
-## Sharing code and data
-
-There are a few options for how you share the code and data for the paper, including: 
-
-- Supplemental files through the journal's website
-- GitHub
-- Scientific repository, like [examples, NIH]
-- Personal / academic website 
-- R package plus script
-
-## What to include with a computationally reproducible paper?
-
 It's also helpful to include: 
 
 - Adequate documentation for the user to recreate the results from the 
 data using the code and environmental information
 - Guidance on how the code can reused (license)
 
-## Data to include
+## Including data for the paper
 
-[Image: raw data to processed data to right before tables / figures]
+Ideally, you will include all the data that were used to generate the paper's
+results. 
 
-## Extremely large data
+However, sometimes there are challenges with including some or all of the data. 
+These include: 
 
-- Repositories built for data curation might be better suited for storing
-data that methods with data size limits ([example])
-- Some repositories might have APIs---data can be downloaded programatically 
-(from the code script), so the code could be connected to the data in this way
-- Some repositories allow options to toggle private versus public (similar to 
-GitHub)
+- Data cannot be legally or ethically shared
+- Data are very large
 
 ## Sensitive or protected data
+
+If your research includes human health data or other types of sensitive or 
+protected data, you may not be able to publish that data. 
+
+As a result, you will not be able to make your paper fully computationally 
+reproducible. 
+
+However, if you consider reproducibility as a spectrum, there 
+are steps you can take to make the paper *more* computationally reproducible, 
+even if you cannot share all the elements required to be fully reproducible. 
+
+## Sensitive or protected data
+
+If you cannot include the data with other reproducbility materials, consider
+the following steps to make the paper as reproducible as possible:
+
+- Include mock dataset (same format, different numbers) to use to test and 
+demonstrate the function of the code
+- Describe the data that you were not able to include, so that readers
+can understand how the code would work with the data
+- Use .gitignore to include the data in a git repo on a local computer 
+(or a secure server you're working on) but not push it to remote versions of that
+repo, like one on GitHub
+- When working on a server for security reasons, consider having
+RStudio Server installed, as this provides a friendlier interface for working with 
+git version control on the server (avoids having to do much from the terminal)
+
+## Sensitive or protected data
+
+In the next lab, we'll explore a paper that has taken steps to be computationally 
+reproducible, even those it cannot share its data. 
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/repo_paper_journal.png")
 ```
 
-https://journals.lww.com/epidem/Abstract/2022/03000/Differential_Mortality_Risks_Associated_With_PM2_5.3.aspx
-
 ## Sensitive or protected data
 
-```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/repo_paper_personal_site.png")
-```
-
-http://www.ag-myresearch.com/2022_masselot_epidemiol.html
-
-## Sensitive or protected data
+In the documentation of the GitHub repository that the authors use to share the 
+code for the paper, they describe why they cannot includes the health data: 
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/sensitive_data.png")
 ```
 
-From the GitHub repository  
-https://github.com/PierreMasselot/Paper--2022--Epidemiology--PM2.5_components
+## .gitignore file 
 
-Masselot P, et al. Differential mortality risks associated to PM2.5 components: a multi-country multi-city study. Epidemiology. 2022.
+When you track a directory with `git` version control, you will have a file added to the 
+directory called ".gitignore". 
 
-## Sensitive or protected data
+```{r out.width = "0.6\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/gitignore_file.png")
+```
 
-- Can include mock dataset (same format, different numbers) to use to test and 
-demonstrate the function of the code
-- Can use .gitignore to include the data in a git repo on a local computer 
-(or a secure server you're working on) but not push it to remote versions of that
-repo, like one on GitHub
-- When working on a server for security reasons, it can be helpful to have 
-RStudio Server installed, as this provides a friendlier interface for working with 
-git version control on the server (avoids having to do much from the terminal)
+## .gitignore file
 
+This is a plain text file. You can edit it to specify the files or groups of files that
+you want `git` to ignore as it tracks changes to that directory.
 
-## Sensitive or protected data
+If you are sharing the `git` repo through GitHub, you can avoid posting certain files
+online by listing them in this ".gitignore" file.
 
-If you look through the repository for Masselot P, et al. 2022, you'll see that they
-listed all data in the ".gitignore" file. This would allow them to have the data on 
+## .gitignore file 
+
+If you look through the repository for the sample paper for the lab, you'll see that they
+listed all data in the ".gitignore" file. This allows them to have the data on 
 their local computer but not share it publicly with the rest of the repo.
 
 ```
@@ -131,25 +149,44 @@ their local computer but not share it publicly with the rest of the repo.
 # RStudio files
 .Rproj.user/
 
-# produced vignettes
-vignettes/*.html
-vignettes/*.pdf
-
 # Other
 Data/
 ```
+## Extremely large data
 
-https://github.com/PierreMasselot/Paper--2022--Epidemiology--PM2.5_components/blob/master/.gitignore
+Sometimes, the paper will include results based on datasets that are very large. 
 
-## Processed data versus raw data
+These data sizes can exceed the limits for some platforms that you otherwise 
+might use to share the reproducibility materials (e.g., GitHub, the journal's
+website, the author's university website). 
 
-A lot of health-related data can require extensive pre-processing to 
-extract the information you need to answer a scientific question. 
+Repositories built for research data curation might be better suited for storing
+very large datasets.
 
-It is helpful to include the original, raw data and the code used to get
-to the processed data. 
+## Research data repositories
 
-## Saving intermediate data
+One example is the ImmPort data repository, which is sponsored by US agencies 
+including the National Institute of Allergy and Infectious Diseases. 
+
+```{r out.width = "\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/immport.png")
+```
+
+## Extremely large data
+
+Some things to keep in mind about these repositories include: 
+
+- Some repositories might have APIs---data can be downloaded programatically 
+(from the code script)
+- Some repositories allow options to toggle private versus public 
+- Some repositories have suggested or required data models
+- Some repositories include platforms to work interactively with the data
+
+dkNET has a curated list of repositories for research data at
+https://dknet.org/rin/suggested-data-repositories
+
+
+## Data to include
 
 It can be useful to save intermediate versions of the data, as the code moves
 from raw data to the final figures, tables, and other results. Intermediate data
@@ -165,163 +202,30 @@ Note that this is in addition to the raw data.
 For these intermediate data sets, it's helpful if you save them in plain text
 formats (e.g., ".csv" or ".txt" file). 
 
-(Sandve et al.)
+## Data to include
 
-## Types of shared documents
-
-There are several formats that you can use to share the files that are needed
-to make an article reproducible. These include: 
-
-- A set of unstructured files
-- A compressed directory, providing both the files and their organization into 
-a directory. This can include an online repo maintained through a version
-control platform.
-- A container, including everything provided with a compressed directory
-as well as the code fo the software needed to run the code
-- An interactive platform, where the user can re-run code, as well as adapt
-and explore the code and data, through a web-based platform without needing
-to download the data
-
-## Compressed directory
-
-Full directory can be shared in one compressed file. 
-
-Includes not only all the files, but also maintains the organization of 
-those files into a directory. 
-
-## Compressed directory
+There's a nice discussion of why to include all intermediate results in 
+an article available through PLoS Computational Biology.
 
 ```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/github_reproducible_repo.png")
+knitr::include_graphics("figures/ten_simple_comp_research.png")
 ```
 
-## Compressed directory
 
-There are advantages to solutions that let you share everything as a directory: 
+## Sharing code and environment information
 
-- Relative pathnames work in scripts (because directory structure is preserved)
-- If you set up your directory as an R Project, it's designed to be self-contained
-(can interact with other things in the directory but doesn't rely on the computer's
-file directory outside of that)
+Usually, you will not have any problems with the code and environmental 
+information being sensitive or extremely large, as with the research data. 
 
-## Container
+However, there are some other things you should consider as you aim to 
+share code to improve the computational reproducbility of a paper. 
 
-```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/docker.png")
-```
-
-## Container
-
-Includes all files and directory organization. Also includes all software
-needed to run code (including operating system?). 
-
-Downsides: 
-
-- Can be very, very large
-- Can be somewhat of a black box, in terms of dissecting what's in the container
-- Can be hard to adapt parts for new tasks (often relies on code that might
-be out of date)
-
-## Considering containers
-
-Containers can get very large---stores not just info on the versions of each 
-piece of software used, but full source code (?)
-
-Works somewhat like a black box---harder for users to explore, change, adapt
-
-Can be useful, though, if using a large collection of different open-source
-software (command line tools, R, Python, etc., all in the same pipeline)
-
-## Interactive platform
-
-Not only shares the data and code, but allows it to be explores (e.g., change
-and test code) on the platform. 
-
-- NSF Disaster data platform
-- Galaxy?
-- Immunoport?
-
-## GitHub as a method for reproducible papers
-
-There are advantages and disadvantages to each method. However, if you 
-are new to making papers computationally reproducible, sharing through 
-GitHub or a similar platform might be a good place to start. 
-
-## GitHub as a method for reproducible papers
-
-- Allows you to set up the online copy of the project directory while
-you're working on the project
-- This can facilitate collaborative work on the project, as well as 
-provide a form of backup as you work
-- You can toggle the GitHub repo from private while you work on your project
-to public once you submit it for publication
-- This system is widely used, so there are many resources available to 
-help you navigate it
-
-## Leveraging a sharing system before you publish
-
-Some of these methods are platforms that you can use before you publish, and they 
-can help you work on code-heavy projects within your team. GitHub is one example, 
-but some agency-funded platforms now combine repositories with workspaces for coding. 
-
-For GitHub (and some of the agency-funded platforms), you can toggle between having
-your data and code be public or private. This allows you to work privately before you 
-publish, but then switch the repository to public when you publish the paper. 
-
-This can be much easier than trying to figure out how to post everything after publication.
-It also provides some helpful tools as you work on the paper.
-
-## GitHub as a method for reproducible papers
-
-Resources for git and GitHub with R and RStudio: 
-
-- [Jenny Bryan's webpage]
-- [something in R for data science?]
-- [something on RStudio stie]
-
-## Versions of software
-
-R base code changes from one version to another. 
-
-The code within packages can change even more. 
-
-Seems to be a particular source of difficulty in reproducing for work that 
-involves Bioconductor packages.
-
-## Versions used in original analysis
-
-You can record the information on all versions of the R software you 
-used in your analysis (base R and packages). 
-
-`session_info` from `devtools` (or `sessionInfo` from base R)
-
-Include this as a line in an RMarkdown file (often at the end), and it will
-print out the information on versions. 
-
-## Versions used in original analysis
-
-Help user recreate the "environment" that code ran in originally
-
-If you have version numbers, you could do it by hand (all old versions of
-CRAN packages, for example, are archived and avaiable for you to install, 
-although it takes a bit more work that installing the current version of 
-the package).
-
-[Packrat alternatives---renv]
-
-## Deprecated functions
-
-Future-proof your code (or at least make it robust for longer)
-
-```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/superceded.png")
-```
-
-## Deprecated functions
-
-```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/deprecated.png")
-```
+- The code will not work correctly if you use absolute rather than 
+relative pathnames for files.
+- The code might not work correctly if it is run on software with a different
+version.
+- The code will not, unless you take appropriate steps, recreate the same results if some of the steps in 
+the code use random number generation.
 
 ## Absolute versus relative pathnames
 
@@ -338,41 +242,205 @@ read_csv("data/my_data.csv")
 Which will be robust when someone else tries to run the code on their own computer?
 
 
-## Reproducing randomness
+## Versions of software
 
-[Dice, roulette wheel]
+When you run R code, your computer not only runs the code that you wrote, but 
+also code within your installation of base R as well as code from packages that 
+you have installed. 
 
-## Reproducing randomness
+You code essentially is built on top of these other pieces
+of code. 
+
+At an even deeper level, your computer is also using code from its 
+operating system to execute your R code script. 
+
+## Versions of software
+
+All of these pieces of software are evolving. When you install a new version of any 
+of these pieces of software, it will change the environment in which your R code
+runs. 
+
+Similarly, if someone else tries to run your code, it may fail if they have
+a different version of one or more of these pieces of software. 
+
+## Versions of software
+
+There is a gradient in how quickly different pieces of software evolve (in terms
+of updates that affect the execution of R code). Code for your operating system 
+and base R tend to evolve more slowly (in terms of things that affect R code), 
+while package extensions to R tend to change more quickly. 
+
+Some R package projects are in stages of significant evolution. Two types of R
+packages which I've repeatedly seen introduce reproducibility issues based on the
+package version are the tidyverse suite of packages and the Bioconductor collection
+of packages. 
+
+## Versions used in original analysis
+
+There are a few approaches you can take to address this issue. Your aim is to provide
+the user with enough information that they can recreate the environment you had
+when you applied the code to the data to generate the paper's results. 
+
+- Provide an in-depth description of the versions of software used when running the 
+paper's analysis
+- Help the user recreate the original environment
+- Save and share the full environment
+
+
+
+## Providing session information when running code
+
+The simplest was to provide environment information is to share the versions of 
+all software that was used when the paper's analysis was conducted. 
+
+Most open-source software will archive older versions. A user can obtain an 
+older version of the software from these archives and install it on R. Here's an 
+example of how to find old sources on CRAN: 
 
 ```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/old_sources.png")
+```
+
+This approach may not work for proprietary software (e.g., SAS, MATLAB), if they 
+do not make prior software versions available.
+
+## Providing session information when running code
+
+R has some functions that will print information about the software in its working
+environment, including the names and versions of all loaded packages. 
+
+These functions include `sessionInfo` from base R and `session_info` from `devtools`. 
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/sessionInfo.png")
+```
+
+## Providing session information from running code
+
+You can include a call to `sessionInfo` or `session_info` at the end of an 
+RMarkdown document. 
+
+This will print out all the information for the environment in which the RMarkdown 
+file was rendered, including: 
+
+- The version of base R
+- The platform (this provides information about the operating system and its version)
+- Versions of other packages of routines (e.g., LAPACK for FORTRAN)
+- Attached and loaded packages, as well as the version of each
+
+## Recreating the original environment 
+
+When you record the session information, it still leaves a lot of work on a 
+later user to find and install all the old versions of packages. 
+
+To alleviate this, there are some R packages that automate part of the 
+process. These help the user recreate the environment that code ran in originally. 
+In particular, they can help when a user wants to recreate the environments 
+for several different projects on one computer, with different software versions
+for each project. 
+
+## Recreating the original environment 
+
+The `renv` package is one of these packages that helps automating the process
+of recreating an environment. It has extensive help documentation online: 
+
+```{r out.width = "0.7\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/renv_package.png")
+```
+
+## Saving and sharing the environment
+
+A number of researchers take the approach of saving and sharing the 
+environment in which the code originally ran. One approach is to use a container
+(e.g., a Docker container).
+
+```{r out.width = "\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/docker.png")
+```
+
+## Container
+
+A container includes all files and directory organization. Also includes the 
+software needed to run code. It does not include all the code for 
+the operating system, but it does provide information to help recreate that
+part of the environment.
+
+This set-up allows the user to rerun the analysis *in its original environment* by 
+running it within the container.
+
+## Container
+
+Downsides: 
+
+- File size of container is often large
+- Higher threshold at present for both creating and using containers with R code 
+versus scripts paired with `renv`
+- Can be somewhat of a black box, in terms of dissecting what's in the container
+- Can be hard to adapt parts for new tasks (often relies on code that might
+be out of date)
+
+## Future-proof your code
+
+You can also take some steps to try to avoid or delay problems that are created as 
+the packages that the code depends on evolves. 
+
+One is to try to avoid using superseded or deprecated functions in your code. 
+
+These are functions where an improved version exists, with plans that the new version
+will become the default. 
+
+A function that is **superseded** will be maintained, but 
+won't be a key part of the evolving package (in particular, it won't receive any 
+new updates, only enough changes to still work). 
+
+A function that is **deprecated** will eventually be removed from the package, and
+a replacement is already available and preferred. 
+
+## Future-proof your code
+
+You can find often find information about deprecation in the helpfiles for a file. 
+
+```{r out.width = "0.8\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/superceded.png")
+```
+
+```{r out.width = "0.8\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/deprecated.png")
+```
+
+## Reproducing randomness
+
+Many statistical methods require randomization, implemented through the generation of 
+random numbers. 
+
+```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/random_digits.jpeg")
 ```
 
 ## Reproducing randomness
 
-```{r out.width = "\\textwidth", echo = FALSE}
+Your code might be using random number generation if you: 
+
+- are sampling
+- are using Monte Carlo methods / simulations
+- are doing Bayesian statistics
+
+
+## Reproducing randomness
+
+There are ways to generate truly random numbers:
+
+```{r out.width = "\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/lava_lamps.jpeg")
 ```
 
 ## Reproducing randomness
 
-pseudorandom number generator
+However, computers typically use a pseudorandom number generator. 
 
-## Reproducing randomness
-
-You might be using random numbers if you: 
-
-- are sampling
-- are using the Monte Carlo method / simulations
-- are doing Bayesian statistics
-
-## Reproducing randomness
-
-Setting seeds when code includes random number generation
-
-Seed can be any integer
-
-Pseudorandom number generator---depends on an initial value (the seed)
+For R's random number generators, you can force the same random numbers each 
+time you run a piece of code by setting something called a "seed" before 
+any function calls that involve random number generation.
 
 ## Reproducing randomness
 
@@ -386,8 +454,8 @@ sample(1:5)
 
 ## Reproducing randomness
 
-If you set the same seed each time before you run that code, you will get the same
-"random" results:
+If you set the same seed each time before you run that code, on the other hand, you will get the same
+"random" results each time you generate random numbers:
 
 ```{r}
 set.seed(100)
@@ -396,31 +464,3 @@ sample(1:5)
 set.seed(100)
 sample(1:5)
 ```
-
-## Reproducing randomness
-
-```{r}
-set.seed(100)
-sample(1:5)
-
-sample(1:5)
-```
-
-## RMarkdown for journal articles
-
-## rticles templates
-
-## How to collaborate when using RMarkdown
-
-Guidelines: 
-
-- Be sure even treats the output (pdf, HTML, Word) as read-only. Only make edits
-to the RMarkdown file
-- If using git and GitHub may help to exclude the output file from tracking
-(e.g., include in .gitignore)
-
-Platforms: 
-
-- GitHub 
-- Overleaf?
-
