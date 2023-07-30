@@ -1,5 +1,5 @@
 ---
-title: "Lecture 2"
+title: "Functional programming"
 author: "Brooke Anderson"
 output: beamer_presentation
 ---
@@ -21,7 +21,7 @@ same analysis with all of them.
 In this scenario, your first draft of code might include a lot of repeated code, 
 places where you've cut-and-pasted, like: 
 
-```{r out.width = "0.6\\textwidth", fig.align = "center", echo = FALSE}
+```{r out.width = "0.7\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/repeated_code.png")
 ```
 
@@ -48,17 +48,30 @@ subtask within the code script you develop for your data.
 
 ## Encapsulating an idea with a function
 
+You can think of the lines in a code script as a series of gears that work together
+to generate the final product, with the output of one feeding into the input of the
+next.
+
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/code_gears.png")
 ```
 
 ## Encapsulating an idea with a function
 
+When you write a function, it's as if you enclose a series of these gears in 
+a box. The gears at the start and end of the series will be exposed to the rest
+of the code, but the gears in between will be enclosed in the box. 
+
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/code_gears2.png")
 ```
 
 ## Encapsulating an idea with a function
+
+Once you've enclosed the interior gears, you can think about the function in 
+terms of the task it does. When you apply the function, you can focus on this more
+abstract idea, while you can work with the details of the code when you edit the 
+code that defines the function.
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/code_gears3.png")
@@ -109,14 +122,9 @@ out of the function?
 knitr::include_graphics("figures/anatomy_api.png")
 ```
 
-## Anatomy of a function 
-
 Inputs are set within parentheses in the `function` call, while the 
 output is specified by `return`. 
 
-```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/anatomy_api.png")
-```
 
 ## Anatomy of a function
 
@@ -137,7 +145,7 @@ within the function runs.
 The "innards" of the function are the code that is run each time you call the function.
 
 ```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/anatomy_api.png")
+knitr::include_graphics("figures/anatomy_innards.png")
 ```
 
 ## Anatomy of a function
@@ -155,7 +163,7 @@ curly brackets (`{` to start the code for the function, `}` to end it).
 ## Writing functions
 
 Functions can be simple, just encapsulating a single, simple (at least to 
-describe) step. 
+simple to describe) step. 
 
 - `mutate`: Change or add a column in a dataframe
 - `rename`: Rename a column
@@ -176,11 +184,15 @@ knitr::include_graphics("figures/example_function_goal.png")
 
 ## How to name a function
 
-- Verb
-- Self-documenting: name means something
+The first step is to pick a name for the function.
+
+Some general tips for naming a function include: 
+
+- Make the name a verb
+- Make the name self-documenting (so it means something related to what the function does)
 - Use the same prefix for similar functions (tab completion can jog your memory)
-- Similar to naming objects: Not too long or too short, all lowercase, 
-use underscores to help make them more readable
+- Make sure it's not too long or too short, all lowercase, 
+use underscores to help make them more readable 
 
 ## Identify relevant code in script
 
@@ -213,6 +225,9 @@ man_animal_resp <- man_animal_resp %>%
                             label = TRUE, 
                             abbr = FALSE))
 ```
+
+Next identify the section of code that you want 
+to encapsulate in a function.
 
 If we look at the final script from the last lab, we can find the section
 where we calculate the number of response calls per month: 
@@ -257,10 +272,17 @@ the script ended up in the function:
 knitr::include_graphics("figures/function_elements.png")
 ```
 
+## Edit the function
+
+We now have a working function. 
+
+Next, we'll want to make some edits to it to make it easier to understand, 
+debug, and use to reproduce analysis.
+
 ## Edit to improve object names
 
-The input and output object names were specific to our code script. We can 
-edit the function to use better names. 
+We can edit the function to use better names. Originally, the input and output
+object names were specific to our code script.
 
 We'll change the input parameter `man_animal_resp` to `call_data` and the output
 object from `monthly_man_animal_response` to `monthly_calls`:
@@ -277,9 +299,93 @@ count_monthly_calls <- function(call_data) {
 
 ## How to name function arguments
 
-- Optional versus required arguments
-- Use common parameter names (easier for user to figure out what each does
+Here are a couple of things to keep in mind as you decide the names to 
+use for function arguments and define them in the function code: 
+
+- Arguments can be either optional (`n = 6`) or required (`.data`)
+- Consider using common parameter names (easier for user to figure out what each does
 and to remember them)
+
+## Adding package::function notation
+
+Next, we'll update the function to add something that will make
+the function more robust when you re-use it or others use it. 
+
+Often, within function code you'll use functions from packages rather
+than just base R. There are a few ways to call those functions. In your
+scripts, you probably load the library and the call the functions in it
+by name, doing something like: 
+
+```{r echo = TRUE, eval = FALSE}
+library(pkg)
+pkg_function(foo)
+```
+
+## Adding package::function notation
+
+However, you can use a different notation to call a function from a package: 
+
+```{r echo = TRUE, eval = FALSE}
+pkg::pkg_function(foo)
+```
+
+When you use this method, you must have the package installed, but you don't 
+need to have it loaded in your current session. 
+
+Also, you can guarantee with package the code gets the function from. If you're
+using a function that's included in many packages, this notation will guarantee
+which one R uses.
+
+## Adding package::function notation
+
+Let's make that change to our function. The `count` function comes from the 
+`dplyr` package, so we can use the notation `dplyr::count`. 
+
+```{r echo = TRUE}
+count_monthly_calls <- function(call_data) {
+  
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month)
+  
+  return(monthly_calls)
+}
+```
+
+## Adding help documentation
+
+Since you are using the function to encapsulate and extract a subtask, you will find
+it helpful to include some documentation to describe the details of the function, and
+you can include that in the code where you define the function. 
+
+Documentation you might want to include: 
+
+- Describe what the function is meant to do
+- Document each parameter: What it does, what type of value it can take
+- Describe what the output from the function will be
+- Consider adding an example of how to use it (ideally with a dataset
+that comes with R or an R package)
+
+## Adding help documentation
+
+Here's an example of documentation we might want to add to the code that defines
+our function:
+
+```{r echo = TRUE}
+# This funtion inputs a dataframe of animal call 
+# response data (`call_data`) and returns a 
+# dataframe with the counts of animal calls per 
+# month. The input dataframe should include a column
+# named `call_month` with the month of the call.
+# To run this function, you will need to have the 
+# following packages installed: dplyr
+count_monthly_calls <- function(call_data) {
+  
+  monthly_calls <- call_data %>% 
+    dplyr::count(.wt = call_month)
+  
+  return(monthly_calls)
+}
+```
 
 ## How to check the function code as you build it
 
@@ -306,83 +412,11 @@ monthly_calls <- call_data %>%
 head(monthly_calls, 2)
 ```
 
-## Adding package::function notation
-
-Next, we'll update the function to add something that will make
-the function more robust when you re-use it or others use it. 
-
-Often, within function code you'll use functions from packages rather
-than just base R. There are a few ways to call those functions. In your
-scripts, you probably load the library and the call the functions in it
-by name, doing something like: 
-
-```{r echo = TRUE, eval = FALSE}
-library(pkg)
-pkg_function(foo)
-```
-
-## Adding package::function notation
-
-However, you can use a different notation to call a function from a package: 
-
-```{r echo = TRUE, eval = FALSE}
-pkg::pkg_function(foo)
-```
-
-When you use this method, you must have the package installed, but you don't 
-need to have it loaded in your current session. Also, you can guarantee with 
-package the code gets the function from. If you're using a function that's 
-included in many packages, this notation will guarantee which one R uses. 
-
-## Adding package::function notation
-
-Let's make that change to our function. The `count` function comes from the 
-`dplyr` package, so we can use the notation `dplyr::count`: 
-
-```{r echo = TRUE}
-count_monthly_calls <- function(call_data) {
-  
-  monthly_calls <- call_data %>% 
-    dplyr::count(.wt = call_month)
-  
-  return(monthly_calls)
-}
-```
-
-## Adding help documentation
-
-- Describe what the function is meant to do
-- Document each parameter: What it does, what type of value it can take
-- Describe what the output from the function will be
-- Consider adding an example of how to use it (ideally with a dataset
-that comes with R or an R package)
-
-Notice that this is getting similar to a helpfile for a function 
-in a package. 
-
-## Adding help documentation
-
-Here's an example of documentation we might want to add to the code that defines
-our function:
-
-```{r echo = TRUE}
-# This funtion inputs a dataframe of animal call 
-# response data (`call_data`) and returns a 
-# dataframe with the counts of animal calls per 
-# month. The input dataframe should include a column
-# named `call_month` with the month of the call.
-# To run this function, you will need to have the 
-# following packages installed: dplyr
-count_monthly_calls <- function(call_data) {
-  
-  monthly_calls <- call_data %>% 
-    dplyr::count(.wt = call_month)
-  
-  return(monthly_calls)
-}
-```
 
 ## Improving the function
+
+In the lab, we'll work with a version of the function that we've improved, 
+to make sure the output includes all months, even those with zero animal response calls.
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/example_function_improved.png")
@@ -390,41 +424,47 @@ knitr::include_graphics("figures/example_function_improved.png")
 
 ## Improving the function
 
+Here is our first version of that improved function code. In a later lab, we'll see
+that this is a bit of a "kluge", and we'll work to improve this function even more. 
+
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/improved_function.png")
-```
-
-
-## Example: Implementing an xkcd comic
-
-```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/random_number.png")
-```
-
-## Example: Implementing an xkcd comic
-
-```{r echo = TRUE}
-get_random_number <- function(dice_roll = 4){
-  
-  random_number <- dice_roll 
-  
-  return(random_number)
-}
 ```
 
 # Applying functions with `purrr`
 
 ## Mapping a function across values in a list / vector
 
+Even with your own functions, you'll find times when you're repeating code. 
+For example, if you write a function to read in data from a file in a certain 
+format, and you have many files in that format, you may end up with code like this: 
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/repeated_code2.png")
+```
+
 ## Mapping a function across values in a list / vector
+
+The `purrr` package has a collection of `map` functions that allow you to 
+apply a function to all the elements of list or vector at once. 
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/purrr_map.jpg")
+```
+
+## Mapping a function across values in a list / vector
+
+Once you've mastered this approach, you'll feel similar to Mickey Mouse when he
+has dozens of brooms working for him in Fantasia (before things get out of control).
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/fantasia_brooms.png")
 ```
 
-## Nesting and mapping
-
 ## Some applications of mapping
+
+There are many applications of the `map` functions from `purrr`. Two that I see 
+often among researchers from a variety of fields are: 
 
 - Reading in lots of files from a directory and joining them into a single 
 dataframe: Applying the function along a vector of filenames
@@ -434,7 +474,13 @@ for each group
 
 ## Using `purrr` for functional programming
 
-```{r out.width = "\\textwidth", echo = FALSE}
+When you use these `map` functions to apply a function efficiently, it can feel at first
+like playing three-dimensional chess. 
+
+```{r out.width = "0.7\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/StarTrekChess.jpeg")
 ```
+
+The best way to start to learn this approach is to try it out with some real 
+applications, which we'll do in a later lab. 
 
