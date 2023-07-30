@@ -36,28 +36,38 @@ you about your own example as we circulate during the lab.
 ## Explore a peer-reviewed paper with elements of computational reproducibility
 
 If you chose the main option for this lab, you will be exploring a published peer-reviewed
-paper. In this paper, the authors have taken many good steps to make it more 
+paper. The paper is: 
+
+> Masselot P, et al. Differential mortality risks associated to PM2.5 components: a multi-country multi-city study. Epidemiology. 2022.
+
+There are a few links you'll want to have available as you explore this paper. First, 
+the journal that published the paper has webpage for the paper at 
+https://journals.lww.com/epidem/Abstract/2022/03000/Differential_Mortality_Risks_Associated_With_PM2_5.3.aspx. Next, the authors posted materials for the paper through a GitHub 
+repository, which is available at https://github.com/PierreMasselot/Paper--2022--Epidemiology--PM2.5_components/.
+Finally, the senior author of the paper has posted some information about it through 
+his website at http://www.ag-myresearch.com/2022_masselot_epidemiol.html. 
+
+In this paper, the authors have taken many good steps to make it more 
 computationally reproducible (if we think of reputability along a spectrum rather than 
-being binary).  
+being binary). We're asking you to explore the materials that the authors made
+available for this paper, assessing how they've made it more reproducible and also
+areas where it's not yet fully computationally reproducible.
 
-Masselot P, et al. Differential mortality risks associated to PM2.5 components: a multi-country multi-city study. Epidemiology. 2022.
+We have a series of prompts for you to address as you explore this paper. These
+prompts are open-ended. There aren't correct answers. Instead, they're meant to
+give you some guidance as you explore this paper and the materials that are
+provided with it. We look forward to discussing your assessment with you as we
+circulate during this lab.
 
-Link to journal article on journal site: https://journals.lww.com/epidem/Abstract/2022/03000/Differential_Mortality_Risks_Associated_With_PM2_5.3.aspx
-
-Link to GitHub repo: https://github.com/PierreMasselot/Paper--2022--Epidemiology--PM2.5_components/blob/master/.gitignore
-
-We have a series of prompts for you to address as you explore this paper and how it has
-taken steps to be more computationally reproducible. These prompts are open-ended. There 
-aren't correct answers. Instead, they're meant to give you some guidance as you explore 
-this paper and the materials that are provided with it. We look forward to discussing your
-assessment with you as we circulate during this lab. 
-
+- Go to the journal's webpage for the paper. See if you can find the materials that 
+help make this paper more reproducible. Are there barriers that you run into when you
+try to find these materials through the journal's page?
 - The authors have shared materials related to this paper through a GitHub repo. Investigate
-that repo. Which materials have they provided among those necessary for a paper to be 
-fully reproducible (data, code to generate the published results from those data, enough 
+that repo. As a reminder, the materials that are necessary for a paper to be 
+fully reproducible include the data, code to generate the published results from those data, enough 
 information about the environment to recreate elements of the environment that may affect
-the way the code runs)?
-- For any elements that the authors failed to include, why do you think they chose not to 
+the way the code runs. Which of these have the authors included?
+- For any elements that the authors failed to include, why do you think they did not to 
 include them?
 - There are several code scripts in this repo. Do the authors do anything to help you 
 navigate them (e.g., figure out what order to use them, figure out what each script does)?
@@ -72,11 +82,12 @@ was published?
 If you'd like to explore another paper that is even more reproducible, you can explore another
 by some of the same authors: 
 
-Link to journal article: https://journals.lww.com/epidem/FullText/2019/05000/Hands_on_Tutorial_on_a_Modeling_Framework_for.3.aspx?casa_token=axYfBZ2mB5sAAAAA:N9j0zeu3vRJEBWNfICzlfRRvPTHxk5PkMrq7DcgjMrlSXi9P3q78zCKLfe4Ja0Uj7lFliBAyeGU9EjaaS1xfeUFY
+> Vicedo-Cabrera AM, Sera F, Gasparrini A. Hands-on tutorial on a modeling framework for projections of climate change impacts on health. Epidemiology. 2019.
 
-Link to article on author's website: http://www.ag-myresearch.com/2019_vicedo-cabrera_epidem.html
+The link to the journal's webpage for the article is https://journals.lww.com/epidem/FullText/2019/05000/Hands_on_Tutorial_on_a_Modeling_Framework_for.3.aspx?casa_token=GYWIHllg5PgAAAAA:py9EFuOzYj_fxf_l4mHiI4iXQ_2yw7F6KvLe6XRKzBiiuHyiP91zF0b13TVIisiTtFXLaJ4GsHzXR45BZUjZ030r. The link to a GitHub repository with materials to 
+aid the paper's reproducibility is available at http://www.ag-myresearch.com/2019_vicedo-cabrera_epidem.html. The author also includes information about the paper on his website at http://www.ag-myresearch.com/2019_vicedo-cabrera_epidem.html.
 
-Link to updated GitHub repo with paper's code and data: https://github.com/gasparrini/2019_vicedo-cabrera_Epidem_Rcodedata 
+Here are some prompts to help you explore this paper: 
 
 - Take a look at the journal website that is linked above. See if you can discover from 
 this webpage how to find and explore the code and data. This one is a bit hard to find, 
@@ -86,8 +97,8 @@ updated version of the code and data to a GitHub repo. Do you find it easier to
 explore and download the data from one source or the other (the journal's website 
 versus the GitHub repo)? Why do you think the authors chose to include a GitHub repo
 if the code and data were posted as a supplement on the journal's webpage?
-- How are the code and data organized? Do you feel comfortable navigating to find the
-datasets versus the code? For the code, there are several separate R code scripts. Have the authors done anything that helps you figure out where to start?
+- How are the code and data organized? Do you feel comfortable navigating which files are 
+datasets versus which are code? For the code, there are several R code scripts. Have the authors done anything that helps you figure out where to start?
 - To be fully computationally reproducible, a paper should include enough information about the
 environment in which the code was applied to the data to allow someone else to recreate
 that environment to the extent necessary to get the same results. With R code, that often 
