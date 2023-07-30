@@ -464,4 +464,12 @@ monthly_man_animal_response <- count_monthly_calls(man_animal_resp)
 monthly_man_animal_response
 ```
 
+# Session info
+
+Here is information about the session under which the lab document was 
+run: 
+
+```{r eval = TRUE}
+sessionInfo()
+```
 

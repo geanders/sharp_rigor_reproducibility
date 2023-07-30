@@ -1,7 +1,6 @@
 ---
-title: "Lab 3---Finding, Dissectingm and Adapting Code"
+title: "Lab 3---Finding, Dissecting and Adapting Code"
 author: "Brooke Anderson"
-date: "2023-07-11"
 output: html_document
 ---
 
@@ -947,7 +946,14 @@ monthly_man_animal_response %>%
 ```
 
 
+# Session info
 
+Here is information about the session under which the lab document was 
+run: 
+
+```{r eval = TRUE}
+sessionInfo()
+```
 
 
 

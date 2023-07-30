@@ -1,7 +1,6 @@
 ---
 title: "Lab---Developing a set of core tools"
 author: "Brooke Anderson"
-date: "2023-07-23"
 output: html_document
 ---
 
@@ -447,3 +446,11 @@ work with the `stringr` cheatsheet and other resources if you haven't done a tas
 like this before, but is a very powerful tool to have available. 
 - Identify all rows where the `location` column is listed as `"N/A"`, `"N/a"`, `"n/A"`, or `"n/a"`. Convert these values to the "NA" that R recognizes as a missing value. 
 
+# Session info
+
+Here is information about the session under which the lab document was 
+run: 
+
+```{r eval = TRUE}
+sessionInfo()
+```

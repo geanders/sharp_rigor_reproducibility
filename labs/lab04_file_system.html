@@ -11,7 +11,6 @@
 
 <meta name="author" content="Brooke Anderson" />
 
-<meta name="date" content="2023-07-23" />
 
 <title>Lab—Leveraging File System Structure</title>
 
@@ -352,7 +351,6 @@ display: none;
 
 <h1 class="title toc-ignore">Lab—Leveraging File System Structure</h1>
 <h4 class="author">Brooke Anderson</h4>
-<h4 class="date">2023-07-23</h4>
 
 </div>
 
@@ -949,10 +947,10 @@ look like:</p>
   pull(filename) %&gt;% 
   sample(5)</code></pre>
 <pre><code>## [1] &quot;../data/Staten_Island_animal_response.csv&quot;
-## [2] &quot;../data/Staten_Island_animal_response.csv&quot;
-## [3] &quot;../data/Brooklyn_animal_response.csv&quot;     
-## [4] &quot;../data/Brooklyn_animal_response.csv&quot;     
-## [5] &quot;../data/Manhattan_animal_response.csv&quot;</code></pre>
+## [2] &quot;../data/Brooklyn_animal_response.csv&quot;     
+## [3] &quot;../data/Bronx_animal_response.csv&quot;        
+## [4] &quot;../data/Queens_animal_response.csv&quot;       
+## [5] &quot;../data/Queens_animal_response.csv&quot;</code></pre>
 <p>They follow a similar pattern: the borough name is between “../data/”
 and “_animal_response.csv”. There are a few ways we could tackle
 extracting the borough names. One of the simplest (although probably not
@@ -973,9 +971,9 @@ ny_calls &lt;- ny_calls %&gt;%
 <pre class="r"><code>ny_calls %&gt;% 
   pull(borough) %&gt;% 
   sample(10)</code></pre>
-<pre><code>##  [1] &quot;Manhattan&quot;     &quot;Manhattan&quot;     &quot;Manhattan&quot;     &quot;Manhattan&quot;    
-##  [5] &quot;Manhattan&quot;     &quot;Staten Island&quot; &quot;Brooklyn&quot;      &quot;Queens&quot;       
-##  [9] &quot;Staten Island&quot; &quot;Bronx&quot;</code></pre>
+<pre><code>##  [1] &quot;Staten Island&quot; &quot;Brooklyn&quot;      &quot;Manhattan&quot;     &quot;Staten Island&quot;
+##  [5] &quot;Queens&quot;        &quot;Manhattan&quot;     &quot;Brooklyn&quot;      &quot;Queens&quot;       
+##  [9] &quot;Manhattan&quot;     &quot;Queens&quot;</code></pre>
 <p>Now we can proceed with the code to analyze the full dataset. With
 these changes, our full script would look like this:</p>
 <pre class="r"><code># Load required libraries ##############################################################
@@ -1071,6 +1069,46 @@ a change that applied to the data from all boroughs in a single place,
 rather than needing to make sure that, when we want to make a change in
 the code, we fix the code every where we’ve copy-and-pasted it
 throughout the script.</p>
+</div>
+<div id="session-info" class="section level1">
+<h1>Session info</h1>
+<p>Here is information about the session under which the lab document
+was run:</p>
+<pre class="r"><code>sessionInfo()</code></pre>
+<pre><code>## R version 4.3.0 (2023-04-21)
+## Platform: x86_64-apple-darwin20 (64-bit)
+## Running under: macOS Monterey 12.6.5
+## 
+## Matrix products: default
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+## 
+## locale:
+## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
+## 
+## time zone: America/New_York
+## tzcode source: internal
+## 
+## attached base packages:
+## [1] stats     graphics  grDevices utils     datasets  methods   base     
+## 
+## other attached packages:
+## [1] stringr_1.5.0 ggplot2_3.4.2 purrr_1.0.1   tidyr_1.3.0   dplyr_1.1.2  
+## 
+## loaded via a namespace (and not attached):
+##  [1] sass_0.4.7        utf8_1.2.3        generics_0.1.3    stringi_1.7.12   
+##  [5] hms_1.1.3         digest_0.6.33     magrittr_2.0.3    evaluate_0.21    
+##  [9] grid_4.3.0        timechange_0.2.0  fastmap_1.1.1     jsonlite_1.8.7   
+## [13] fansi_1.0.4       scales_1.2.1      jquerylib_0.1.4   cli_3.6.1        
+## [17] rlang_1.1.1       crayon_1.5.2      bit64_4.0.5       munsell_0.5.0    
+## [21] withr_2.5.0       cachem_1.0.8      yaml_2.3.7        tools_4.3.0      
+## [25] parallel_4.3.0    tzdb_0.4.0        colorspace_2.1-0  vctrs_0.6.3      
+## [29] R6_2.5.1          lifecycle_1.0.3   lubridate_1.9.2   snakecase_0.11.0 
+## [33] bit_4.0.5         vroom_1.6.3       janitor_2.2.0     pkgconfig_2.0.3  
+## [37] pillar_1.9.0      bslib_0.5.0       gtable_0.3.3      glue_1.6.2       
+## [41] highr_0.10        xfun_0.39         tibble_3.2.1      tidyselect_1.2.0 
+## [45] rstudioapi_0.15.0 knitr_1.43        farver_2.1.1      htmltools_0.5.5  
+## [49] labeling_0.4.2    rmarkdown_2.23    readr_2.1.4       compiler_4.3.0</code></pre>
 </div>
 
 

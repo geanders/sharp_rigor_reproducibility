@@ -1,7 +1,6 @@
 ---
 title: "Lab---Leveraging File System Structure"
 author: "Brooke Anderson"
-date: "2023-07-23"
 output: html_document
 ---
 
@@ -542,3 +541,11 @@ applied to the data from all boroughs in a single place, rather than needing to
 make sure that, when we want to make a change in the code, we fix the code every
 where we've copy-and-pasted it throughout the script.
 
+# Session info
+
+Here is information about the session under which the lab document was 
+run: 
+
+```{r eval = TRUE}
+sessionInfo()
+```
