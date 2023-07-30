@@ -8,9 +8,11 @@ output: beamer_presentation
 knitr::opts_chunk$set(echo = FALSE, message = FALSE, warning = FALSE)
 ```
 
-## Code no one can read
+## Reproducibility challenge
 
-```{r out.width = "\\textwidth", echo = FALSE}
+One key challenge to reproducibility is when the code is hard to figure out.
+
+```{r out.width = "0.5\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/code_noone_can_read.jpeg")
 ```
 
@@ -19,6 +21,9 @@ knitr::include_graphics("figures/code_noone_can_read.jpeg")
 ```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/writing_editing.png")
 ```
+
+To address this issue, it's critical that you remember that you can edit
+code in a separate step than when you initially write the code. 
 
 ## Write your code fast...
 
@@ -43,7 +48,7 @@ knitr::include_graphics("figures/dazzle_camoflage.jpeg")
 
 ## Editing code
 
-```{r out.width = "0.8\\textwidth", fig.align = "center", echo = FALSE}
+```{r out.width = "0.7\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/code_lifespan.png")
 ```
 
@@ -54,7 +59,7 @@ xkcd Explained: https://www.explainxkcd.com/wiki/index.php/File:code_lifespan_2x
 In this lecture, we'll cover several steps you can take to edit your code. 
 These include: 
 
-- Change names to be good names
+- Improve names
 - Break up monolithic code
 - Remove dead-end code 
 - Add useful comments
@@ -79,15 +84,15 @@ knitr::include_graphics("figures/lymphocytes_zoom.png")
 If you use good names, it makes your code self-documenting---in other words, the
 name by itself gives the reader information about what the code is doing.
 
-Edit your code to have good names for, among others: 
+Edit your code to have good names for: 
 
 - objects (e.g., dataframes, vectors)
 - columns in dataframes
 - functions
 - files
 
-The [tidyverse style guide](https://style.tidyverse.org/index.html) includes
-advice for naming things in R. 
+The tidyverse style guide includes
+advice for naming things in R: https://style.tidyverse.org/index.html
 
 ## Good names for objects
 
@@ -114,7 +119,7 @@ object names that:
 - Use only lowercase (e.g., `animal_calls` versus `Animal_calls`)
 - Use underscores to make words in object name easier to read (e.g., `animal_calls`
 rather than `animalcalls`)
-- not too short, not too long (although tab completion can help)
+- Make names that are not too short, not too long (although tab completion can help)
 - Use nouns for objects that are data containers
 
 ## Good names for columns
@@ -147,7 +152,7 @@ names. The `janitor` package has a function called `clean_names` that:
 
 ## Fixing column names
 
-Here's an example of a simple dataframw with bad column names:
+Here's an example of a simple dataframe with bad column names:
 
 ```{r}
 library(tibble)
@@ -161,7 +166,7 @@ df
 You can make a lot of improvements to the column names using `clean_names` from the
 `janitor` package:
 
-```{r clean_column_names}
+```{r clean_column_names, echo = TRUE}
 library(janitor)
 df <- clean_names(df)
 df
@@ -171,7 +176,7 @@ df
 
 You can finish with customized changes with `rename` from `dplyr`:
 
-```{r}
+```{r echo = TRUE}
 library(dplyr)
 df <- df %>% 
   rename(longer_name = column_with_long_name)
@@ -187,8 +192,6 @@ into separate blocks and clarify what each block does.
 Code that is easier to maintain and understand will often have 
 more white space and clearer structure. 
 
-[Cartoon view---code with structure versus code all in one piece]
-
 ## Break up monolithic code
 
 ```{r out.width = "\\textwidth", echo = FALSE}
@@ -203,16 +206,6 @@ knitr::include_graphics("figures/organized_code_script.jpg")
 
 ## Break up monolithic code
 
-- Identify sections of code that go together to solve a discrete 
-part of your overall task
-- Move calls to be near others doing the same subtask. For example, 
-move all library calls (and function definitions) to the top of the code script
-- Separate these sections using white space between sections ("Returns
-are free" in R!)
-- Used code comments to document each section
-
-## Break up monolithic code
-
 > "I can‘t start writing until I‘ve thought it through and can see it whole in my mind." 
 ---Robert Caro
 
@@ -222,8 +215,16 @@ knitr::include_graphics("figures/robert_caro.jpeg")
 
 ## Break up monolithic code
 
-Don't be afraid to split calls across lines. 
+- Identify sections of code that go together to solve a discrete 
+part of your overall task
+- Move calls to be near others doing the same subtask. For example, 
+move all library calls (and function definitions) to the top of the code script
+- Add code comments to document each section
 
+
+## Break up monolithic code
+
+Don't be afraid to split calls across lines. 
 In general, you should try to 
 keep each line of your code to 80 characters or fewer. 
 
@@ -249,21 +250,12 @@ One example is the `lintr` package:
 https://lintr.r-lib.org/
 
 
-## Breaking up monolithic code
 
-In RMarkdown files, separate code into more code chunks. 
-
-You may find it helpful to name these chunks (so you can find and fix bugs). 
-
-````{verbatim echo = TRUE}
-```{r clean_column_names}
-library(janitor)
-df <- clean_names(df)
-df
-```
-````
 
 ## Add useful comments
+
+The next step is to add useful comments describing each section of code.
+Keep in mind that some comments are more useful than others. 
 
 ```{r out.width = "\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/not_expected_to_understand.jpg")
@@ -283,6 +275,19 @@ df <- df %>%
   rename(new_name = old_name)
 ```
 
+## Breaking up monolithic code in RMarkdown
+
+In RMarkdown files, separate code into more code chunks. 
+
+You may find it helpful to name these chunks (so you can find and fix bugs). 
+
+````{verbatim echo = TRUE}
+```{r clean_column_names}
+library(janitor)
+df <- clean_names(df)
+df
+```
+````
 
 ## Edit out dead-ends
 
@@ -295,14 +300,52 @@ There are a few types of "dead-ends" in code. They include:
 
 ## Types of dead-ends: Interactive code
 
+As you develop your code, it is common that the script will include 
+function calls that you make to check your progress and explore your data. 
+
+Some examples of this type of dead-end code include: 
+
+```{r echo = TRUE, eval = FALSE}
+my_data
+summary(my_data)
+View(my_data)
+str(my_data)
+head(my_data$column_1)
+```
+
+## Types of dead-ends: Interactive code
+
+These typically aren't helpful once you've written and edited your code. 
+
+You can either plan to edit these out of your script or get in the habit of 
+running these from the console rather than writing them into the script.
+
 ## Types of dead-ends: Darlings
+
+The name of the other type of dead-end code comes from a famous writing quote.
 
 ```{r out.width = "\\textwidth", fig.align = "center", echo = FALSE}
 knitr::include_graphics("figures/murder_your_darlings.jpg")
 ```
 
-# Introduction to the labs
+## Types of dead-ends: Darlings
 
-## Introduction to the labs
+In writing, "darlings" are parts of the text that the writer loves and doesn't
+want to remove, but that should be edited out to improve the writing. 
 
-The rest of the workshop will alternate between lectures and labs. 
+One example is a paragraph that doesn't move the plot forward, but that the
+author loves because it has a clever turn of phrase that they worked on for a
+long time.
+
+## Types of dead-ends: Darlings
+
+In code, these dead-ends are pieces of code that you pursued but that didn't end
+up going anywhere. They might involve some very clever code, but they ultimately 
+aren't doing much to make progress on your text. 
+
+Often, coders will be reluctant to remove any code that they think might be useful 
+in the future, even if it's not at the moment. However, these clutter up your 
+script, and they send someone trying to understand the code on wild goose chases.
+
+
+
