@@ -1,5 +1,5 @@
 ---
-title: "Lecture 3"
+title: "Dissecting and Adapting Example Code"
 author: "Brooke Anderson"
 output: beamer_presentation
 ---
@@ -22,25 +22,32 @@ knitr::include_graphics("figures/copying_stackoverflow.jpeg")
 - Learn some Google search operators 
   + Quotation marks force a match to an exact term or phrase
   + A negative sign excludes a word, returning only matches that don't include that word
-- If you get an error message, Google it (take out anything specific to 
+- If you get an error message in R, Google it (take out anything specific to 
 your problem, like a filepath or object name)
 - Hone your search terms
-  + Continue to learn precise coding vocabulary
-  + Pay attention to the language used by top responders in forums like StackOverflow
+  + Continue to improve the precision of your coding vocabulary
+  + Pay attention to the language advanced coders use 
   + Refine your search terms based on what Google returns from your first search
 
 ## The art of Googling for code
 
-- Advanced Google searching, including search operators: https://support.google.com/websearch/answer/2466433?hl=en
-- 21 Tips and Tricks to Master the Art of Googling as a Developer: 
+There are a variety of tips that can help you improve your Googling. Some resources include:
+
+- **Advanced Google searching, including search operators**: https://support.google.com/websearch/answer/2466433?hl=en
+- **21 Tips and Tricks to Master the Art of Googling as a Developer**: 
 https://www.makeuseof.com/21-tips-and-tricks-to-master-the-art-of-googling-as-a-developer/
-- How to Google effectively as a developer: https://medium.com/@niamhpower/how-to-google-effectively-as-a-developer-4ebe363afe
-- Googling for code solutions can be tricky---here's how to get started: https://knightlab.northwestern.edu/2014/03/13/googling-for-code-solutions-can-be-tricky-heres-how-to-get-started/
+- **How to Google effectively as a developer**: https://medium.com/@niamhpower/how-to-google-effectively-as-a-developer-4ebe363afe
+- **Googling for code solutions can be tricky---here's how to get started**: https://knightlab.northwestern.edu/2014/03/13/googling-for-code-solutions-can-be-tricky-heres-how-to-get-started/
 
 ## Where you may find example code
 
+Once you have submitted a good Google search, you should be able to get some
+promising leads for most R coding tasks. 
+
+Some of the types of resources that may have example code include: 
+
 - Help forums: StackOverflow, Posit Community
-- Package documentation: vignettes, helpfiles, cheatsheets
+- Package documentation: vignettes, helpfiles (e.g., `?stringr`), cheatsheets
 - Blog posts (especially those written with blogdown)
 - AI: e.g., ChatGPT (https://openai.com/blog/chatgpt)
 
@@ -50,11 +57,17 @@ https://www.makeuseof.com/21-tips-and-tricks-to-master-the-art-of-googling-as-a-
 knitr::include_graphics("figures/cheatsheet.png")
 ```
 
-## Navigating helpfiles
+## 
 
-
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/helpfile.png")
+```
 
 ## Finding R packages
+
+If you are trying to do a specialized task, you may find that you need to 
+find a new R package with the appropriate algorithms. There are steps you can 
+take to identify and evaluate packages for specific tasks.
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/ten_simple_rules.png")
@@ -89,22 +102,16 @@ compare your versions to those used in the example
 - Make sure that you have the example data and it's being loaded or 
 set up correctly in R
 
-If it still won't run, you may have to work through it to find out
 
 ## Dissecting example code
+
+The next step is to go through the example carefully to make sure you 
+understand what it's doing. 
 
 - Run through code step-by-step. Take apart pipelines if necessary
 - For each step, what does input look like? What does output look like?
 - Make sure you understand why each function is being called and why 
 any arguments are being used
-
-## Dissecting example code
-
-Assess the code as you go: 
-
-- Why does it do each step?
-- If the steps are inputting and outputting the same thing (e.g., a 
-dataframe), how does that object change from before to after the call?
 
 ## Dissecting nested code
 
@@ -125,7 +132,7 @@ If you are trying to figure out a line of code with nested code, dissect
 it from the inside out. 
 
 Start by figuring out what the innermost function call is doing. For the 
-moment, ignore everything about the other code in which it's estimated. 
+moment, ignore everything except the nested function call. 
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/nested_inner.jpg")
@@ -134,7 +141,7 @@ knitr::include_graphics("figures/nested_inner.jpg")
 ## Dissecting nested code
 
 Once you have figured out the innermost function call, you can think of 
-that part of the code line as the output from that function call. 
+that part of the code line as its output. 
 
 Now you can proceed to figure out the outer function call.
 
@@ -152,19 +159,19 @@ my_data <- my_data %>%
   mutate(animal_species = fct(animal_species))
 ```
 
-## Dissecting piped code
-
 In this type of piped code, the output of one function call is sent directly 
 as input into the next function call. 
+
+## Dissecting piped code
 
 This type of code can be very clear and efficient in performing a series of
 simple steps. However, it's useful to have some strategies for how to dissect
 example code that is in a pipeline, as this isn't always as straightforward. 
 
-## Dissecting piped code
-
 It's a good strategy to dissect the code line by line. Figure out everything up to 
 the first pipe before you look at the next line up to the next pipe, and so on. 
+
+## Dissecting piped code
 
 For the example code, you could start just by looking at the data input to the first
 pipe. In RStudio, you can do this by highlight only that dataframe name (`my_data`)
@@ -176,23 +183,58 @@ knitr::include_graphics("figures/pipe_1.jpg")
 
 ## Dissecting piped code
 
+Once you understand that much, you can add on the next function call in the pipe. 
+Highlight the code, starting from the input to the pipe and going up to (but not
+including) the pipe after the last call you want to assess. 
+
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/pipe_2.jpg")
 ```
 
 ## Dissecting piped code
 
+If one of the function calls in the pipeline includes another function call nested
+inside, use the techniques for nested function calls to dissect that part of the 
+code. 
+
+Start with the inner function call:
+
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/pipe_3.jpg")
 ```
 
-## Dissecting piped code
+Then dissect the outer function call:
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/pipe_4.jpg")
 ```
 
 ## Dissecting piped code
+
+Some nested function calls will operate on a single column of the dataframe, 
+rather than the whole dataframe. In those cases, you can use the `pull` function 
+to investigate the inner function.
+
+For example, to explore this: 
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/pipe_3.jpg")
+```
+
+You can use: 
+
+```{r echo = TRUE, eval = FALSE}
+my_data %>% 
+  rename(better_name = `Bad Name!`) %>% 
+  pull(animal_species) %>% 
+  fct()
+```
+
+## Dissecting piped code
+
+If the pipeline overwrites an earlier object, it will usually be best to not run 
+the assignment part of the pipeline until you have dissected all of the rest of the
+code in the pipeline. 
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/pipe_5.jpg")
