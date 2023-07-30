@@ -13,7 +13,7 @@
 
 <meta name="date" content="2023-07-23" />
 
-<title>Lab-Tools</title>
+<title>Lab—Developing a set of core tools</title>
 
 <script>// Pandoc 2.9 adds attributes on both header and div. We remove the former (to
 // be compatible with the behavior of Pandoc < 2.8).
@@ -350,22 +350,78 @@ display: none;
 
 
 
-<h1 class="title toc-ignore">Lab-Tools</h1>
+<h1 class="title toc-ignore">Lab—Developing a set of core tools</h1>
 <h4 class="author">Brooke Anderson</h4>
 <h4 class="date">2023-07-23</h4>
 
 </div>
 
 
+<div id="developing-a-set-of-core-tools" class="section level2">
+<h2>Developing a set of core tools</h2>
+<p>In several parts of the lectures, we’ve discussed how useful it is to
+develop a set of core tools in R that you know very well. Between base R
+and available R packages, there are an enormous amount of tools that are
+available for R. However, you’ll often find that, for most of the tasks
+you perform, most of the task can be done with a fairly small set of
+tools. If you identify this core set and learn to use them very well,
+you’ll find that you can code more efficiently and that you are less
+likely to introduce or fail to fix bugs in your code.</p>
+<p>The tidyverse tools are an excellent set of tools to learn as a core
+toolset. Many of the tools are very similar to functions available in
+base R, but they often are adjusted in small ways that make them more
+convenient for the average user.</p>
+<p>The tidyverse tools are divided into packages. A number of the
+packages are focused on working with a type of data or data container.
+For example:</p>
+<ul>
+<li><code>stringr</code>: Functions to work with character strings</li>
+<li><code>lubridate</code>: Functions to work with dates</li>
+<li><code>forcats</code>: Functions to work with factors</li>
+<li><code>dplyr</code>: Functions to work with dataframes</li>
+</ul>
+<p>Many of the tidyverse tools come out of a developer team at Posit
+(formerly RStudio). However, other developers can also create and share
+packages that fit within the tidyverse approach. One example is the
+<code>sf</code> package, which brings a tidyverse approach to spatial
+data and is an extremely useful tool to learn if you regularly create
+geospatial maps in R.</p>
+<p>Once you have identified some tools that you want to include in your
+core toolset, it is well worth your time to explore the tools deeply to
+make sure that you understand how they work and are taking full
+advantage of them. In this lab, we’ll walk you through an approach to
+develop and learn more about a set of tools available in the
+<code>stringr</code> package.</p>
+<p>Also, this is the last lab of the workshop. Please feel free to also
+use this lab time to complete any parts of earlier labs that you have
+not completed but would like to, as well as talk to as about questions
+you have about applying the material from the workshop in your own
+coding practice.</p>
+</div>
 <div id="learning-regular-expression-tools" class="section level2">
 <h2>Learning regular expression tools</h2>
 <p>The <code>stringr</code> package has excellent tools for leveraging
-regular expressions in R. We’ll use this lab to explore some of the
-tools in this package and learning how to develop this package as one of
-your core tools.</p>
-<p>Use the following resources as you work through the different tasks
-and figure out how to solve them with functions from the
-<code>stringr</code> package:</p>
+regular expressions in R. Regular expressions are an enormously powerful
+tool in R coding, especially if you regularly work with messy data. They
+allow you to identify patterns in character strings. You can then use
+information about those patterns to clean your data, or combine them
+with logical statements to extract subsets of the data.</p>
+<p>We’ll use this lab to explore some of the tools for regular
+expressions in the <code>stringr</code> package. (The package also
+includes other tools for working with character strings that do not
+involve regular expressions and in generaly is an excellent package to
+add to your core toolset). In addition to teaching you some of these
+functions (which you might already know), this lab aims to give you some
+strategies of how you can become more familiar with a tool you want to
+add to your toolset. These strategies apply more broadly as you build
+the set of tools that you plan to use over and over in your coding.</p>
+<p>As you work through the tasks of this lab, we’ll ask you to reference
+some materials that can help you learn the tools in
+<code>stringr</code>. These types of resources are often available for R
+packages, and we recommend you get in the habit of using them to improve
+your understanding of your tools. Use the following resources as you
+work through the different tasks and figure out how to solve them with
+functions from the <code>stringr</code> package:</p>
 <ul>
 <li>The <code>stringr</code> package cheatsheet: <a href="https://rstudio.github.io/cheatsheets/strings.pdf" class="uri">https://rstudio.github.io/cheatsheets/strings.pdf</a></li>
 <li>Vignettes for <code>stringr</code>: Available through the “Articles”
@@ -382,31 +438,13 @@ Data Science”. For <code>stringr</code>, the chapter is: <a href="https://r4ds
 <div id="set-up-data" class="section level2">
 <h2>Set up data</h2>
 <p>We’ll use the data from earlier labs. Let’s start by running the code
-to set up this dataset.</p>
+to set up this dataset. As a reminder, the code to do that is:</p>
 <pre class="r"><code># Load required libraries ##############################################################
 library(readr)
-library(janitor)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;janitor&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     chisq.test, fisher.test</code></pre>
-<pre class="r"><code>library(dplyr)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;dplyr&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:stats&#39;:
-## 
-##     filter, lag</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     intersect, setdiff, setequal, union</code></pre>
-<pre class="r"><code>library(lubridate)</code></pre>
-<pre><code>## 
-## Attaching package: &#39;lubridate&#39;</code></pre>
-<pre><code>## The following objects are masked from &#39;package:base&#39;:
-## 
-##     date, intersect, setdiff, union</code></pre>
-<pre class="r"><code>library(tidyr)
+library(janitor)
+library(dplyr)
+library(lubridate)
+library(tidyr)
 library(purrr)
 library(stringr)
 library(ggplot2)
@@ -458,72 +496,59 @@ ny_calls &lt;- borough_files %&gt;%
          borough = str_remove(borough, &quot;../data/&quot;), 
          borough = str_remove(borough, &quot;_animal_response.csv&quot;), 
          borough = str_replace(borough, &quot;_&quot;, &quot; &quot;))</code></pre>
-<pre><code>## Rows: 278 Columns: 22</code></pre>
-<pre><code>## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (14): Date and Time of initial call, Date and time of Ranger response, P...
-## dbl  (3): Duration of Response, # of Animals, Hours spent monitoring
-## lgl  (4): PEP Response, Animal Monitored, Police Response, ESU Response
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 461 Columns: 22
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (14): Date and Time of initial call, Date and time of Ranger response, P...
-## dbl  (3): Duration of Response, # of Animals, Hours spent monitoring
-## lgl  (4): PEP Response, Animal Monitored, Police Response, ESU Response
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 960 Columns: 22
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (14): Date and Time of initial call, Date and time of Ranger response, P...
-## dbl  (3): Duration of Response, # of Animals, Hours spent monitoring
-## lgl  (4): PEP Response, Animal Monitored, Police Response, ESU Response
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 458 Columns: 22
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (14): Date and Time of initial call, Date and time of Ranger response, P...
-## dbl  (3): Duration of Response, # of Animals, Hours spent monitoring
-## lgl  (4): PEP Response, Animal Monitored, Police Response, ESU Response
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.
-## Rows: 452 Columns: 22
-## ── Column specification ────────────────────────────────────────────────────────
-## Delimiter: &quot;,&quot;
-## chr (14): Date and Time of initial call, Date and time of Ranger response, P...
-## dbl  (3): Duration of Response, # of Animals, Hours spent monitoring
-## lgl  (4): PEP Response, Animal Monitored, Police Response, ESU Response
-## 
-## ℹ Use `spec()` to retrieve the full column specification for this data.
-## ℹ Specify the column types or set `show_col_types = FALSE` to quiet this message.</code></pre>
 </div>
 <div id="exploring-and-learning-stringr" class="section level2">
 <h2>Exploring and learning <code>stringr</code></h2>
-<p>Tasks we’re trying to do:</p>
+<p>To show you how to learn more about some of the <code>stringr</code>
+regular expression tools, we’ve set up a couple of tasks for you to try
+to do with the animal calls data from earlier labs. These tasks are:</p>
 <ul>
 <li>Filter the data to certain types of animals. For example, filter to
 all animal response calls that involved snakes or alligators.</li>
 <li>Filter to all calls that came from a playground (may be listed in
 <code>property</code> or <code>location</code>)</li>
 </ul>
+<p>If you look at the <code>ny_calls</code> dataset, you’ll see that
+there are some columns in it with information related to these tasks.
+These include the columns <code>property</code>, <code>location</code>,
+<code>species_description</code>, and <code>animal_class</code>.</p>
+<pre class="r"><code>ny_calls %&gt;% 
+  select(property, location, species_description, animal_class)</code></pre>
+<pre><code>## # A tibble: 1,448 × 4
+##    property           location                  species_description animal_class
+##    &lt;chr&gt;              &lt;chr&gt;                     &lt;chr&gt;               &lt;chr&gt;       
+##  1 Pelham Bay Park    &quot;Orchard Beach traffic c… Canada Goose        Birds       
+##  2 Walton Park        &quot;Inside Playground&quot;       Chicken             Domestic;#B…
+##  3 Pelham Bay Park    &quot;40.869531, -73.785360 (… Raccoon             Small Mamma…
+##  4 Pelham Bay Park    &quot;Orchard Beach South Nea… White-tailed Deer   Deer        
+##  5 Van Cortlandt Park &quot;Van Cortlandt Lake&quot;      Canada Goose        Birds       
+##  6 Van Cortlandt Park &quot;Van Cortlandt Lake&quot;      Canada Goose        Birds       
+##  7 Van Cortlandt Park &quot;87 North Ramp parallel … Eastern Coyote      Coyotes     
+##  8 Van Cortlandt Park &quot;Mosholu and Broadway&quot;    Chicken             Birds;#Dome…
+##  9 Pelham Bay Park    &quot;\&quot;On the trail near the… White-tailed Deer   Deer        
+## 10 Soundview Park     &quot;Baseball Field&quot;          Striped Skunk       Small Mamma…
+## # ℹ 1,438 more rows</code></pre>
+<p>However, the information that we need to solve our tasks is often
+buried somewhere in the values for those columns. For example, the
+<code>location</code> column never says just “Playground”, and the
+<code>species_description</code> never just says “Snake”. If they did,
+we could just filter with a statement that checks for an exact match
+(e.g., with <code>==</code>). Instead, we’ll need to figure out if
+certain words are somewhere within the values given for those columns.
+Regular expressions are a great tool to do this.</p>
 <div id="filter-the-data-to-certain-types-of-animals." class="section level3">
 <h3>Filter the data to certain types of animals.</h3>
-<p>First, see if you can filter the data to certain types of animals.
-For example, to start, see if you can filter the data to animal response
-calls that involved snakes.</p>
+<p>Let’s start with the first task, which is to see if you can filter
+the data to certain types of animals. For example, see if you can filter
+the data to animal response calls that involved snakes.</p>
 <p>Start by taking a look at the data to see which column to search for
 this information. There are two columns related to the type of animal in
 a call, <code>species_description</code> and <code>animal_class</code>.
 From looking at the data, it looks like <code>animal_class</code> gives
 broader descriptions of the type of animal (“Birds” or “Small Mammals”,
-for example). It looks like what we’ll need to search is intead
+for example). There’s a value for “Terrestrial Reptile or Amphibian”,
+which would include snakes, but that will also include a lot of other
+types of animals. It looks like what we’ll need to search is instead
 <code>species_description</code>, which gives the specific type of data
 (e.g., “Canada Goose”, “Racoon”).</p>
 <p>Let’s see if there’s a way to look for rows in the dataframe where
@@ -544,11 +569,12 @@ includes the word “snake” or “Snake” but also includes some other
 words.</p>
 <p>Next, we can look through the <code>stringr</code> cheatsheet (<a href="https://rstudio.github.io/cheatsheets/strings.pdf" class="uri">https://rstudio.github.io/cheatsheets/strings.pdf</a>) to
 see if there’s anything promising. We are looking for a function that
-can identify which values in a string include a certain string, without
-that string necessarily be the full value. Start by looking at the large
-categories on the first page of the cheatsheet (“Detect Matches”,
-“Subset Strings”, and so on). What we are trying to do here is to detect
-a string, so we can start looking in that section.</p>
+can identify which values in vector of character strings include a
+certain pattern, without that pattern necessarily be the full value.
+Start by looking at the large categories on the first page of the
+cheatsheet (“Detect Matches”, “Subset Strings”, and so on). What we are
+trying to do here is to detect a string, so we can start looking in that
+section.</p>
 <p>There are five functions listed in the “Detect Matches” section:
 <code>str_detect</code>, <code>str_starts</code>,
 <code>str_which</code>, <code>str_locate</code>, and
@@ -614,12 +640,13 @@ pull out certain rows from a dataframe, the <code>filter</code> function
 from the <code>dplyr</code> package is often a good way to do that. In
 fact, this is what we tried earlier, when we looked for exact matches of
 that column with the string “Snake”. The <code>filter</code> function
-works based on a logical statement—it will check some logical and keep
-each row where the logic evaluates to <code>TRUE</code> and remove the
-ones where it evaluates to <code>FALSE</code>. Based on this
+works based on a logical statement—it will check some logical expression
+and keep each row where the logic evaluates to <code>TRUE</code> and
+remove the ones where it evaluates to <code>FALSE</code>. Based on this
 understanding of <code>filter</code>, we probably want to use
 <code>str_detect</code>, since it returns <code>TRUE</code> /
-<code>FALSE</code> values, which <code>filter</code> needs.</p>
+<code>FALSE</code> values, which <code>filter</code> needs to do its
+part.</p>
 <p>Let’s try that out. We’ll start by looking for rows where the string
 “Snake” is included in <code>species_description</code>:</p>
 <pre class="r"><code>ny_snake_calls &lt;- ny_calls %&gt;% 
@@ -836,15 +863,31 @@ playground_animal_calls</code></pre>
 ## # ℹ 89 more rows
 ## # ℹ 5 more variables: final_ranger_action &lt;chr&gt;, filename &lt;chr&gt;,
 ## #   call_year &lt;dbl&gt;, call_month &lt;ord&gt;, borough &lt;chr&gt;</code></pre>
-<p>Other things you might want to try:</p>
+</div>
+</div>
+<div id="continuing-to-explore-regular-expressions" class="section level2">
+<h2>Continuing to explore regular expressions</h2>
+<p>In these tasks, we’ve dug into how one tool in <code>stringr</code>
+works with regularly expressions, and this process can help us add
+<code>str_detect</code> to our core set of tools. If you work with
+character strings a lot—particularly in the context of cleaning messy
+data—you may want to continue to explore other <code>stringr</code>
+functions.</p>
+<p>Here are two other tasks you could try to build up that toolset:</p>
 <ul>
 <li>Find all calls where the <code>location</code> column seems to
-include a latitude and longitude</li>
+include a latitude and longitude. Extract these values into separate
+columns for the latitude and longitude, with each as a numeric variable.
+As a hint, you’ll be looking for values in the <code>location</code>
+column that include a pattern like “40.869531, -73.785360”. This task
+will take a lot of work with the <code>stringr</code> cheatsheet and
+other resources if you haven’t done a task like this before, but is a
+very powerful tool to have available.</li>
 <li>Identify all rows where the <code>location</code> column is listed
 as <code>&quot;N/A&quot;</code>, <code>&quot;N/a&quot;</code>, <code>&quot;n/A&quot;</code>, or
-<code>&quot;n/a&quot;</code></li>
+<code>&quot;n/a&quot;</code>. Convert these values to the “NA” that R recognizes
+as a missing value.</li>
 </ul>
-</div>
 </div>
 
 

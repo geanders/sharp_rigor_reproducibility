@@ -1,22 +1,76 @@
 ---
-title: "Lab-Tools"
+title: "Lab---Developing a set of core tools"
 author: "Brooke Anderson"
 date: "2023-07-23"
 output: html_document
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 ```
+
+## Developing a set of core tools
+
+In several parts of the lectures, we've discussed how useful it is to develop a set
+of core tools in R that you know very well. Between base R and available R packages, 
+there are an enormous amount of tools that are available for R. However, you'll often 
+find that, for most of the tasks you perform, most of the task can be done with a 
+fairly small set of tools. If you identify this core set and learn to use them very 
+well, you'll find that you can code more efficiently and that you are less likely to 
+introduce or fail to fix bugs in your code. 
+
+The tidyverse tools are an excellent set of tools to learn as a core toolset. Many of 
+the tools are very similar to functions available in base R, but they often are 
+adjusted in small ways that make them more convenient for the average user.
+
+The tidyverse tools are divided into packages. A number of the packages are 
+focused on working with a type of data or data container. For example: 
+
+- `stringr`: Functions to work with character strings
+- `lubridate`: Functions to work with dates
+- `forcats`: Functions to work with factors
+- `dplyr`: Functions to work with dataframes
+
+Many of the tidyverse tools come out of a developer team at Posit (formerly RStudio).
+However, other developers can also create and share packages that fit within the
+tidyverse approach. One example is the `sf` package, which brings a tidyverse 
+approach to spatial data and is an extremely useful tool to learn if you 
+regularly create geospatial maps in R.
+
+Once you have identified some tools that you want to include in your core toolset, 
+it is well worth your time to explore the tools deeply to make sure that you 
+understand how they work and are taking full advantage of them. In this lab, 
+we'll walk you through an approach to develop and learn more about a set
+of tools available in the `stringr` package. 
+
+Also, this is the last lab of the workshop. Please feel free to also use this lab
+time to complete any parts of earlier labs that you have not completed but would 
+like to, as well as talk to as about questions you have about applying the 
+material from the workshop in your own coding practice.
 
 ## Learning regular expression tools
 
-The `stringr` package has excellent tools for leveraging regular expressions in R. We'll 
-use this lab to explore some of the tools in this package and learning how to 
-develop this package as one of your core tools. 
+The `stringr` package has excellent tools for leveraging regular expressions in R. 
+Regular expressions are an enormously powerful tool in R coding, especially if you 
+regularly work with messy data. They allow you to identify patterns in character
+strings. You can then use information about those patterns to clean your data, 
+or combine them with logical statements to extract subsets of the data. 
 
-Use the following resources as you work through the different tasks and figure out how 
-to solve them with functions from the `stringr` package: 
+We'll use this lab to explore some of the tools for regular expressions in the
+`stringr` package. (The package also includes other tools for working with
+character strings that do not involve regular expressions and in generaly is an
+excellent package to add to your core toolset). In addition to teaching you some
+of these functions (which you might already know), this lab aims to give you
+some strategies of how you can become more familiar with a tool you want to add
+to your toolset. These strategies apply more broadly as you build the set of 
+tools that you plan to use over and over in your coding.
+
+As you work through the tasks of this lab, we'll ask you to reference some
+materials that can help you learn the tools in `stringr`. These types of
+resources are often available for R packages, and we recommend you get in the
+habit of using them to improve your understanding of your tools. Use the
+following resources as you work through the different tasks and figure out how
+to solve them with functions from the `stringr` package:
 
 - The `stringr` package cheatsheet: https://rstudio.github.io/cheatsheets/strings.pdf 
 - Vignettes for `stringr`: Available through the "Articles" section of the pkgdown
@@ -31,7 +85,7 @@ For `stringr`, the chapter is: https://r4ds.had.co.nz/strings.html
 ## Set up data
 
 We'll use the data from earlier labs. Let's start by running the code to set up 
-this dataset. 
+this dataset. As a reminder, the code to do that is: 
 
 ```{r}
 # Load required libraries ##############################################################
@@ -95,25 +149,46 @@ ny_calls <- borough_files %>%
 
 ## Exploring and learning `stringr`
 
-Tasks we're trying to do: 
+To show you how to learn more about some of the `stringr` regular expression tools, we've
+set up a couple of tasks for you to try to do with the animal calls data from earlier
+labs. These tasks are: 
 
 - Filter the data to certain types of animals. For example, filter to all animal response
 calls that involved snakes or alligators. 
 - Filter to all calls that came from a playground (may be listed in `property` or `location`)
 
+If you look at the `ny_calls` dataset, you'll see that there are some columns in it 
+with information related to these tasks. These include the columns `property`, 
+`location`, `species_description`, and `animal_class`. 
 
+```{r}
+ny_calls %>% 
+  select(property, location, species_description, animal_class)
+```
+
+However, the information that we need to solve our tasks is often buried
+somewhere in the values for those columns. For example, the `location` column
+never says just "Playground", and the `species_description` never just says
+"Snake". If they did, we could just filter with a statement that checks for an
+exact match (e.g., with `==`). Instead, we'll need to figure out if certain
+words are somewhere within the values given for those columns. Regular expressions
+are a great tool to do this.
 
 ###  Filter the data to certain types of animals. 
 
-First, see if you can filter the data to certain types of animals. For example, to 
-start, see if you can filter the data to animal response calls that involved snakes.
+Let's start with the first task, which is to see if you can filter the data to
+certain types of animals. For example, see if you can filter the data to animal
+response calls that involved snakes.
 
-Start by taking a look at the data to see which column to search for this information. 
-There are two columns related to the type of animal in a call, `species_description` 
-and `animal_class`. From looking at the data, it looks like `animal_class` gives
-broader descriptions of the type of animal ("Birds" or "Small Mammals", for 
-example). It looks like what we'll need to search is intead `species_description`, 
-which gives the specific type of data (e.g., "Canada Goose", "Racoon"). 
+Start by taking a look at the data to see which column to search for this
+information. There are two columns related to the type of animal in a call,
+`species_description` and `animal_class`. From looking at the data, it looks
+like `animal_class` gives broader descriptions of the type of animal ("Birds" or
+"Small Mammals", for example). There's a value for "Terrestrial Reptile or
+Amphibian", which would include snakes, but that will also include a lot of
+other types of animals. It looks like what we'll need to search is instead
+`species_description`, which gives the specific type of data (e.g., "Canada
+Goose", "Racoon").
 
 Let's see if there's a way to look for rows in the dataframe where the word "snake" 
 is included in the `species_description` column. We can start by looking for rows
@@ -130,12 +205,14 @@ but it could also mean that the snake listings include more details about the sp
 so that the value in this column includes the word "snake" or "Snake" but also includes
 some other words. 
 
-Next, we can look through the `stringr` cheatsheet (https://rstudio.github.io/cheatsheets/strings.pdf) to see if there's anything promising. 
-We are looking for a function that can identify which values in a string include a certain
-string, without that string necessarily be the full value. Start by looking at the 
-large categories on the first page of the cheatsheet ("Detect Matches", "Subset Strings", 
-and so on). What we are trying to do here is to detect a string, so we can start looking 
-in that section. 
+Next, we can look through the `stringr` cheatsheet
+(https://rstudio.github.io/cheatsheets/strings.pdf) to see if there's anything
+promising. We are looking for a function that can identify which values in
+vector of character strings include a certain pattern, without that pattern
+necessarily be the full value. Start by looking at the large categories on the
+first page of the cheatsheet ("Detect Matches", "Subset Strings", and so on).
+What we are trying to do here is to detect a string, so we can start looking in
+that section.
 
 There are five functions listed in the "Detect Matches" section: `str_detect`,
 `str_starts`, `str_which`, `str_locate`, and `str_count`. If we read the
@@ -208,15 +285,17 @@ str_which(fruit, "b")
 ```
 
 Now that we understand the two functions, we can decide which would work better.
-As a reminder, our aim in this task is to take a dataframe and reduce it to only the 
-rows that include "Snake" or "snake" in its value for the `species_description` column. 
-When you want to pull out certain rows from a dataframe, the `filter` function from 
-the `dplyr` package is often a good way to do that. In fact, this is what we tried 
-earlier, when we looked for exact matches of that column with the string "Snake". 
-The `filter` function works based on a logical statement---it will check some logical and
-keep each row where the logic evaluates to `TRUE` and remove the ones where it evaluates
-to `FALSE`. Based on this understanding of `filter`, we probably want to use `str_detect`, 
-since it returns `TRUE` / `FALSE` values, which `filter` needs. 
+As a reminder, our aim in this task is to take a dataframe and reduce it to only
+the rows that include "Snake" or "snake" in its value for the
+`species_description` column. When you want to pull out certain rows from a
+dataframe, the `filter` function from the `dplyr` package is often a good way to
+do that. In fact, this is what we tried earlier, when we looked for exact
+matches of that column with the string "Snake". The `filter` function works
+based on a logical statement---it will check some logical expression and keep
+each row where the logic evaluates to `TRUE` and remove the ones where it
+evaluates to `FALSE`. Based on this understanding of `filter`, we probably want
+to use `str_detect`, since it returns `TRUE` / `FALSE` values, which `filter`
+needs to do its part.
 
 Let's try that out. We'll start by looking for rows where the string "Snake" is included
 in `species_description`: 
@@ -351,8 +430,20 @@ playground_animal_calls <- ny_calls %>%
 playground_animal_calls
 ```
 
-Other things you might want to try: 
+## Continuing to explore regular expressions
 
-- Find all calls where the `location` column seems to include a latitude and longitude
-- Identify all rows where the `location` column is listed as `"N/A"`, `"N/a"`, `"n/A"`, or `"n/a"`
+In these tasks, we've dug into how one tool in `stringr` works with regularly expressions, 
+and this process can help us add `str_detect` to our core set of tools. If you work with 
+character strings a lot---particularly in the context of cleaning messy data---you may 
+want to continue to explore other `stringr` functions. 
+
+Here are two other tasks you could try to build up that toolset: 
+
+- Find all calls where the `location` column seems to include a latitude and longitude. 
+Extract these values into separate columns for the latitude and longitude, with each as 
+a numeric variable. As a hint, you'll be looking for values in the `location` column 
+that include a pattern like "40.869531, -73.785360". This task will take a lot of 
+work with the `stringr` cheatsheet and other resources if you haven't done a task 
+like this before, but is a very powerful tool to have available. 
+- Identify all rows where the `location` column is listed as `"N/A"`, `"N/a"`, `"n/A"`, or `"n/a"`. Convert these values to the "NA" that R recognizes as a missing value. 
 
