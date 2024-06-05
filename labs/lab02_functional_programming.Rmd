@@ -5,6 +5,10 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+library(dplyr) # %>%
+library(janitor)
+library(readr)
+library(lubridate)
 ```
 
 ## Functional Programming
@@ -32,7 +36,7 @@ selected for objects or columns).
 
 As a reminder, here's the code we ended up with at the end of the last lab: 
 
-```{r include = FALSE}
+```{r eval = F}
 # Load required libraries
 library(readr)
 library(janitor)
@@ -68,7 +72,7 @@ monthly_man_animal_response
 
 In the lecture before this class, we covered how to create a function that counts the 
 number of calls per month (we'll work on improving this function in a later lab). 
-You'll also find it use to have the code that defines this function handy. It is:
+You'll also find it useful to have the code that defines this function handy. It is:
 
 ```{r}
 # To run this function, you will need to have the following packages installed:
@@ -172,17 +176,17 @@ Those steps are:
 - Clean the column names (this includes a first step of general cleaning and then 
 some more specialized cleaning to treat a case that wasn't handled in the general 
 step)
-- Convert the column on the dates to a date-time class, so you can work with it in 
+- Convert the column with the dates to a date-time class, so you can work with it in 
 later code as a date-time object
 
-There are some other steps you might want to consider, as well, depending on how 
+There are some other steps you might want to consider as well, depending on how 
 you plan to look at the data once you read it in. Some other steps you could consider
 adding to this function are: 
 
 - Removing columns that you aren't planning to use in your analysis (There are a lot
 of columns in this dataset, and it can make it easier to work on your target problem
 if you remove those from your working dataframe in R. Remember that this won't 
-delete the columns from the data saved in the CSV, so that data will always be there
+delete the columns from the data saved in the CSV, so that data will always be available
 if you need to go back and add them.)
 - Add columns for the month and year (These are new columns that you use in some of
 your analysis, so it may make sense to create these as you read in the data. These steps
@@ -196,7 +200,7 @@ in the function, then we'll look at how we could add these additional pieces.
 Let's start by looking at the script to see which parts we want to pull out
 (I've added comments on those in the script):
 
-```{r}
+```{r eval = F}
 # Load required libraries
 library(readr)
 library(janitor)
@@ -271,8 +275,8 @@ you want to read in. It's helpful to use the same parameter name as the one used
 the general function `read_csv`, which is `file`. 
 - You can include code comments within the function
 
-Now let's add the option steps (adding columns for the month and year of the call, 
-removing all the columns we're not planning interested in for our research question): 
+Now let's add the optional steps (adding columns for the month and year of the call, and
+removing all the columns we're not interested in for our research question): 
 
 ```{r}
 read_and_clean_call_data <- function(file){
@@ -349,7 +353,7 @@ manhattan_full_years
 
 Next, it's helpful if we add some code that clarifies which package each function
 in the code comes from. This way, the function can run as long as the user has
-installed that package, whether or not the the user has remember to load the package in their
+installed that package, whether or not the the user has remembered to load the package in their
 R session. You can all add comments to let the user know which packages they'll need
 to have installed to run the function. 
 

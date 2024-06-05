@@ -538,8 +538,8 @@ with files for all 50 states).
 By using this functional programming solution, we've created a code script that
 is concise and will be easier to maintain, since we can make a change that
 applied to the data from all boroughs in a single place, rather than needing to
-make sure that, when we want to make a change in the code, we fix the code every
-where we've copy-and-pasted it throughout the script.
+make sure that, when we want to make a change in the code, we fix the code everywhere 
+we've copy-and-pasted it throughout the script.
 
 # Session info
 

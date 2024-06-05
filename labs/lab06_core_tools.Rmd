@@ -57,11 +57,11 @@ or combine them with logical statements to extract subsets of the data.
 
 We'll use this lab to explore some of the tools for regular expressions in the
 `stringr` package. (The package also includes other tools for working with
-character strings that do not involve regular expressions and in generaly is an
+character strings that do not involve regular expressions and in general is an
 excellent package to add to your core toolset). In addition to teaching you some
 of these functions (which you might already know), this lab aims to give you
-some strategies of how you can become more familiar with a tool you want to add
-to your toolset. These strategies apply more broadly as you build the set of 
+some strategies for becoming more familiar with a tool you want to add
+to your toolset. These strategies can apply more broadly as you build the set of 
 tools that you plan to use over and over in your coding.
 
 As you work through the tasks of this lab, we'll ask you to reference some
@@ -208,7 +208,7 @@ Next, we can look through the `stringr` cheatsheet
 (https://rstudio.github.io/cheatsheets/strings.pdf) to see if there's anything
 promising. We are looking for a function that can identify which values in
 vector of character strings include a certain pattern, without that pattern
-necessarily be the full value. Start by looking at the large categories on the
+necessarily being the full value. Start by looking at the large categories on the
 first page of the cheatsheet ("Detect Matches", "Subset Strings", and so on).
 What we are trying to do here is to detect a string, so we can start looking in
 that section.
@@ -216,7 +216,7 @@ that section.
 There are five functions listed in the "Detect Matches" section: `str_detect`,
 `str_starts`, `str_which`, `str_locate`, and `str_count`. If we read the
 descriptions of these, two sound promising. The first is `str_detect`, which
-detects if a match exist in each string in the vector, returning `TRUE` if it
+detects if a match exists in each string in the vector, returning `TRUE` if it
 does and `FALSE` otherwise. The second is `str_which`, which returns the indexes of 
 the strings in a vector that have a match. 
 
@@ -362,7 +362,7 @@ alt("[abe]")
 ```
 
 We can see that the square brackets let us pick out any one of the letters a, b, and e
-in these examples. Let's try it with out example. First, in the `snake_examples`, 
+in these examples. Let's try it with our example. First, in the `snake_examples`, 
 let's see if we can pick out every "s", regardless of if it's uppercase or lowercase: 
 
 ```{r}
@@ -416,7 +416,7 @@ ny_calls %>%
 ```
 
 It looks like the `property` column is consistent in always using "Playground", but 
-the `location` column is not, and there it's important that we look for both 
+the `location` column is not, and therefore it's important that we look for both 
 "Playground" and "playground". 
 
 Now that we have the patterns we want to use, we can use them along with `filter` to 
@@ -431,7 +431,7 @@ playground_animal_calls
 
 ## Continuing to explore regular expressions
 
-In these tasks, we've dug into how one tool in `stringr` works with regularly expressions, 
+In these tasks, we've dug into how one tool in `stringr` works with regular expressions, 
 and this process can help us add `str_detect` to our core set of tools. If you work with 
 character strings a lot---particularly in the context of cleaning messy data---you may 
 want to continue to explore other `stringr` functions. 

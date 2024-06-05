@@ -378,10 +378,41 @@ differences in your version (for example, different names you selected
 for objects or columns).</p>
 <p>As a reminder, here’s the code we ended up with at the end of the
 last lab:</p>
+<pre class="r"><code># Load required libraries
+library(readr)
+library(janitor)
+library(dplyr)
+library(lubridate)
+
+# Read in data and clean column names
+man_animal_resp &lt;- read_csv(&quot;../data/Manhattan_animal_response.csv&quot;) %&gt;% 
+  clean_names() %&gt;% 
+  rename(datetime_call = date_and_time_of_initial_call)
+
+# Filter to data on reptiles and amphibians in Central Park
+man_animal_resp &lt;- man_animal_resp %&gt;% 
+  filter(property == &quot;Central Park&quot;) %&gt;%  
+  filter(animal_class == &quot;Terrestrial Reptile or Amphibian&quot;)
+
+# Filter to years with data covering the full year (2018 and 2021 do not)
+man_animal_resp &lt;- man_animal_resp %&gt;% 
+  mutate(datetime_call = mdy_hms(datetime_call), 
+         call_year = year(datetime_call)) %&gt;% 
+  filter(call_year %in% c(2019, 2020))
+
+# Count number of response calls per month
+man_animal_resp &lt;- man_animal_resp %&gt;% 
+  mutate(call_month = month(datetime_call, 
+                            label = TRUE, 
+                            abbr = FALSE))
+  
+monthly_man_animal_response &lt;- man_animal_resp %&gt;% 
+  count(.wt = call_month)
+monthly_man_animal_response</code></pre>
 <p>In the lecture before this class, we covered how to create a function
 that counts the number of calls per month (we’ll work on improving this
-function in a later lab). You’ll also find it use to have the code that
-defines this function handy. It is:</p>
+function in a later lab). You’ll also find it useful to have the code
+that defines this function handy. It is:</p>
 <pre class="r"><code># To run this function, you will need to have the following packages installed:
 # dplyr, tibble
 count_monthly_calls &lt;- function(call_data) {
@@ -479,10 +510,10 @@ data.</p>
 <li>Clean the column names (this includes a first step of general
 cleaning and then some more specialized cleaning to treat a case that
 wasn’t handled in the general step)</li>
-<li>Convert the column on the dates to a date-time class, so you can
+<li>Convert the column with the dates to a date-time class, so you can
 work with it in later code as a date-time object</li>
 </ul>
-<p>There are some other steps you might want to consider, as well,
+<p>There are some other steps you might want to consider as well,
 depending on how you plan to look at the data once you read it in. Some
 other steps you could consider adding to this function are:</p>
 <ul>
@@ -490,8 +521,8 @@ other steps you could consider adding to this function are:</p>
 (There are a lot of columns in this dataset, and it can make it easier
 to work on your target problem if you remove those from your working
 dataframe in R. Remember that this won’t delete the columns from the
-data saved in the CSV, so that data will always be there if you need to
-go back and add them.)</li>
+data saved in the CSV, so that data will always be available if you need
+to go back and add them.)</li>
 <li>Add columns for the month and year (These are new columns that you
 use in some of your analysis, so it may make sense to create these as
 you read in the data. These steps are easy to do in the code script,
@@ -534,15 +565,6 @@ monthly_man_animal_response &lt;- man_animal_resp %&gt;%
                             abbr = FALSE)) %&gt;% 
   count(.wt = call_month)
 monthly_man_animal_response</code></pre>
-<pre><code>## # A tibble: 6 × 2
-##   .wt           n
-##   &lt;ord&gt;     &lt;int&gt;
-## 1 February      1
-## 2 May           6
-## 3 June          3
-## 4 July          5
-## 5 August        2
-## 6 September     1</code></pre>
 <p>The following code chunk defines a function that encapsulates the
 parts we know we want to go in the function. Take a look at how this
 compares to the code in the script above. Hopefully you notice that a
@@ -602,8 +624,8 @@ the general function <code>read_csv</code>, which is
 <code>file</code>.</li>
 <li>You can include code comments within the function</li>
 </ul>
-<p>Now let’s add the option steps (adding columns for the month and year
-of the call, removing all the columns we’re not planning interested in
+<p>Now let’s add the optional steps (adding columns for the month and
+year of the call, and removing all the columns we’re not interested in
 for our research question):</p>
 <pre class="r"><code>read_and_clean_call_data &lt;- function(file){
   
@@ -701,7 +723,7 @@ manhattan_full_years</code></pre>
 <p>Next, it’s helpful if we add some code that clarifies which package
 each function in the code comes from. This way, the function can run as
 long as the user has installed that package, whether or not the the user
-has remember to load the package in their R session. You can all add
+has remembered to load the package in their R session. You can all add
 comments to let the user know which packages they’ll need to have
 installed to run the function.</p>
 <pre class="r"><code># To run this function, you will need to have the following functions installed:
@@ -829,38 +851,37 @@ monthly_man_animal_response</code></pre>
 <p>Here is information about the session under which the lab document
 was run:</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.3.0 (2023-04-21)
-## Platform: x86_64-apple-darwin20 (64-bit)
-## Running under: macOS Monterey 12.6.5
+<pre><code>## R version 4.2.3 (2023-03-15 ucrt)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 22621)
 ## 
 ## Matrix products: default
-## BLAS:   /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRblas.0.dylib 
-## LAPACK: /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
 ## 
 ## locale:
-## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
-## time zone: America/New_York
-## tzcode source: internal
+## [1] LC_COLLATE=English_United States.utf8 
+## [2] LC_CTYPE=English_United States.utf8   
+## [3] LC_MONETARY=English_United States.utf8
+## [4] LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.utf8    
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
-## [1] lubridate_1.9.2 dplyr_1.1.2     janitor_2.2.0   readr_2.1.4    
+## [1] lubridate_1.9.2 readr_2.1.4     janitor_2.2.0   dplyr_1.1.4    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] bit_4.0.5         jsonlite_1.8.7    compiler_4.3.0    crayon_1.5.2     
-##  [5] tidyselect_1.2.0  stringr_1.5.0     parallel_4.3.0    snakecase_0.11.0 
-##  [9] jquerylib_0.1.4   yaml_2.3.7        fastmap_1.1.1     R6_2.5.1         
-## [13] generics_0.1.3    knitr_1.43        tibble_3.2.1      bslib_0.5.0      
-## [17] pillar_1.9.0      tzdb_0.4.0        rlang_1.1.1       utf8_1.2.3       
-## [21] cachem_1.0.8      stringi_1.7.12    xfun_0.39         sass_0.4.7       
-## [25] bit64_4.0.5       timechange_0.2.0  cli_3.6.1         withr_2.5.0      
-## [29] magrittr_2.0.3    digest_0.6.33     vroom_1.6.3       rstudioapi_0.15.0
-## [33] hms_1.1.3         lifecycle_1.0.3   vctrs_0.6.3       evaluate_0.21    
-## [37] glue_1.6.2        fansi_1.0.4       rmarkdown_2.23    tools_4.3.0      
-## [41] pkgconfig_2.0.3   htmltools_0.5.5</code></pre>
+##  [1] pillar_1.9.0     bslib_0.4.2      compiler_4.2.3   jquerylib_0.1.4 
+##  [5] tools_4.2.3      bit_4.0.5        digest_0.6.31    jsonlite_1.8.4  
+##  [9] evaluate_0.20    lifecycle_1.0.3  tibble_3.2.1     timechange_0.2.0
+## [13] pkgconfig_2.0.3  rlang_1.1.4      cli_3.6.1        rstudioapi_0.14 
+## [17] parallel_4.2.3   yaml_2.3.7       xfun_0.40        fastmap_1.1.1   
+## [21] withr_2.5.0      stringr_1.5.0    knitr_1.42       generics_0.1.3  
+## [25] vctrs_0.6.5      sass_0.4.5       hms_1.1.3        bit64_4.0.5     
+## [29] tidyselect_1.2.1 glue_1.6.2       snakecase_0.11.0 R6_2.5.1        
+## [33] fansi_1.0.4      vroom_1.6.1      rmarkdown_2.21   tzdb_0.4.0      
+## [37] magrittr_2.0.3   htmltools_0.5.5  utf8_1.2.3       stringi_1.7.12  
+## [41] cachem_1.0.7     crayon_1.5.2</code></pre>
 </div>
 
 

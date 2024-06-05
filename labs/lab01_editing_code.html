@@ -485,8 +485,8 @@ R code script and editing it to make it easier to understand, maintain,
 debug, and reproduce.</p>
 <p>To start, the following code chunk contains the original code script
 I’d like you to work with. If you’d like, you can copy this into a new R
-code script and make your edits that. Otherwise, you can work with it
-directly in this RMarkdown file (if you have opened the lab as its
+code script and make your edits that way. Otherwise, you can work with
+it directly in this RMarkdown file (if you have opened the lab as its
 RMarkdown file) or, if these ideas are very new to you, you could even
 just follow along by reading through the example code that’s included in
 the lab, without trying to make the changes yourself yet.</p>
@@ -755,8 +755,8 @@ man_animal_resp &lt;- mutate(man_animal_resp, call_month = month(datetime_call, 
 monthly_man_animal_response &lt;- count(man_animal_resp, .wt = call_month)
 monthly_man_animal_response</code></pre>
 </div>
-<div id="delete-dead-end-code" class="section level2">
-<h2>Delete dead end code</h2>
+<div id="delete-deadend-code" class="section level2">
+<h2>Delete deadend code</h2>
 <p>The next step is to edit the script to remove “deadend” code. There
 are a couple of types of deadend code that often come up when you first
 write a code script. The first comes from things that you tried that
@@ -765,13 +765,14 @@ but those are cases that are easy for you to identify in your own code,
 and you can substantially clarify the code by editing them out once
 you’ve determined they aren’t helping.</p>
 <p>The other type of “deadend” code is the code that you use to check
-things as your write the code. These calls are very helpful as you’re
+things as you write the code. These calls are very helpful as you’re
 writing the code, but it typically makes the code script cleaner and
 clearer if you edit them out in the editing stage. Examples of this type
-of deadend code might include calls that print out the dataframe () or
-elements of it <code>colnames(man_animal_resp)</code>. It can include
-other pieces of code you used in an exploratory way (e.g., calls to
-<code>summary</code> or <code>range</code>).</p>
+of deadend code might include calls that print out the dataframe
+(<code>man_animal_resp</code>) or elements of it
+(<code>colnames(man_animal_resp)</code>). It can include other pieces of
+code you used in an exploratory way (e.g., calls to <code>summary</code>
+or <code>range</code>).</p>
 <p>In the following code chunk, I’ve edited out these examples of
 deadend code in the script. Note that I did keep the last call to read
 out a dataframe (<code>monthly_man_animal_response</code>), since this
@@ -810,7 +811,7 @@ following certain rules when you do this. For example, if you haven’t
 completed a function call when you start a new line, the new line will
 typically be indented. If you’re adding code that’s nested within a
 function, the indentation will help the new line align with other parts
-of the nested function all.</p>
+of the nested function call.</p>
 <p>There are two ways that these new lines and indentation can help make
 the code easier to understand and maintain. First, they can help you
 avoid long lines of code. Long lines are particularly a problem if they
@@ -868,14 +869,15 @@ about this tool, check out <a href="https://appsilon.com/rstudio-shortcuts-and-t
 <div id="add-pipes-when-appropriate" class="section level2">
 <h2>Add pipes when appropriate</h2>
 <p>This step is not as critical as the previous ones, but it can help
-clarify your code, in particular by reinforcing how the code is divided
-into blocks that perform similar tasks.</p>
+clarify and improve the readability of your code, in particular by
+reinforcing how the code is divided into blocks that perform similar
+tasks.</p>
 <p>In the existing script, you may notice that there are many cases
 where we’re reassigning a new version of the data to override the old
 object (e.g., using <code>&lt;-</code> with the same object name as the
 input and output) after making a single change to the data. This is
-alright, but in many of the cases, we could chain several of the steps
-together with a pipe and only reassign after we’ve made a few related
+alright, but in many cases, we could chain several of the steps together
+with a pipe and only reassign after we’ve made a few related
 changes.</p>
 <p>Once people have learned to use pipes, they’ll often form their own
 style for how much they chain together in a piped statement and how long
@@ -920,29 +922,28 @@ monthly_man_animal_response</code></pre>
 <p>Here is information about the session under which the lab document
 was run:</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.3.0 (2023-04-21)
-## Platform: x86_64-apple-darwin20 (64-bit)
-## Running under: macOS Monterey 12.6.5
+<pre><code>## R version 4.2.3 (2023-03-15 ucrt)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 22621)
 ## 
 ## Matrix products: default
-## BLAS:   /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRblas.0.dylib 
-## LAPACK: /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
 ## 
 ## locale:
-## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
-## time zone: America/New_York
-## tzcode source: internal
+## [1] LC_COLLATE=English_United States.utf8 
+## [2] LC_CTYPE=English_United States.utf8   
+## [3] LC_MONETARY=English_United States.utf8
+## [4] LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.utf8    
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] digest_0.6.33     R6_2.5.1          fastmap_1.1.1     xfun_0.39        
-##  [5] cachem_1.0.8      knitr_1.43        htmltools_0.5.5   rmarkdown_2.23   
-##  [9] cli_3.6.1         sass_0.4.7        jquerylib_0.1.4   compiler_4.3.0   
-## [13] rstudioapi_0.15.0 tools_4.3.0       evaluate_0.21     bslib_0.5.0      
-## [17] yaml_2.3.7        rlang_1.1.1       jsonlite_1.8.7</code></pre>
+##  [1] digest_0.6.31   R6_2.5.1        jsonlite_1.8.4  evaluate_0.20  
+##  [5] cachem_1.0.7    rlang_1.1.4     cli_3.6.1       rstudioapi_0.14
+##  [9] jquerylib_0.1.4 bslib_0.4.2     rmarkdown_2.21  tools_4.2.3    
+## [13] xfun_0.40       yaml_2.3.7      fastmap_1.1.1   compiler_4.2.3 
+## [17] htmltools_0.5.5 knitr_1.42      sass_0.4.5</code></pre>
 </div>
 
 

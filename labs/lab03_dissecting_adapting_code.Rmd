@@ -6,6 +6,7 @@ output: html_document
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
+library(dplyr)
 ```
 
 # Introduction to this lab
@@ -36,7 +37,7 @@ to budget more of the lab time to work on that section.
 To prepare for this lab, make sure that you've run the final script from the last 
 lab in your current R session. As a reminder, that code is: 
 
-```{r include = FALSE}
+```{r}
 # Load required libraries
 library(readr)
 library(janitor)
@@ -115,11 +116,11 @@ monthly_man_animal_response
 # Identifying a kluge in our code
 
 In that last lab, one of the tasks that we did was create a way to get a summary
-of counts of calls by months that included rows with zeros. We ultimate did that
+of counts of calls by months that included rows with zeros. We ultimately did that
 using a function we created called `count_monthly_calls`. 
 
 This function seems to work pretty well to complete that task. However, there are a 
-couple of issues with the way we've talked that problem. First, the logic of the 
+couple of issues with the way we've tackled that problem. First, the logic of the 
 code isn't as clearly linked to the logic of the task as we might want (in other 
 words, the solution is currently a bit of a kluge). The code will be easier to 
 understand and maintain if we can find a better way to link its logic with the logic 
@@ -185,7 +186,7 @@ example of their problem and then other people responded with potential
 solutions. We'll first dissect the code, and then we'll adapt it to our own
 task. 
 
-We'll start by reading the The example code in the question is:
+The example code in the question is:
 
 ```{r eval = FALSE}
 set.seed(1)
@@ -294,7 +295,7 @@ with those letters. Also, it can make it harder to understand what the call is
 doing ("replace" is clearer, for example, than "rep"). If we look at the
 Arguments section, we can see that `replace` is used to say whether the object
 should be sampled with replacement. In other words, in our example should we be
-able to have more than one copies of the same letter in the vector we're
+able to have more than one copy of the same letter in the vector we're
 creating? For our example, we have to allow replacement in the sampling, because 
 there are only 26 letters in `letters` and we want to make a vector that has
 50 values, so there will have to be some letters that show up more than once. 
@@ -314,7 +315,7 @@ column, called "ID", that has a sample of 50 letters, where some letters show up
 more than once and some may never show up. Since it includes random number generation 
 (in `sample`), the exact letters that show up would change if we didn't set the seed, 
 but if we set the same seed right before we run the function call, we'll get the same
-dataframe of `dat` as the person who posted the question did. 
+dataframe of `dat` as the person who posted the question. 
 
 Now let's look at the next part of the code: 
 
@@ -383,8 +384,8 @@ dat %>%
   mutate(ID = factor(ID, levels = letters))
 ```
 
-Let's work from the inside out for the function call. The innermose call is to `factor`. 
-Let's use the helpful to see what that does (`?factor`).
+Let's work from the inside out for the function call. The innermost call is to `factor`. 
+Let's use the helpfile to see what that does (`?factor`).
 
 Based on the helpfile, the `factor` function will input a vector and change it to a 
 factor. This is one of the classes of data that values in a vector can have in R 
@@ -392,7 +393,7 @@ factor. This is one of the classes of data that values in a vector can have in R
 aren't familiar with factors and how they work, there is a chapter in **R for Data 
 Science** that you might find very helpful (https://r4ds.had.co.nz/factors.html). 
 
-Factors are very helpful when you have a value that can only take one of a set of 
+Factors are very helpful when you have a variable that can only take one of a set of 
 values. As one example, the original data for the animal response calls includes 
 a variable with the animal's age, which can only be "Juvenile" or "Adult". In the
 StackOverflow example we're looking at here, the values in the sample of letters can
@@ -505,7 +506,7 @@ dat %>%
 ```
 
 This is using a `count` function. We already know, from our original function, that 
-this function will count up the number observations in each group within a dataset. 
+this function will count up the number of observations in each group within a dataset. 
 This call is using some arguments that we didn't use in our earlier code, though. 
 Specifically, it uses `name = "no_rows"` and `.drop = F`. Let's figure out what 
 each of those are doing before we try to adapt this code for our own task. 
@@ -633,13 +634,13 @@ Once we've figured out how to adapt the code for our task, we'll use what we've 
 update our function. 
 
 Let's see if we can adapt the example solution to the kluge-y part of our code. First, 
-let's fine the part of our code that's a kluge. It's the code where we're trying
+let's find the part of our code that's a kluge. It's the code where we're trying
 to make sure that all the months get reported in the final summary, even if they had no 
 animal calls (in which case we want them reported with a count of 0). 
 
 In our current code, we do that by making a dataframe called `all_months` that lists
 all of the months and their order over the year. We then use a `full_join` function 
-to force this dataset to be merged with out monthly call counts, and then we use the
+to force this dataset to be merged with our monthly call counts, and then we use the
 `order` column to reorder this dataframe so it follows the day in the year. 
 
 This solution is kluge-y because the logic in the code doesn't follow the logic of 
@@ -707,7 +708,7 @@ problems.
 Next, let's look at what's inside the two dataframes. The `dat` dataframe has a
 single column called `ID`, which is currently in a character class. This is the
 column that's being counted in the count summary we want to create. The
-`call_data` dataframe has six columns, and one of them (`month`) similar gives
+`call_data` dataframe has six columns, and one of them (`month`) similarly gives
 the values we want to count in the count summary. However, this column has an
 "ordered" class rather than a character class. An "ordered" class is a
 specialized type of "factor" class. Again, maybe this won't make a difference

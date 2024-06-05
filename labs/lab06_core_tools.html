@@ -407,12 +407,12 @@ with logical statements to extract subsets of the data.</p>
 <p>We’ll use this lab to explore some of the tools for regular
 expressions in the <code>stringr</code> package. (The package also
 includes other tools for working with character strings that do not
-involve regular expressions and in generaly is an excellent package to
+involve regular expressions and in general is an excellent package to
 add to your core toolset). In addition to teaching you some of these
 functions (which you might already know), this lab aims to give you some
-strategies of how you can become more familiar with a tool you want to
-add to your toolset. These strategies apply more broadly as you build
-the set of tools that you plan to use over and over in your coding.</p>
+strategies for becoming more familiar with a tool you want to add to
+your toolset. These strategies can apply more broadly as you build the
+set of tools that you plan to use over and over in your coding.</p>
 <p>As you work through the tasks of this lab, we’ll ask you to reference
 some materials that can help you learn the tools in
 <code>stringr</code>. These types of resources are often available for R
@@ -568,7 +568,7 @@ words.</p>
 <p>Next, we can look through the <code>stringr</code> cheatsheet (<a href="https://rstudio.github.io/cheatsheets/strings.pdf" class="uri">https://rstudio.github.io/cheatsheets/strings.pdf</a>) to
 see if there’s anything promising. We are looking for a function that
 can identify which values in vector of character strings include a
-certain pattern, without that pattern necessarily be the full value.
+certain pattern, without that pattern necessarily being the full value.
 Start by looking at the large categories on the first page of the
 cheatsheet (“Detect Matches”, “Subset Strings”, and so on). What we are
 trying to do here is to detect a string, so we can start looking in that
@@ -578,8 +578,8 @@ section.</p>
 <code>str_which</code>, <code>str_locate</code>, and
 <code>str_count</code>. If we read the descriptions of these, two sound
 promising. The first is <code>str_detect</code>, which detects if a
-match exist in each string in the vector, returning <code>TRUE</code> if
-it does and <code>FALSE</code> otherwise. The second is
+match exists in each string in the vector, returning <code>TRUE</code>
+if it does and <code>FALSE</code> otherwise. The second is
 <code>str_which</code>, which returns the indexes of the strings in a
 vector that have a match.</p>
 <p>Let’s try out the examples for these two functions to see which would
@@ -722,7 +722,7 @@ with square brackets from the cheatsheet:</p>
 alt(&quot;[abe]&quot;) </code></pre>
 <pre><code>## [1] │ &lt;a&gt;&lt;b&gt;cd&lt;e&gt;</code></pre>
 <p>We can see that the square brackets let us pick out any one of the
-letters a, b, and e in these examples. Let’s try it with out example.
+letters a, b, and e in these examples. Let’s try it with our example.
 First, in the <code>snake_examples</code>, let’s see if we can pick out
 every “s”, regardless of if it’s uppercase or lowercase:</p>
 <pre class="r"><code>str_view(snake_examples, pattern = &quot;[sS]&quot;)</code></pre>
@@ -836,7 +836,7 @@ vector and work with it alone.</p>
 ## ... and 58 more</code></pre>
 <p>It looks like the <code>property</code> column is consistent in
 always using “Playground”, but the <code>location</code> column is not,
-and there it’s important that we look for both “Playground” and
+and therefore it’s important that we look for both “Playground” and
 “playground”.</p>
 <p>Now that we have the patterns we want to use, we can use them along
 with <code>filter</code> to get animal response calls that came from
@@ -866,7 +866,7 @@ playground_animal_calls</code></pre>
 <div id="continuing-to-explore-regular-expressions" class="section level2">
 <h2>Continuing to explore regular expressions</h2>
 <p>In these tasks, we’ve dug into how one tool in <code>stringr</code>
-works with regularly expressions, and this process can help us add
+works with regular expressions, and this process can help us add
 <code>str_detect</code> to our core set of tools. If you work with
 character strings a lot—particularly in the context of cleaning messy
 data—you may want to continue to explore other <code>stringr</code>
@@ -892,40 +892,39 @@ as a missing value.</li>
 <p>Here is information about the session under which the lab document
 was run:</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.3.0 (2023-04-21)
-## Platform: x86_64-apple-darwin20 (64-bit)
-## Running under: macOS Monterey 12.6.5
+<pre><code>## R version 4.2.3 (2023-03-15 ucrt)
+## Platform: x86_64-w64-mingw32/x64 (64-bit)
+## Running under: Windows 10 x64 (build 22621)
 ## 
 ## Matrix products: default
-## BLAS:   /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRblas.0.dylib 
-## LAPACK: /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
 ## 
 ## locale:
-## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
-## 
-## time zone: America/New_York
-## tzcode source: internal
+## [1] LC_COLLATE=English_United States.utf8 
+## [2] LC_CTYPE=English_United States.utf8   
+## [3] LC_MONETARY=English_United States.utf8
+## [4] LC_NUMERIC=C                          
+## [5] LC_TIME=English_United States.utf8    
 ## 
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
 ## other attached packages:
 ## [1] ggplot2_3.4.2   stringr_1.5.0   purrr_1.0.1     tidyr_1.3.0    
-## [5] lubridate_1.9.2 dplyr_1.1.2     janitor_2.2.0   readr_2.1.4    
+## [5] lubridate_1.9.2 dplyr_1.1.4     janitor_2.2.0   readr_2.1.4    
 ## 
 ## loaded via a namespace (and not attached):
-##  [1] bit_4.0.5         gtable_0.3.3      jsonlite_1.8.7    crayon_1.5.2     
-##  [5] compiler_4.3.0    tidyselect_1.2.0  parallel_4.3.0    snakecase_0.11.0 
-##  [9] jquerylib_0.1.4   scales_1.2.1      yaml_2.3.7        fastmap_1.1.1    
-## [13] R6_2.5.1          generics_0.1.3    knitr_1.43        tibble_3.2.1     
-## [17] munsell_0.5.0     bslib_0.5.0       pillar_1.9.0      tzdb_0.4.0       
-## [21] rlang_1.1.1       utf8_1.2.3        cachem_1.0.8      stringi_1.7.12   
-## [25] xfun_0.39         sass_0.4.7        bit64_4.0.5       timechange_0.2.0 
-## [29] cli_3.6.1         withr_2.5.0       magrittr_2.0.3    digest_0.6.33    
-## [33] grid_4.3.0        vroom_1.6.3       rstudioapi_0.15.0 hms_1.1.3        
-## [37] lifecycle_1.0.3   vctrs_0.6.3       evaluate_0.21     glue_1.6.2       
-## [41] colorspace_2.1-0  fansi_1.0.4       rmarkdown_2.23    tools_4.3.0      
-## [45] pkgconfig_2.0.3   htmltools_0.5.5</code></pre>
+##  [1] pillar_1.9.0     bslib_0.4.2      compiler_4.2.3   jquerylib_0.1.4 
+##  [5] tools_4.2.3      bit_4.0.5        digest_0.6.31    gtable_0.3.3    
+##  [9] jsonlite_1.8.4   evaluate_0.20    lifecycle_1.0.3  tibble_3.2.1    
+## [13] timechange_0.2.0 pkgconfig_2.0.3  rlang_1.1.4      cli_3.6.1       
+## [17] rstudioapi_0.14  parallel_4.2.3   yaml_2.3.7       xfun_0.40       
+## [21] fastmap_1.1.1    withr_2.5.0      knitr_1.42       generics_0.1.3  
+## [25] vctrs_0.6.5      sass_0.4.5       hms_1.1.3        bit64_4.0.5     
+## [29] grid_4.2.3       tidyselect_1.2.1 glue_1.6.2       snakecase_0.11.0
+## [33] R6_2.5.1         fansi_1.0.4      vroom_1.6.1      rmarkdown_2.21  
+## [37] tzdb_0.4.0       magrittr_2.0.3   scales_1.2.1     htmltools_0.5.5 
+## [41] colorspace_2.1-0 utf8_1.2.3       stringi_1.7.12   munsell_0.5.0   
+## [45] cachem_1.0.7     crayon_1.5.2</code></pre>
 </div>
 
 

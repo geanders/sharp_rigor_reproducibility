@@ -141,7 +141,7 @@ and editing it to make it easier to understand, maintain, debug, and reproduce.
 
 To start, the following code chunk contains the original code script I'd like
 you to work with. If you'd like, you can copy this into a new R code script and 
-make your edits that. Otherwise, you can work with it directly in this RMarkdown file
+make your edits that way. Otherwise, you can work with it directly in this RMarkdown file
 (if you have opened the lab as its RMarkdown file) or, if these ideas are very new
 to you, you could even just follow along by reading through the example code that's 
 included in the lab, without trying to make the changes yourself yet. 
@@ -414,7 +414,7 @@ monthly_man_animal_response <- count(man_animal_resp, .wt = call_month)
 monthly_man_animal_response
 ```
 
-## Delete dead end code
+## Delete deadend code
 
 The next step is to edit the script to remove "deadend" code. There are a couple of types of 
 deadend code that often come up when you first write a code script. The first comes from 
@@ -423,11 +423,10 @@ here, but those are cases that are easy for you to identify in your own code, an
 substantially clarify the code by editing them out once you've determined they aren't helping. 
 
 The other type of "deadend" code is the code that you use to check things as
-your write the code. These calls are very helpful as you're writing the code,
+you write the code. These calls are very helpful as you're writing the code,
 but it typically makes the code script cleaner and clearer if you edit them out in the 
 editing stage. Examples of this type of deadend code might include calls that print
-out the dataframe () or elements of it `colnames(man_animal_resp)`. It can include
-other pieces of code you used in an exploratory way (e.g., calls to `summary` or `range`).
+out the dataframe (`man_animal_resp`) or elements of it (`colnames(man_animal_resp)`). It can include other pieces of code you used in an exploratory way (e.g., calls to `summary` or `range`).
 
 In the following code chunk, I've edited out these examples of deadend code in the 
 script. Note that I did keep the last call to read out a dataframe (`monthly_man_animal_response`), since this prints out the final result we are working
@@ -467,7 +466,7 @@ key) to create new lines in some spaces. If you're working in RStudio, the code 
 automatically indent following certain rules when you do this. For example, if you haven't
 completed a function call when you start a new line, the new line will typically be 
 indented. If you're adding code that's nested within a function, the indentation will help 
-the new line align with other parts of the nested function all. 
+the new line align with other parts of the nested function call. 
 
 There are two ways that these new lines and indentation can help make the code easier
 to understand and maintain. First, they can help you avoid long lines of code. Long lines
@@ -528,14 +527,14 @@ https://appsilon.com/rstudio-shortcuts-and-tips/#:~:text=Reformat%20R%20scripts,
 
 ## Add pipes when appropriate
 
-This step is not as critical as the previous ones, but it can help clarify your code, 
-in particular by reinforcing how the code is divided into blocks that perform similar 
-tasks. 
+This step is not as critical as the previous ones, but it can help clarify and improve the
+readability of your code, in particular by reinforcing how the code is divided into blocks that
+perform similar tasks. 
 
 In the existing script, you may notice that there are many cases where we're reassigning
 a new version of the data to override the old object (e.g., using `<-` with the same 
 object name as the input and output) after making a single change to the data. 
-This is alright, but in many of the cases, we could chain several of the steps together
+This is alright, but in many cases, we could chain several of the steps together
 with a pipe and only reassign after we've made a few related changes. 
 
 Once people have learned to use pipes, they'll often form their own style for how much 
