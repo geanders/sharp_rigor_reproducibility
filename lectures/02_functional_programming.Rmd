@@ -29,17 +29,18 @@ knitr::include_graphics("figures/repeated_code.png")
 
 There are several limitations to code that repeats in this way, including: 
 
-- As you evolve the code to do something lengthy or complexed, you waste a lot of
+- As you evolve the code to do something lengthy or complex, you waste a lot of
 time with copying-and-pasting
 - If you want to change some of your code, you'll have to change it everywhere you 
 copied-and-pasted it
 - The code becomes very long, so it takes longer to read and understand it
+- There is a limit to how far your code can scale (copy and paste 10 vs. 1,000 times)
 
 Writing and using functions is one way to limit the amount of code you copy-and-paste.
 
 ## Encapsulating an idea with a function
 
-Another advantage of a function is that is separates the code that performs a 
+Another advantage of a function is that it separates the code that performs a 
 subtask from the application of that subtask. 
 
 In practice, this lets you encapsulate the "idea" and implementation that you
@@ -97,8 +98,9 @@ by:
 There are also some other advantages of writing functions: 
 
 - More efficient across broader work, since functions can be reused
-- Each function can be documented clearly and throughly
-- Writing functions is a step on the path toward writing packages
+- Each function can be documented clearly and thoroughly
+- Writing functions is a step on the path toward writing packages and facilitates 
+reproducibility within a team or larger community 
 - Gets you in the habit of breaking up a complex coding task into discrete, 
 do-able steps
 
@@ -114,12 +116,23 @@ knitr::include_graphics("figures/anatomy_overview.png")
 
 ## Anatomy of a function 
 
+Another way to think about function anatomy is in terms of (1) the arguments, 
+(2) the body, and (3) the environment. Arguments and body are both defined explicitly; 
+the function's environment is implicit based on where the function is defined. 
+Functions are objects:
+
+```{r out.width = "0.7\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/‎anatomy_b.png")
+```
+
+## Anatomy of a function 
+
 The Application Programming Interface (API) of the function is the interface
-that you'll use when you apply the function---what do you put into and get 
+that you'll use when you apply the function---what do you put into and get
 out of the function?
 
-```{r out.width = "\\textwidth", echo = FALSE}
-knitr::include_graphics("figures/anatomy_api.png")
+```{r out.width = "0.9\\textwidth", fig.align = "center", echo = FALSE}
+knitr::include_graphics("figures/‎anatomy_api_b.png")
 ```
 
 Inputs are set within parentheses in the `function` call, while the 
@@ -131,7 +144,7 @@ output is specified by `return`.
 For the function's API, it's help to know that: 
 
 - You can only output one thing from the function. If you have a lot you need 
-to get out, you can pack it into a list object to do so (this is what a 
+to get out, you can pack it into a list object to do so (this is why a 
 lot of statistical tests and models return a list object)
 - There are ways to avoid using `return`, but it's helpful to use it as your 
 start writing functions, to make sure you're clear on what you're sending out 
@@ -154,9 +167,9 @@ For the innards of the function, it's helpful to know that:
 
 - R will move to a different R environment when the function runs, so the objects
 created within the function code won't show up in your working environment. 
+- The environment determines how the function finds the values associated with names
 - If the innards include more than one function call, then group them together with 
 curly brackets (`{` to start the code for the function, `}` to end it).
-
 
 # How to build a function
 
@@ -249,6 +262,14 @@ We can pick out those parts in the code and highlight them: \medskip
 knitr::include_graphics("figures/id_function_parts.png")
 ```
 
+## Identify function elements in the code 
+
+In this example the **argument** is the object that's being fed into the **body** of the function: \medskip
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/‎id_function_parts_b.png")
+```
+
 ## Convert the code to a function 
 
 Now that we've identified the parts, we can build the function from that. 
@@ -261,6 +282,12 @@ count_monthly_calls <- function(man_animal_resp) {
   
   return(monthly_man_animal_response)
 }
+```
+
+## Convert the code to a function 
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/‎count_monthly_calls.png")
 ```
 
 ## Convert the code to a function
@@ -281,7 +308,7 @@ debug, and use to reproduce analysis.
 
 ## Edit to improve object names
 
-We can edit the function to use better names. Originally, the input and output
+We can edit the function to use better, more generic, names. Originally, the input and output
 object names were specific to our code script.
 
 We'll change the input parameter `man_animal_resp` to `call_data` and the output
@@ -332,9 +359,14 @@ pkg::pkg_function(foo)
 When you use this method, you must have the package installed, but you don't 
 need to have it loaded in your current session. 
 
-Also, you can guarantee with package the code gets the function from. If you're
+Also, your code will explicitly get the function from the specified package. If you're
 using a function that's included in many packages, this notation will guarantee
 which one R uses.
+
+```{r echo = TRUE, eval = FALSE}
+stats::filter()
+dplyr::filter()
+```
 
 ## Adding package::function notation
 
@@ -396,6 +428,8 @@ as you learn to write functions:
 - Create example objects for each of your parameters
 - Walk through the code inside the function line-by-line
 
+Getting used to this workflow will also help with debugging.
+
 ## How to check the function code as you build it
 
 Let's try that with our example code:
@@ -450,6 +484,24 @@ apply a function to all the elements of list or vector at once.
 
 ```{r out.width = "\\textwidth", echo = FALSE}
 knitr::include_graphics("figures/purrr_map.jpg")
+```
+
+## Mapping a function across values in a list / vector
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/purrr_map_id.png")
+```
+
+## Mapping a function across values in a list / vector
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/purrr_map_stickers.png")
+```
+
+## Mapping a function across values in a list / vector
+
+```{r out.width = "\\textwidth", echo = FALSE}
+knitr::include_graphics("figures/purrr_map_drpepper.png")
 ```
 
 ## Mapping a function across values in a list / vector
