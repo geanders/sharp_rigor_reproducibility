@@ -13,8 +13,7 @@ knitr::opts_chunk$set(echo = FALSE)
 
 1. Data structures in R
 2. The tidyverse approach
-3. The Bioconductor approach
-4. Transitioning across approaches in a workflow
+3. Some examples of our favorite tools 
 
 # Data structures
 
@@ -43,8 +42,6 @@ dimensions.
 knitr::include_graphics("figures/complex_data_structure.png")
 ```
 
-
-
 ## Data structures across a workflow
 
 Work with research data will typically require a series of steps for
@@ -65,6 +62,18 @@ knitr::include_graphics("figures/workflow_structures.png")
 
 # Tidyverse approach
 
+## Tidyverse 
+
+Tidyverse is an *opinionated* collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures. 
+
+```{r out.width = "0.25\\textwidth", fig.align = "center"}
+knitr::include_graphics("figures/tidyverse_hex_logo.png")
+```
+
+\footnotesize
+
+\href{tidyverse.org}{Source: tidyverse.org}
+
 ## Tidyverse data structure
 
 The key data structure in the tidyverse approach is the **dataframe**:
@@ -72,6 +81,121 @@ The key data structure in the tidyverse approach is the **dataframe**:
 ```{r out.width = "\\textwidth"}
 knitr::include_graphics("figures/dataframe.png")
 ```
+
+## Tidy data 
+
+1. Each variable is a column; each column is a variable. 
+2. Each observation is a row; each row is an observation.
+3. Each value is a cell; each cell is a single value. 
+
+**Messy data** is any other arrangement of the data. 
+
+```{r out.width = "0.4\\textwidth", fig.align = "center"}
+knitr::include_graphics("figures/tidyr.png")
+```
+
+\footnotesize
+
+\href{https://cran.r-project.org/web/packages/tidyr/vignettes/tidy-data.html}{Source: Tidy data vignette}
+
+## Tidy data 
+
+```{r out.width = "\\textwidth", fig.align = "center"}
+knitr::include_graphics("figures/tidy_rules.png")
+```
+
+\vspace{2cm}
+
+\footnotesize
+
+\href{https://r4ds.hadley.nz/data-tidy}{Source: R for Data Science}
+
+## Tidy data 
+
+```{r out.width = "\\textwidth", fig.align = "center"}
+knitr::include_graphics("figures/messy_data.png")
+```
+
+\vspace{1.25cm}
+
+\footnotesize
+
+\href{https://r4ds.hadley.nz/data-tidy}{Source: R for Data Science}
+
+## Tidy data 
+
+- Data in column names 
+
+```{r out.width = "\\textwidth", fig.align = "center"}
+knitr::include_graphics("figures/data_in_columnnames.png")
+```
+
+\vspace{1.25cm}
+
+\footnotesize
+
+\href{https://r4ds.hadley.nz/data-tidy}{Source: R for Data Science}
+
+## Tidy data 
+
+- Many variables in column names 
+
+```{r out.width = "\\textwidth", fig.align = "center"}
+knitr::include_graphics("figures/many_data_in_columnnames.png")
+```
+
+\vspace{1.25cm}
+
+\footnotesize
+
+\href{https://r4ds.hadley.nz/data-tidy}{Source: R for Data Science}
+
+## Piping 
+
+Linking together modular tidyverse verbs in a pipeline using the **pipe** symbol 
+can allow you to write human-readable, sentence-like code. 
+
+Since most tidyverse functions take a data frame as their first argument, piping is
+an alternative to nesting or reassigning at each step. 
+
+## Piping example: storms dataset
+
+```{r echo = T, message = F}
+library(dplyr)
+
+head(storms, 3)
+```
+
+## Nesting 
+
+```{r echo = T, message = F}
+count(
+  summarise(
+    group_by(
+      filter(storms, year == 2022), name), 
+    start_month = min(month)), 
+  start_month, name = "n_storms")
+```
+
+## Reassignment 
+
+```{r echo = T, message = F}
+storms2 <- filter(storms, year == 2022)
+storms3 <- group_by(storms2, name)
+storms4 <- summarise(storms3, start_month = min(month))
+count(storms4, start_month, name = "n_storms")
+```
+
+## Piping 
+
+```{r echo = T, message = F}
+storms %>% 
+  filter(year == 2022) %>% 
+  group_by(name) %>% 
+  summarise(start_month = min(month)) %>% 
+  count(start_month, name = "n_storms")
+```
+
 
 ## Tidyverse approach
 
@@ -133,358 +257,357 @@ By contrast, if you use a variety of data structures, you often have to learn
 different tools (functions) for each data structure, rather than being able to
 use a single set of tools for all your data.
 
+<!-- # Bioconductor approach -->
 
-# Bioconductor approach
+<!-- ## Bioconductor data structures -->
 
-## Bioconductor data structures
+<!-- Bioconductor data structures tend to be more complex.  -->
 
-Bioconductor data structures tend to be more complex. 
+<!-- They are built on **S4 object classes**, which is one of R's **object-oriented -->
+<!-- programming** systems.  -->
 
-They are built on **S4 object classes**, which is one of R's **object-oriented
-programming** systems. 
+<!-- ## Bioconductor data structures -->
 
-## Bioconductor data structures
+<!-- They often will include several elements. The elements might have different -->
+<!-- data types or different dimensions, but the data structure stores these -->
+<!-- disparate parts together in one object. -->
 
-They often will include several elements. The elements might have different
-data types or different dimensions, but the data structure stores these
-disparate parts together in one object.
+<!-- ```{r out.width = "0.9\\textwidth", fig.align = "center"} -->
+<!-- knitr::include_graphics("figures/complex_data_structure.png") -->
+<!-- ``` -->
 
-```{r out.width = "0.9\\textwidth", fig.align = "center"}
-knitr::include_graphics("figures/complex_data_structure.png")
-```
+<!-- ## Types of data structures in R: Complex -->
 
-## Types of data structures in R: Complex
+<!-- You can start to see these levels in a complex data object by using the -->
+<!-- `str` function.  -->
 
-You can start to see these levels in a complex data object by using the
-`str` function. 
+<!-- For example, here's a peak at the structure of data stored in an `ExpressionSet` -->
+<!-- data structure from Bioconductor: -->
 
-For example, here's a peak at the structure of data stored in an `ExpressionSet`
-data structure from Bioconductor:
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- ```{r echo = TRUE, warning = FALSE, message = FALSE} -->
+<!-- library(Biobase); library(biobroom); data(hammer) -->
+<!-- str(hammer, max.level = 3) -->
+<!-- ``` -->
 
-```{r echo = TRUE, warning = FALSE, message = FALSE}
-library(Biobase); library(biobroom); data(hammer)
-str(hammer, max.level = 3)
-```
+<!-- ## Types of data structures in R: Complex -->
 
-## Types of data structures in R: Complex
+<!-- ```{r out.width = "\\textwidth", fig.align = "center"} -->
+<!-- knitr::include_graphics("figures/validation.png") -->
+<!-- ``` -->
 
-```{r out.width = "\\textwidth", fig.align = "center"}
-knitr::include_graphics("figures/validation.png")
-```
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- Image source: Amezquita et al., 2020 -->
 
-Image source: Amezquita et al., 2020
+<!-- ## Data structures in Bioconductor -->
 
-## Data structures in Bioconductor
+<!-- Examples of data structures in Bioconductor include: -->
 
-Examples of data structures in Bioconductor include:
+<!-- - `SummarizedExperiment` -->
+<!-- - `GRanges` -->
+<!-- - `ExpressionSet` -->
+<!-- - `MSnExp` -->
+<!-- - `SingleCellExperiment` -->
+<!-- - `MultiAssayExperiment` -->
+<!-- - `DGEList` -->
+<!-- - `DGEExact` -->
 
-- `SummarizedExperiment`
-- `GRanges`
-- `ExpressionSet`
-- `MSnExp`
-- `SingleCellExperiment`
-- `MultiAssayExperiment`
-- `DGEList`
-- `DGEExact`
+<!-- Once you have its package loaded, you can access help  -->
+<!-- documentation on a data structure using, e.g.,  -->
+<!-- `` ?`DGEList-class` ``. -->
 
-Once you have its package loaded, you can access help 
-documentation on a data structure using, e.g., 
-`` ?`DGEList-class` ``.
+<!-- ## Why use more complex data structures? -->
 
-## Why use more complex data structures?
+<!-- 1. To keep together lots of differently structured things  -->
 
-1. To keep together lots of differently structured things 
+<!-- ```{r out.width = "\\textwidth", fig.align = "center"} -->
+<!-- knitr::include_graphics("figures/validation.png") -->
+<!-- ``` -->
 
-```{r out.width = "\\textwidth", fig.align = "center"}
-knitr::include_graphics("figures/validation.png")
-```
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- Image source: Amezquita et al., 2020 -->
 
-Image source: Amezquita et al., 2020
+<!-- ## Why use more complex data structures? -->
 
-## Why use more complex data structures?
+<!-- 2. To work with large data -->
 
-2. To work with large data
+<!-- Complex data structures can help ensure that data are efficiently  -->
+<!-- stored. In some cases, they can also allow for data storage formats -->
+<!-- where part of the data stay on disk, rather than being read into memory. -->
 
-Complex data structures can help ensure that data are efficiently 
-stored. In some cases, they can also allow for data storage formats
-where part of the data stay on disk, rather than being read into memory.
+<!-- ```{r out.width = "0.9\\textwidth", fig.align = "center"} -->
+<!-- knitr::include_graphics("figures/memory_storage.png") -->
+<!-- ``` -->
 
-```{r out.width = "0.9\\textwidth", fig.align = "center"}
-knitr::include_graphics("figures/memory_storage.png")
-```
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- Image source: callnerds.com -->
 
-Image source: callnerds.com
+<!-- ## Why use more complex data structures? -->
 
-## Why use more complex data structures?
+<!-- One example is the `OnDiskMSnExp` data structure from the `MSnbase` package: -->
 
-One example is the `OnDiskMSnExp` data structure from the `MSnbase` package:
+<!-- \bigskip -->
 
-\bigskip
+<!-- > "The distinction between MSnExp and OnDiskMSnExp is often not explicitly -->
+<!-- stated as **it should not matter, from a user’s perspective, which data structure -->
+<!-- they are working with**, as both behave in equivalent ways. Often, they are -->
+<!-- referred to as in-memory and on-disk MSnExp implementations." -->
+<!-- (Gatto et al. 2013) -->
 
-> "The distinction between MSnExp and OnDiskMSnExp is often not explicitly
-stated as **it should not matter, from a user’s perspective, which data structure
-they are working with**, as both behave in equivalent ways. Often, they are
-referred to as in-memory and on-disk MSnExp implementations."
-(Gatto et al. 2013)
+<!-- ## Why use more complex data structures? -->
 
-## Why use more complex data structures?
+<!-- 3. To validate data when an object's created -->
 
-3. To validate data when an object's created
+<!-- ```{r out.width = "\\textwidth", fig.align = "center"} -->
+<!-- knitr::include_graphics("figures/validation.png") -->
+<!-- ``` -->
 
-```{r out.width = "\\textwidth", fig.align = "center"}
-knitr::include_graphics("figures/validation.png")
-```
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- Image source: Amezquita et al., 2020 -->
 
-Image source: Amezquita et al., 2020
+<!-- ## Why use more complex data structures? -->
 
-## Why use more complex data structures?
+<!-- 4. To facilitate software development across large and diverse -->
+<!-- groups of contributors -->
 
-4. To facilitate software development across large and diverse
-groups of contributors
+<!-- \bigskip -->
 
-\bigskip
+<!-- > "S4 is a rigorous system that forces you to thing carefully about program -->
+<!-- design. **It's particularly well-suited for building large systems that evolve -->
+<!-- over time and will receive contributions from many programmers.** This is why it's -->
+<!-- used by the Bioconductor project, so another reason to learn S4 is to equip you -->
+<!-- to contribute to that project." (Wickham, *Advanced R*) -->
 
-> "S4 is a rigorous system that forces you to thing carefully about program
-design. **It's particularly well-suited for building large systems that evolve
-over time and will receive contributions from many programmers.** This is why it's
-used by the Bioconductor project, so another reason to learn S4 is to equip you
-to contribute to that project." (Wickham, *Advanced R*)
+<!-- ## More resources on the Bioconductor approach -->
 
-## More resources on the Bioconductor approach
+<!-- - [Bioconductor site](https://www.bioconductor.org/) (especially the "Learn" section) -->
+<!-- - [BioC Conference](http://bioc2020.bioconductor.org/) -->
 
-- [Bioconductor site](https://www.bioconductor.org/) (especially the "Learn" section)
-- [BioC Conference](http://bioc2020.bioconductor.org/)
+<!-- # Connecting the two approaches -->
 
-# Connecting the two approaches
+<!-- ## Data structures across a workflow -->
 
-## Data structures across a workflow
+<!-- You can move your data among different structures across a workflow, including from more complex data to simpler data structures. -->
 
-You can move your data among different structures across a workflow, including from more complex data to simpler data structures.
+<!-- ```{r out.width = "0.9\\textwidth", fig.align = "center"} -->
+<!-- knitr::include_graphics("figures/workflow_structures.png") -->
+<!-- ``` -->
 
-```{r out.width = "0.9\\textwidth", fig.align = "center"}
-knitr::include_graphics("figures/workflow_structures.png")
-```
+<!-- ## Example data -->
 
-## Example data
+<!-- The `hammer` dataset is available through the `biobroom` package. It  -->
+<!-- provides data from an RNA-Seq experiment for a study on nervous system -->
+<!-- transcriptomics (Hammer et al., 2010). -->
 
-The `hammer` dataset is available through the `biobroom` package. It 
-provides data from an RNA-Seq experiment for a study on nervous system
-transcriptomics (Hammer et al., 2010).
+<!-- The data are stored in an `ExpressionSet` data structure, a common class used in -->
+<!-- Bioconductor work. Different elements of the data structure store data from the -->
+<!-- assay as well as phenotype data. -->
 
-The data are stored in an `ExpressionSet` data structure, a common class used in
-Bioconductor work. Different elements of the data structure store data from the
-assay as well as phenotype data.
+<!-- ## Example data -->
 
-## Example data
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- ```{r echo = TRUE, message = FALSE, warning = FALSE} -->
+<!-- library(Biobase); library(biobroom) -->
+<!-- data(hammer) -->
+<!-- print(hammer) -->
+<!-- ``` -->
 
-```{r echo = TRUE, message = FALSE, warning = FALSE}
-library(Biobase); library(biobroom)
-data(hammer)
-print(hammer)
-```
+<!-- ## Connecting the two approaches -->
 
-## Connecting the two approaches
+<!-- There are several ways you can connect the two approaches:  -->
 
-There are several ways you can connect the two approaches: 
+<!-- - Generic functions from the **`biobroom` package** -->
+<!-- - **Accessor functions** written for specific Bioconductor data  -->
+<!-- structures -->
+<!-- - **Elemental tools** for extracting parts of data from R objects -->
 
-- Generic functions from the **`biobroom` package**
-- **Accessor functions** written for specific Bioconductor data 
-structures
-- **Elemental tools** for extracting parts of data from R objects
+<!-- ## `biobroom` package -->
 
-## `biobroom` package
+<!-- If you're lucky, you can make the connection very easily using the  -->
+<!-- **`biobroom` package**.  -->
 
-If you're lucky, you can make the connection very easily using the 
-**`biobroom` package**. 
+<!-- This package allows you to extract elements from  -->
+<!-- several types of Bioconductor data structures.  -->
 
-This package allows you to extract elements from 
-several types of Bioconductor data structures. 
+<!-- It has generic functions -->
+<!-- that pull out elements and format them as tidy dataframes. -->
 
-It has generic functions
-that pull out elements and format them as tidy dataframes.
+<!-- ## `biobroom` package -->
 
-## `biobroom` package
+<!-- Bioconductor data structures that currently work with `biobroom` -->
+<!-- include:  -->
 
-Bioconductor data structures that currently work with `biobroom`
-include: 
+<!-- - `ExpressionSet` -->
+<!-- - `GRanges` -->
+<!-- - `GRangesList` -->
+<!-- - `MSnSet` -->
+<!-- - `RangedSummarizedExperiment` -->
+<!-- - `qvalue` -->
+<!-- - `DESeqDataSet` -->
+<!-- - `DESeqResults` -->
+<!-- - `MArrayLM` -->
 
-- `ExpressionSet`
-- `GRanges`
-- `GRangesList`
-- `MSnSet`
-- `RangedSummarizedExperiment`
-- `qvalue`
-- `DESeqDataSet`
-- `DESeqResults`
-- `MArrayLM`
 
+<!-- ## `biobroom` example -->
 
-## `biobroom` example
+<!-- You can use the `tidy` function to extract a tidy dataframe with assay data -->
+<!-- from an `ExpressionSet` object in R: -->
 
-You can use the `tidy` function to extract a tidy dataframe with assay data
-from an `ExpressionSet` object in R:
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- ```{r echo = TRUE, message = FALSE, warning = FALSE} -->
+<!-- tidy(hammer, addPheno = TRUE) -->
+<!-- ``` -->
 
-```{r echo = TRUE, message = FALSE, warning = FALSE}
-tidy(hammer, addPheno = TRUE)
-```
+<!-- ## `biobroom` example -->
 
-## `biobroom` example
+<!-- This allows you to use tidyverse functions to explore and visualize the data.  -->
+<!-- For example, to explore the values for a single gene:  -->
 
-This allows you to use tidyverse functions to explore and visualize the data. 
-For example, to explore the values for a single gene: 
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- ```{r echo = TRUE, message = FALSE, warning = FALSE} -->
+<!-- library(tidyverse); library(ggbeeswarm); library(ggrepel) -->
+<!-- one_gene <- tidy(hammer, addPheno = TRUE) %>%  -->
+<!--         filter(gene == "ENSRNOG00000004805") -->
+<!-- one_gene -->
+<!-- ``` -->
 
-```{r echo = TRUE, message = FALSE, warning = FALSE}
-library(tidyverse); library(ggbeeswarm); library(ggrepel)
-one_gene <- tidy(hammer, addPheno = TRUE) %>% 
-        filter(gene == "ENSRNOG00000004805")
-one_gene
-```
+<!-- ## `biobroom` example -->
 
-## `biobroom` example
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- ```{r echo = TRUE, message = FALSE, warning = FALSE, fig.width = 5, fig.height = 3, out.width = "0.9\\textwidth", fig.align = "center"} -->
 
-```{r echo = TRUE, message = FALSE, warning = FALSE, fig.width = 5, fig.height = 3, out.width = "0.9\\textwidth", fig.align = "center"}
+<!-- one_gene %>%  -->
+<!--         ggplot(aes(x = protocol, y = value)) +  -->
+<!--         geom_beeswarm() + -->
+<!--         geom_label_repel(aes(label = sample)) +  -->
+<!--         ggtitle("Values by sample for gene ENSRNOG00000004805",  -->
+<!--                 subtitle = "Samples are labeled with their sample ID") -->
+<!-- ``` -->
 
-one_gene %>% 
-        ggplot(aes(x = protocol, y = value)) + 
-        geom_beeswarm() +
-        geom_label_repel(aes(label = sample)) + 
-        ggtitle("Values by sample for gene ENSRNOG00000004805", 
-                subtitle = "Samples are labeled with their sample ID")
-```
 
+<!-- ## Accessor functions -->
 
-## Accessor functions
+<!-- **Accessor functions** are written to allow you to extract specific elements -->
+<!-- from complex data structures.  -->
 
-**Accessor functions** are written to allow you to extract specific elements
-from complex data structures. 
+<!-- For example, you can extract the assay data (in a -->
+<!-- matrix format) from an `ExpressionSet` object using the `exprs` accessor -->
+<!-- function: -->
 
-For example, you can extract the assay data (in a
-matrix format) from an `ExpressionSet` object using the `exprs` accessor
-function:
+<!-- \bigskip -->
 
-\bigskip
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- ```{r echo = TRUE} -->
+<!-- exprs(hammer)[1:6, 1:4] -->
+<!-- ``` -->
+<!-- ## Accessor function example -->
 
-```{r echo = TRUE}
-exprs(hammer)[1:6, 1:4]
-```
-## Accessor function example
+<!-- You can use the `pData` accessor function to extract the phenotype data -->
+<!-- (as a "messy" dataframe) from an `ExpressionSet` object: -->
 
-You can use the `pData` accessor function to extract the phenotype data
-(as a "messy" dataframe) from an `ExpressionSet` object:
+<!-- ```{r echo = TRUE} -->
+<!-- pData(hammer)[1:6, 1:3] -->
+<!-- ``` -->
+<!-- ## Accessor functions -->
 
-```{r echo = TRUE}
-pData(hammer)[1:6, 1:3]
-```
-## Accessor functions
+<!-- Accessor functions are meant to be more robust than more elemental tools. -->
 
-Accessor functions are meant to be more robust than more elemental tools.
+<!-- Developers are meant to consider these a "contract" with users, so their changes -->
+<!-- "under the hood" shouldn't affect code that uses these functions. -->
 
-Developers are meant to consider these a "contract" with users, so their changes
-"under the hood" shouldn't affect code that uses these functions.
+<!-- ## Extracting from R objects -->
 
-## Extracting from R objects
+<!-- The most elemental way of extracting data from R objects is to use the `$` or -->
+<!-- `@` operators. -->
 
-The most elemental way of extracting data from R objects is to use the `$` or
-`@` operators.
+<!-- For S4 objects (most Bioconductor objects), `@` is used for this extraction: -->
 
-For S4 objects (most Bioconductor objects), `@` is used for this extraction:
+<!-- ```{r echo = TRUE} -->
+<!-- hammer@phenoData@data[1:4, 1:3] -->
+<!-- ``` -->
 
-```{r echo = TRUE}
-hammer@phenoData@data[1:4, 1:3]
-```
+<!-- ## Extracting from R objects -->
 
-## Extracting from R objects
+<!-- You can use the `str` function (short for "structure") to investigate -->
+<!-- what's stored in any type of R object, to figure out what you can extract: -->
 
-You can use the `str` function (short for "structure") to investigate
-what's stored in any type of R object, to figure out what you can extract:
+<!-- \footnotesize -->
 
-\footnotesize
+<!-- ```{r echo = TRUE} -->
+<!-- str(hammer@phenoData) -->
+<!-- ``` -->
 
-```{r echo = TRUE}
-str(hammer@phenoData)
-```
+<!-- ## Extracting from R objects -->
 
-## Extracting from R objects
+<!-- In some cases, especially for large data, a slot in an object might just -->
+<!-- point to an environment---it might be trickier in these cases to extract the -->
+<!-- data directly from the object. -->
 
-In some cases, especially for large data, a slot in an object might just
-point to an environment---it might be trickier in these cases to extract the
-data directly from the object.
+<!-- For example, the `assayData` slot in the example `ExpressionSet` object  -->
+<!-- points to an environment, rather than directly storing the assay data: -->
 
-For example, the `assayData` slot in the example `ExpressionSet` object 
-points to an environment, rather than directly storing the assay data:
+<!-- ```{r echo = TRUE} -->
+<!-- hammer@assayData -->
+<!-- ``` -->
 
-```{r echo = TRUE}
-hammer@assayData
-```
+<!-- ## Data structures across a workflow -->
 
-## Data structures across a workflow
+<!-- You can move your data among different structures across a workflow, including from more complex data to simpler data structures. -->
 
-You can move your data among different structures across a workflow, including from more complex data to simpler data structures.
+<!-- ```{r out.width = "0.9\\textwidth", fig.align = "center"} -->
+<!-- knitr::include_graphics("figures/workflow_structures.png") -->
+<!-- ``` -->
 
-```{r out.width = "0.9\\textwidth", fig.align = "center"}
-knitr::include_graphics("figures/workflow_structures.png")
-```
+<!-- # Future directions in connecting workflows -->
 
-# Future directions in connecting workflows
+<!-- ## Future directions: `ggbio` package -->
 
-## Future directions: `ggbio` package
+<!-- The `ggbio` package allows you to coordinate Bioconductor-style analysis -->
+<!-- with the tidyverse style of visualization, which is based on the `ggplot2` -->
+<!-- package. -->
 
-The `ggbio` package allows you to coordinate Bioconductor-style analysis
-with the tidyverse style of visualization, which is based on the `ggplot2`
-package.
+<!-- This package enables the use of "layers" of small simple functions to build  -->
+<!-- up a plot, aligning with the general tidyverse approach of combining small,  -->
+<!-- simple tools to do complex things. -->
 
-This package enables the use of "layers" of small simple functions to build 
-up a plot, aligning with the general tidyverse approach of combining small, 
-simple tools to do complex things.
+<!-- ## Future directions: `ggbio` package -->
 
-## Future directions: `ggbio` package
+<!-- Here is an example from the [`ggbio` vignette](https://www.bioconductor.org/packages/release/bioc/vignettes/ggbio/inst/doc/ggbio.pdf), using data stored in a `GRanges` data structure: -->
 
-Here is an example from the [`ggbio` vignette](https://www.bioconductor.org/packages/release/bioc/vignettes/ggbio/inst/doc/ggbio.pdf), using data stored in a `GRanges` data structure:
+<!-- ```{r out.width = "\\textwidth"} -->
+<!-- knitr::include_graphics("figures/ggbio_vignette_example.png") -->
+<!-- ``` -->
 
-```{r out.width = "\\textwidth"}
-knitr::include_graphics("figures/ggbio_vignette_example.png")
-```
+<!-- ## Future directions: List-columns -->
 
-## Future directions: List-columns
+<!-- In some areas, there is a movement to allow a tidyverse approach even in the -->
+<!-- context of very complex data that doesn't fit naturally into a dataframe.   -->
 
-In some areas, there is a movement to allow a tidyverse approach even in the
-context of very complex data that doesn't fit naturally into a dataframe.  
+<!-- More complex "tidy" dataframes are being developed that allow some columns to be -->
+<!-- **list-columns** and store pretty complex data within a cell of the dataframe. -->
 
-More complex "tidy" dataframes are being developed that allow some columns to be
-**list-columns** and store pretty complex data within a cell of the dataframe.
+<!-- ## Future directions: List-columns -->
 
-## Future directions: List-columns
+<!-- One example is with spatial data. List-columns are being powerfully used, for -->
+<!-- example, within the `sf` package for geospatial data in R. -->
 
-One example is with spatial data. List-columns are being powerfully used, for
-example, within the `sf` package for geospatial data in R.
+<!-- \bigskip -->
 
-\bigskip
+<!-- ```{r out.width = "\\textwidth", fig.align = "center"} -->
+<!-- knitr::include_graphics("figures/sf_example.png") -->
+<!-- ``` -->
 
-```{r out.width = "\\textwidth", fig.align = "center"}
-knitr::include_graphics("figures/sf_example.png")
-```
+<!-- \footnotesize -->
 
-\footnotesize
-
-Image source: https://r-spatial.github.io/sf/articles/sf1.html
+<!-- Image source: https://r-spatial.github.io/sf/articles/sf1.html -->
 
