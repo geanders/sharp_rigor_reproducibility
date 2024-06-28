@@ -1,6 +1,6 @@
 ---
 title: "Functional programming"
-author: "Brooke Anderson"
+author: "Brooke Anderson and Rachel Severson"
 output: beamer_presentation
 ---
 

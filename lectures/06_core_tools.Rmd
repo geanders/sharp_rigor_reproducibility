@@ -1,7 +1,7 @@
 ---
 title: "Developing and using a set of core tools in R" 
 subtitle: "Developing toolsets in the context of complex and tidy data structures"
-author: "Brooke Anderson"
+author: "Brooke Anderson and Rachel Severson"
 output: beamer_presentation
 ---
 
