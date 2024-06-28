@@ -1,6 +1,6 @@
 ---
 title: "Preparing Data and Code for Publication"
-author: "Brooke Anderson"
+author: "Brooke Anderson and Rachel Severson"
 output: beamer_presentation
 ---
 
