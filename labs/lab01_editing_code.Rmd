@@ -87,22 +87,24 @@ These data provide information on these calls over several years, including
 information like the date and time of the initial call, information describing 
 the animal, and the nature and outcome of the response. 
 
-The original data can be found at https://data.cityofnewyork.us/Environment/Urban-Park-Ranger-Animal-Condition-Response/fuhs-xmg2. We will be working with a version of the data that have been slightly reformated
+The original data can be found at
+https://data.cityofnewyork.us/Environment/Urban-Park-Ranger-Animal-Condition-Response/fuhs-xmg2.
+We will be working with a version of the data that have been slightly reformated
 to help highlight some topics we'll cover during the labs. Do not download the
-data from the original site (I'm only including that in case you'd like to find 
-out more about the data). Instead, please use the version included in the "data" 
-subdirectory of the lab repo that you downloaded. (The main difference is that we've
-split the data into separate files by borough, to help illustrate some techniques
-for reading and joining data from multiple files. If you'd like to see later how we 
-prepared the example data from the original data, we've included the original data
-in the lab repo in the "raw_data" subdirectory and the script to convert it in the
-"prepare_data" subdirectory.)
+data from the original site (I'm only including that in case you'd like to find
+out more about the data). Instead, please use the version included in the "data"
+subdirectory of the lab repo that you downloaded. (The main difference is that
+we've split the data into separate files by borough, to help illustrate some
+techniques for reading and joining data from multiple files. If you'd like to
+see later how we prepared the example data from the original data, we've
+included the original data in the lab repo in the "raw_data" subdirectory and
+the script to convert it in the "prepare_data" subdirectory.)
 
-Each file is a CSV, so it can be read into R using the `read_csv` function from the `readr` 
-package (included as part of the umbrella `tidyverse` package). Here is an example of the 
-data from Manhattan: 
+Each file is a CSV, so it can be read into R using the `read_csv` function from
+the `readr` package (included as part of the umbrella `tidyverse` package). Here
+is an example of the data from Manhattan:
 
-```{r}
+```{r eval = TRUE, message = FALSE, warning = FALSE}
 library(readr)
 
 man_animal_response <- read_csv("../data/Manhattan_animal_response.csv")
@@ -136,38 +138,43 @@ working through in that lab.
 
 # Editing Code
 
-In this lab, I would like for you to practice taking a messy original R code script
-and editing it to make it easier to understand, maintain, debug, and reproduce. 
+In this lab, I would like for you to practice taking a messy original R code
+script and editing it to make it easier to understand, maintain, debug, and
+reproduce.
 
 To start, the following code chunk contains the original code script I'd like
-you to work with. If you'd like, you can copy this into a new R code script and 
-make your edits that way. Otherwise, you can work with it directly in this RMarkdown file
-(if you have opened the lab as its RMarkdown file) or, if these ideas are very new
-to you, you could even just follow along by reading through the example code that's 
-included in the lab, without trying to make the changes yourself yet. 
+you to work with. If you'd like, you can copy this into a new R code script and
+make your edits that way. Otherwise, you can work with it directly in this
+RMarkdown file (if you have opened the lab as its RMarkdown file) or, if these
+ideas are very new to you, you could even just follow along by reading through
+the example code that's included in the lab, without trying to make the changes
+yourself yet.
 
 Start by looking through this example code. Try it out on your own computer to
 make sure you can get each part to run and to see if you can understand what
 it's doing (don't worry---I've provided some explanation after the code in case
-you can't make sene of it). Once you understand it, I'll walk you through several 
-steps to take to edit it so it will be clearer to understand, debug, and maintain.
+you can't make sene of it). Once you understand it, I'll walk you through
+several steps to take to edit it so it will be clearer to understand, debug, and
+maintain.
 
-As a couple of problem-shooting notes, keep in mind the following as you try out the
-code: 
+As a couple of problem-shooting notes, keep in mind the following as you try out
+the code:
 
-- There may be some libraries that the code uses (or that are added in the later edits
-to the code) that you don't have installed to your computer yet. If you get an error, 
-check to make sure that you have the required packages installed (you can use 
-`install.packages` along with the package name to do this). If you're unclear on 
-how to do this, you can ask me or a teaching assistant for help.
-- The code uses filepaths to find the data file as it reads it in. The code is written
-with the assumption that the data file is in a subdirectory of your current working 
-directory, with that subdirectory called "data". If you have downloaded the lab repo
-and are working with code in the lab RMarkdown, this filepath should work fine. 
-However, if you have opened a new script or are copying the example code into a new
-RMarkdown, you may need to change this depending on where you've saved that file. Again, 
-please let me or a teaching assistant know if you're having any problems reading the
-file in, as we may just need to change the filepath you're using. 
+- There may be some libraries that the code uses (or that are added in the later
+edits to the code) that you don't have installed to your computer yet. If you
+get an error, check to make sure that you have the required packages installed
+(you can use `install.packages` along with the package name to do this). If
+you're unclear on how to do this, you can ask me or a teaching assistant for
+help.
+- The code uses filepaths to find the data file as it reads it in. The code is
+written with the assumption that the data file is in a subdirectory of your
+current working directory, with that subdirectory called "data". If you have
+downloaded the lab repo and are working with code in the lab RMarkdown, this
+filepath should work fine. However, if you have opened a new script or are
+copying the example code into a new RMarkdown, you may need to change this
+depending on where you've saved that file. Again, please let me or a teaching
+assistant know if you're having any problems reading the file in, as we may just
+need to change the filepath you're using.
 
 ```{r}
 library(readr)
@@ -187,63 +194,67 @@ combined <- count(df3, .wt = call_month)
 combined
 ```
 
-Here is an explanation of what the script is doing, in case you weren't clear on all 
-the pieces (this is written intentionally as a first draft of code, so it's not as 
-clear yet as it should be by the time we're done with our edits!). First, it reads in 
-data from the data file on animal responses in the borough of Manhattan. Next, it
-limits that data to only the calls that came for Central Park and for reptiles or 
-amphibians. 
+Here is an explanation of what the script is doing, in case you weren't clear on
+all the pieces (this is written intentionally as a first draft of code, so it's
+not as clear yet as it should be by the time we're done with our edits!). First,
+it reads in data from the data file on animal responses in the borough of
+Manhattan. Next, it limits that data to only the calls that came for Central
+Park and for reptiles or amphibians.
 
-The next steps are working with and exploring the timing of the calls. 
-First, while the data includes a date and time of the initial call, this column 
-is not recognized and represented as a date and time when the data are read in. 
-Instead, that information is represented as a character string. This code converts
-that information into a data class built to represent dates and times, which allows
-us to do things like get the range of dates covered by the calls in the data and 
-determine the year and month of each call based on the date and time of the call.
+The next steps are working with and exploring the timing of the calls. First,
+while the data includes a date and time of the initial call, this column is not
+recognized and represented as a date and time when the data are read in.
+Instead, that information is represented as a character string. This code
+converts that information into a data class built to represent dates and times,
+which allows us to do things like get the range of dates covered by the calls in
+the data and determine the year and month of each call based on the date and
+time of the call.
 
-Once this information is converted, we use it to first see the range between 
-the first and last calls listed in the data, which helps us see that the data
+Once this information is converted, we use it to first see the range between the
+first and last calls listed in the data, which helps us see that the data
 started midway through 2018 and ended midway through 2021. We then make a column
-with the year of the call and use it to limit the data to calls that came during the
-two years with year-round data, 2019 and 2020. We then make a column that gives
-the month of each call and use that information to count us the number of calls
-by month. 
+with the year of the call and use it to limit the data to calls that came during
+the two years with year-round data, 2019 and 2020. We then make a column that
+gives the month of each call and use that information to count the number of
+calls by month.
 
 ## Use better column names
 
-Now, we'll start editing the code to make it clearer and easier to maintain, debug, 
-and reproduce. I'd like you to start by converting the column names to make them 
-easier to work with. If you have ideas of how to do that, you can skip to editing
-the code (and check the next code chunk for my answer), but if you need some ideas, 
-keep reading for some tips.
+Now, we'll start editing the code to make it clearer and easier to maintain,
+debug, and reproduce. I'd like you to start by converting the column names to
+make them easier to work with. If you have ideas of how to do that, you can skip
+to editing the code (and check the next code chunk for my answer), but if you
+need some ideas, keep reading for some tips.
 
-If you take a look at the data, you can see that there are some things about the 
-column names that make them hard to work with. First, several of them are very long
-(for example, "Date and Time of initial call"). This will be annoying to type out 
-every time you work with them and, while tab completion can help with that, will make
-it hard to keep lines of code to under 80 characters and so could cause some of your code
-to run off the page of your script file or RMarkdown file. 
+If you take a look at the data, you can see that there are some things about the
+column names that make them hard to work with. First, several of them are very
+long (for example, "Date and Time of initial call"). This will be annoying to
+type out every time you work with them and, while tab completion can help with
+that, will make it hard to keep lines of code to under 80 characters and so
+could cause some of your code to run off the page of your script file or
+RMarkdown file.
 
-Second, they tend to include a mix of uppercase and lowercase letters. The names are
-case-sensitive, so you'll need to remember where uppercase letters go in each column. 
-Again, when you're working in RStudio, tab completion can help with this, but it 
-still may be simpler (and easier on your pinkies) to use lowercase throughout the column 
-names. 
+Second, they tend to include a mix of uppercase and lowercase letters. The names
+are case-sensitive, so you'll need to remember where uppercase letters go in
+each column. Again, when you're working in RStudio, tab completion can help with
+this, but it still may be simpler (and easier on your pinkies) to use lowercase
+throughout the column names.
 
-Third and most important, there are spaces in many of the column names. Column names
-are allowed to have spaces, but you then will need to do something a bit unusual to 
-use those column names for much of the code where you work with the column: you will 
-need to surround its name with backticks. You can see several examples of this in 
-the original script. This becomes a big inconvenience if you have to do it often. 
+Third and most important, there are spaces in many of the column names. Column
+names are allowed to have spaces, but you then will need to do something a bit
+unusual to use those column names for much of the code where you work with the
+column: you will need to surround its name with backticks. You can see several
+examples of this in the original script. This becomes a big inconvenience if you
+have to do it often.
 
-We'd like, therefore, to edit the code to use better column names, specifically one that
-have no spaces (underscores would be fine instead) and are all in lowercase. Also, 
-for some column names, we'd like to shorten the name. There is a very convenient 
-function that can help us do the first two steps, the `clean_names` function from the 
-`janitor` package. After we run this, we may also want to use the `rename` function from 
-the `dplyr` package to clean up remaining concerns. For example, we can use this to 
-change a long column name to something shorter. 
+We'd like, therefore, to edit the code to use better column names, specifically
+one that have no spaces (underscores would be fine instead) and are all in
+lowercase. Also, for some column names, we'd like to shorten the name. There is
+a very convenient function that can help us do the first two steps, the
+`clean_names` function from the `janitor` package. After we run this, we may
+also want to use the `rename` function from the `dplyr` package to clean up
+remaining concerns. For example, we can use this to change a long column name to
+something shorter.
 
 Here is an example of how the edited script might look: 
 
@@ -259,7 +270,7 @@ df <- rename(df,
              datetime_call = date_and_time_of_initial_call)
 colnames(df)
 
-# How this changes later code
+# How this changes later code, since we've changed column names
 
 library(dplyr)
 df <- filter(df, property == "Central Park", animal_class == "Terrestrial Reptile or Amphibian")
@@ -277,31 +288,33 @@ combined
 
 ## Use better object names
 
-Just as we want to have column names that are easy to work with, we also should make
-sure that our object names are easy to work with. Further, we want to make sure that
-they are clear and provide some information on the object---this can help our code to 
-be "self-documenting", in terms of embedding information that helps understand the 
-code directly into the code. As with the last section, if you have ideas on how to 
-edit the code to fix this, feel free to try your own approach and then compare it 
-to our example in the next code chunk. If you'd like more advice, we've got some 
-tips in the remaining text before the code chunk. 
+Just as we want to have column names that are easy to work with, we also should
+make sure that our object names are easy to work with. Further, we want to make
+sure that they are clear and provide some information on the object---this can
+help our code to be "self-documenting", in terms of embedding information that
+helps understand the code directly into the code. As with the last section, if
+you have ideas on how to edit the code to fix this, feel free to try your own
+approach and then compare it to our example in the next code chunk. If you'd
+like more advice, we've got some tips in the remaining text before the code
+chunk.
 
-The object names in the original script ("df", "df2", "df3", "combined") don't have 
-the types of problems that some of the column names did. They aren't long and they don't 
-mix upper- and lowercase (if they did, you may want to fix these issues as you edited
-the names). 
+The object names in the original script ("df", "df2", "df3", "combined") don't
+have the types of problems that some of the column names did. They aren't long
+and they don't mix upper- and lowercase (if they did, you may want to fix these
+issues as you edited the names).
 
-The problem in this example, rather, is that the names don't mean much and are essentially
-placeholder object names. Object names like "df" (short for "dataframe"), "ex", and "foo"
-are commonly uses as someone is developing their code, so the person can quickly work 
-through some ideas of how to tackle their coding task rather than pausing to name 
-each object well. There's nothing wrong with using these types of placeholder object names
-when you first write your code.
+The problem in this example, rather, is that the names don't mean much and are
+essentially placeholder object names. Object names like "df" (short for
+"dataframe"), "ex", and "foo" are commonly uses as someone is developing their
+code, so the person can quickly work through some ideas of how to tackle their
+coding task rather than pausing to name each object well. There's nothing wrong
+with using these types of placeholder object names when you first write your
+code.
 
-However, this is a prime point where you can improve your code when you edit it. If we 
-use clearer object names here, it will make more sense to people who read the code
-(including you at a later date). We can pick object names that are more related to the
-data that are included in the object. 
+However, this is a prime point where you can improve your code when you edit it.
+If we use clearer object names here, it will make more sense to people who read
+the code (including you at a later date). We can pick object names that are more
+related to the data that are included in the object.
 
 The following is an example of an edited version of the code, where I've
 replaced the placeholder object names with names that are clearer. You may pick
@@ -338,49 +351,55 @@ monthly_man_animal_response <- count(man_animal_resp, .wt = call_month)
 monthly_man_animal_response
 ```
 
-As a note, some of the object names I've used (e.g., `monthly_man_animal_response`) are
-getting a little long. In later labs, we'll work with this data some more, and you'll see
-some examples of other ways I've chosen to name similar objects. In all cases, I'll tend
-to use all lowercase and use underscores to improve readability of the object name. 
-Ultimately, you will likely develop some of your own internal rules for how to name 
-objects in a way that makes sense to you. Remember that the most important person to 
-write clear code for is yourself a few months in the future, so above all aim for something
-that you think will make sense to you when you revisit the code after being away from 
-it for a while. 
+As a note, some of the object names I've used (e.g.,
+`monthly_man_animal_response`) are getting a little long. In later labs, we'll
+work with this data some more, and you'll see some examples of other ways I've
+chosen to name similar objects. In all cases, I'll tend to use all lowercase and
+use underscores to improve readability of the object name. Ultimately, you will
+likely develop some of your own internal rules for how to name objects in a way
+that makes sense to you. Remember that the most important person to write clear
+code for is yourself a few months in the future, so above all aim for something
+that you think will make sense to you when you revisit the code after being away
+from it for a while.
  
 ## Group blocks of code and add comments
 
-Next, it would be helpful to add some structure to the code. Right now, the code looks
-a lot like a free-flowing version of a first draft that you might write of a paper---the 
-ideas are there, but they're not arranged in a way that makes them pop out to readers. 
+Next, it would be helpful to add some structure to the code. Right now, the code
+looks a lot like a free-flowing version of a first draft that you might write of
+a paper---the ideas are there, but they're not arranged in a way that makes them
+pop out to readers.
 
-We can edit the code to improve this. Three keys ways are: (1) edit so similar ideas
-are grouped together, (2) use spacing to highlight these groups, and (3) add comments
-to explain what's happening within these groups. Notice how these align with some key 
-steps in editing a first draft of a paper---steps like organizing ideas into paragraphs
-and adding section headers provide similar structure when writing. If you have ideas of
-how to do this, go ahead and try them out and then compare to the version I've included
-in the next code chunk. If not, read on for some more specific ideas. 
+We can edit the code to improve this. Three keys ways are: (1) edit so similar
+ideas are grouped together, (2) use spacing to highlight these groups, and (3)
+add comments to explain what's happening within these groups. Notice how these
+align with some key steps in editing a first draft of a paper---steps like
+organizing ideas into paragraphs and adding section headers provide similar
+structure when writing. If you have ideas of how to do this, go ahead and try
+them out and then compare to the version I've included in the next code chunk.
+If not, read on for some more specific ideas.
 
-One of the first steps you can take is to find all the libraries that you load in the
-script and move these `library` calls to the start of the script. This is a helpful way 
-to reorganize the code because it allows someone who's reading the code to check at the
-start if they have all the packages they'll need and to install any they're missing. 
+One of the first steps you can take is to find all the libraries that you load
+in the script and move these `library` calls to the start of the script. This is
+a helpful way to reorganize the code because it allows someone who's reading the
+code to check at the start if they have all the packages they'll need and to
+install any they're missing.
 
-Next, look through the remaining code and see what major tasks you're doing. See if you 
-can group the script into sets of lines that you can describe as working on a single larger
-task. In most cases, a task will include several lines of code, but in some cases, a 
-task-specific "block" of code may only include one line. 
+Next, look through the remaining code and see what major tasks you're doing. See
+if you can group the script into sets of lines that you can describe as working
+on a single larger task. In most cases, a task will include several lines of
+code, but in some cases, a task-specific "block" of code may only include one
+line.
 
-When I looked through the code, I identified several big tasks. First, the script reads in 
-the data and does some clean-up to get it read---specifically, it cleans up the column 
-names. Next, it filters the data to the rows from one property (Central Park) and 
-one broad category of animals (amphibians and reptiles). Next, it takes some steps to 
-filter the data to years where data are available throughout the year, and finally it
-takes some steps to count up the number of calls per month. 
+When I looked through the code, I identified several big tasks. First, the
+script reads in the data and does some clean-up to get it read---specifically,
+it cleans up the column names. Next, it filters the data to the rows from one
+property (Central Park) and one broad category of animals (amphibians and
+reptiles). Next, it takes some steps to filter the data to years where data are
+available throughout the year, and finally it takes some steps to count up the
+number of calls per month.
 
-The following code chunk shows my example of how I edited the code to divide it into 
-these blocks and add comments to document each block: 
+The following code chunk shows my example of how I edited the code to divide it
+into these blocks and add comments to document each block:
 
 ```{r}
 # Load required libraries
@@ -416,21 +435,25 @@ monthly_man_animal_response
 
 ## Delete deadend code
 
-The next step is to edit the script to remove "deadend" code. There are a couple of types of 
-deadend code that often come up when you first write a code script. The first comes from 
-things that you tried that ultimately didn't pan out. I haven't included any examples of that
-here, but those are cases that are easy for you to identify in your own code, and you can 
-substantially clarify the code by editing them out once you've determined they aren't helping. 
+The next step is to edit the script to remove "deadend" code. There are a couple
+of types of deadend code that often come up when you first write a code script.
+The first comes from things that you tried that ultimately didn't pan out. I
+haven't included any examples of that here, but those are cases that are easy
+for you to identify in your own code, and you can substantially clarify the code
+by editing them out once you've determined they aren't helping.
 
-The other type of "deadend" code is the code that you use to check things as
-you write the code. These calls are very helpful as you're writing the code,
-but it typically makes the code script cleaner and clearer if you edit them out in the 
-editing stage. Examples of this type of deadend code might include calls that print
-out the dataframe (`man_animal_resp`) or elements of it (`colnames(man_animal_resp)`). It can include other pieces of code you used in an exploratory way (e.g., calls to `summary` or `range`).
+The other type of "deadend" code is the code that you use to check things as you
+write the code. These calls are very helpful as you're writing the code, but it
+typically makes the code script cleaner and clearer if you edit them out in the
+editing stage. Examples of this type of deadend code might include calls that
+print out the dataframe (`man_animal_resp`) or elements of it
+(`colnames(man_animal_resp)`). It can include other pieces of code you used in
+an exploratory way (e.g., calls to `summary` or `range`).
 
-In the following code chunk, I've edited out these examples of deadend code in the 
-script. Note that I did keep the last call to read out a dataframe (`monthly_man_animal_response`), since this prints out the final result we are working
-toward with the code. 
+In the following code chunk, I've edited out these examples of deadend code in
+the script. Note that I did keep the last call to read out a dataframe
+(`monthly_man_animal_response`), since this prints out the final result we are
+working toward with the code.
 
 ```{r}
 # Load required libraries
@@ -461,25 +484,28 @@ monthly_man_animal_response
 
 ## Add indentation and new lines to make code easier to read
 
-The next edit that you can make is to add carriage returns (in other words, hit the "Return"
-key) to create new lines in some spaces. If you're working in RStudio, the code will typically
-automatically indent following certain rules when you do this. For example, if you haven't
-completed a function call when you start a new line, the new line will typically be 
-indented. If you're adding code that's nested within a function, the indentation will help 
-the new line align with other parts of the nested function call. 
+The next edit that you can make is to add carriage returns (in other words, hit
+the "Return" key) to create new lines in some spaces. If you're working in
+RStudio, the code will typically automatically indent following certain rules
+when you do this. For example, if you haven't completed a function call when you
+start a new line, the new line will typically be indented. If you're adding code
+that's nested within a function, the indentation will help the new line align
+with other parts of the nested function call.
 
-There are two ways that these new lines and indentation can help make the code easier
-to understand and maintain. First, they can help you avoid long lines of code. Long lines
-are particularly a problem if they get so long that they run off the page (which means
-you have to scroll left and right to read your code) or wrap around without indentation. 
+There are two ways that these new lines and indentation can help make the code
+easier to understand and maintain. First, they can help you avoid long lines of
+code. Long lines are particularly a problem if they get so long that they run
+off the page (which means you have to scroll left and right to read your code)
+or wrap around without indentation.
 
-Second, the indentation can help you see how the parameters of a function call are grouped
-with each other and which function they apply to. Among other things, this can help 
-you avoid bugs from putting a parenthesis in the wrong place, which is easy to do if it's
-not clear from the code where the nesting for a function call starts and ends. 
+Second, the indentation can help you see how the parameters of a function call
+are grouped with each other and which function they apply to. Among other
+things, this can help you avoid bugs from putting a parenthesis in the wrong
+place, which is easy to do if it's not clear from the code where the nesting for
+a function call starts and ends.
 
-Here's an example of how I edited the code to add line breaks and indentation to improve the 
-legibility of the code: 
+Here's an example of how I edited the code to add line breaks and indentation to
+improve the legibility of the code:
 
 ```{r}
 # Load required libraries
@@ -517,31 +543,33 @@ monthly_man_animal_response <- count(man_animal_resp,
 monthly_man_animal_response
 ```
 
-As a note, there are some tools that can help you automate a number of these steps (although
-I think it's helpful to try them by hand first, as you'll start to develop habits that
-you use even in the first draft of your code). 
+As a note, there are some tools that can help you automate a number of these
+steps (although I think it's helpful to try them by hand first, as you'll start
+to develop habits that you use even in the first draft of your code).
 
-If you are working in RStudio, you can try out the "Reformat Code" tool. You can find 
-it in RStudio under the "Code" menu. To read more about this tool, check out 
-https://appsilon.com/rstudio-shortcuts-and-tips/#:~:text=Reformat%20R%20scripts,selected%20part%20of%20a%20code.
+If you are working in RStudio, you can try out the "Reformat Code" tool. You can
+find it in RStudio under the "Code" menu. To read more about this tool, check
+out https://appsilon.com/rstudio-shortcuts-and-tips and search the page for
+"Reformat Code".
 
 ## Add pipes when appropriate
 
-This step is not as critical as the previous ones, but it can help clarify and improve the
-readability of your code, in particular by reinforcing how the code is divided into blocks that
-perform similar tasks. 
+This step is not as critical as the previous ones, but it can help clarify and
+improve the readability of your code, in particular by reinforcing how the code
+is divided into blocks that perform similar tasks.
 
-In the existing script, you may notice that there are many cases where we're reassigning
-a new version of the data to override the old object (e.g., using `<-` with the same 
-object name as the input and output) after making a single change to the data. 
-This is alright, but in many cases, we could chain several of the steps together
-with a pipe and only reassign after we've made a few related changes. 
+In the existing script, you may notice that there are many cases where we're
+reassigning a new version of the data to override the old object (e.g., using
+`<-` with the same object name as the input and output) after making a single
+change to the data. This is alright, but in many cases, we could chain several
+of the steps together with a pipe and only reassign after we've made a few
+related changes.
 
-Once people have learned to use pipes, they'll often form their own style for how much 
-they chain together in a piped statement and how long those piped statements get before
-the results is assigned to a new object name or used to overwrite an existing object. 
-The following code chunk gives an example of how I might edit the code to group some
-parts into sets of piped calls:
+Once people have learned to use pipes, they'll often form their own style for
+how much they chain together in a piped statement and how long those piped
+statements get before the results is assigned to a new object name or used to
+overwrite an existing object. The following code chunk gives an example of how I
+might edit the code to group some parts into sets of piped calls:
 
 ```{r}
 # Load required libraries

@@ -453,6 +453,26 @@ is an example of the data from Manhattan:</p>
 man_animal_response &lt;- read_csv(&quot;../data/Manhattan_animal_response.csv&quot;)
 
 man_animal_response</code></pre>
+<pre><code>## # A tibble: 960 × 21
+##    `Date and Time of initial call` Date and time of Ranger r…¹ Property Location
+##    &lt;chr&gt;                           &lt;chr&gt;                       &lt;chr&gt;    &lt;chr&gt;   
+##  1 06/22/2021 11:30:00 AM          06/22/2021 11:30:00 AM      Highbri… Coogan&#39;…
+##  2 06/22/2021 12:00:00 PM          06/22/2021 12:00:00 PM      Inwood … 214th a…
+##  3 06/21/2021 09:20:00 AM          06/21/2021 12:00:00 PM      Central… West 97…
+##  4 06/20/2021 09:00:00 AM          06/20/2021 03:00:00 PM      Inwood … Northwe…
+##  5 06/19/2021 09:00:00 AM          06/19/2021 10:00:00 AM      Inwood … Payson …
+##  6 06/17/2021 08:00:00 AM          06/17/2021 10:00:00 AM      Riversi… Entranc…
+##  7 06/17/2021 10:00:00 AM          06/17/2021 10:00:00 AM      William… playgro…
+##  8 06/16/2021 10:13:00 AM          06/16/2021 10:32:00 AM      Central… Central…
+##  9 06/15/2021 08:30:00 AM          06/15/2021 03:00:00 PM      Inwood … Gaelic …
+## 10 06/14/2021 03:30:00 PM          06/14/2021 03:45:00 PM      Central… Central…
+## # ℹ 950 more rows
+## # ℹ abbreviated name: ¹​`Date and time of Ranger response`
+## # ℹ 17 more variables: `Species Description` &lt;chr&gt;, `Call Source` &lt;chr&gt;,
+## #   `Species Status` &lt;chr&gt;, `Animal Condition` &lt;chr&gt;,
+## #   `Duration of Response` &lt;dbl&gt;, Age &lt;chr&gt;, `Animal Class` &lt;chr&gt;,
+## #   `311SR Number` &lt;chr&gt;, `Final Ranger Action` &lt;chr&gt;, `# of Animals` &lt;dbl&gt;,
+## #   `PEP Response` &lt;lgl&gt;, `Animal Monitored` &lt;lgl&gt;, Rehabilitator &lt;chr&gt;, …</code></pre>
 <p>There is one row per response, where each response is a case where
 the caller felt an animal might need some kind of help. For each rescue,
 there’s information that includes the date and time of both the call and
@@ -553,7 +573,7 @@ that the data started midway through 2018 and ended midway through 2021.
 We then make a column with the year of the call and use it to limit the
 data to calls that came during the two years with year-round data, 2019
 and 2020. We then make a column that gives the month of each call and
-use that information to count us the number of calls by month.</p>
+use that information to count the number of calls by month.</p>
 <div id="use-better-column-names" class="section level2">
 <h2>Use better column names</h2>
 <p>Now, we’ll start editing the code to make it clearer and easier to
@@ -602,7 +622,7 @@ df &lt;- rename(df,
              datetime_call = date_and_time_of_initial_call)
 colnames(df)
 
-# How this changes later code
+# How this changes later code, since we&#39;ve changed column names
 
 library(dplyr)
 df &lt;- filter(df, property == &quot;Central Park&quot;, animal_class == &quot;Terrestrial Reptile or Amphibian&quot;)
@@ -864,7 +884,8 @@ as you’ll start to develop habits that you use even in the first draft
 of your code).</p>
 <p>If you are working in RStudio, you can try out the “Reformat Code”
 tool. You can find it in RStudio under the “Code” menu. To read more
-about this tool, check out <a href="https://appsilon.com/rstudio-shortcuts-and-tips/#" class="uri">https://appsilon.com/rstudio-shortcuts-and-tips/#</a>:~:text=Reformat%20R%20scripts,selected%20part%20of%20a%20code.</p>
+about this tool, check out <a href="https://appsilon.com/rstudio-shortcuts-and-tips" class="uri">https://appsilon.com/rstudio-shortcuts-and-tips</a> and
+search the page for “Reformat Code”.</p>
 </div>
 <div id="add-pipes-when-appropriate" class="section level2">
 <h2>Add pipes when appropriate</h2>
@@ -922,13 +943,13 @@ monthly_man_animal_response</code></pre>
 <p>Here is information about the session under which the lab document
 was run:</p>
 <pre class="r"><code>sessionInfo()</code></pre>
-<pre><code>## R version 4.3.3 (2024-02-29)
-## Platform: x86_64-apple-darwin20 (64-bit)
+<pre><code>## R version 4.4.1 (2024-06-14)
+## Platform: x86_64-apple-darwin20
 ## Running under: macOS Sonoma 14.3.1
 ## 
 ## Matrix products: default
-## BLAS:   /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRblas.0.dylib 
-## LAPACK: /Library/Frameworks/R.framework/Versions/4.3-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.11.0
+## BLAS:   /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/lib/libRblas.0.dylib 
+## LAPACK: /Library/Frameworks/R.framework/Versions/4.4-x86_64/Resources/lib/libRlapack.dylib;  LAPACK version 3.12.0
 ## 
 ## locale:
 ## [1] en_US.UTF-8/en_US.UTF-8/en_US.UTF-8/C/en_US.UTF-8/en_US.UTF-8
@@ -939,12 +960,19 @@ was run:</p>
 ## attached base packages:
 ## [1] stats     graphics  grDevices utils     datasets  methods   base     
 ## 
+## other attached packages:
+## [1] readr_2.1.5
+## 
 ## loaded via a namespace (and not attached):
-##  [1] digest_0.6.35     R6_2.5.1          fastmap_1.1.1     xfun_0.43        
-##  [5] cachem_1.0.8      knitr_1.45        htmltools_0.5.8   rmarkdown_2.26   
-##  [9] lifecycle_1.0.4   cli_3.6.2         sass_0.4.9        jquerylib_0.1.4  
-## [13] compiler_4.3.3    rstudioapi_0.16.0 tools_4.3.3       evaluate_0.23    
-## [17] bslib_0.6.2       yaml_2.3.8        rlang_1.1.3       jsonlite_1.8.8</code></pre>
+##  [1] crayon_1.5.3      vctrs_0.6.5       cli_3.6.3         knitr_1.47       
+##  [5] rlang_1.1.4       xfun_0.45         jsonlite_1.8.8    bit_4.0.5        
+##  [9] glue_1.7.0        htmltools_0.5.8.1 sass_0.4.9        hms_1.1.3        
+## [13] fansi_1.0.6       rmarkdown_2.27    evaluate_0.24.0   jquerylib_0.1.4  
+## [17] tibble_3.2.1      tzdb_0.4.0        fastmap_1.2.0     yaml_2.3.8       
+## [21] lifecycle_1.0.4   compiler_4.4.1    pkgconfig_2.0.3   digest_0.6.36    
+## [25] R6_2.5.1          tidyselect_1.2.1  utf8_1.2.4        parallel_4.4.1   
+## [29] vroom_1.6.5       pillar_1.9.0      magrittr_2.0.3    bslib_0.7.0      
+## [33] bit64_4.0.5       tools_4.4.1       cachem_1.1.0</code></pre>
 </div>
 
 
