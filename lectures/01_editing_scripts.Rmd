@@ -1,6 +1,6 @@
 ---
 title: "Editing Code for Rigor and Reproducibility"
-author: "Brooke Anderson"
+author: "Brooke Anderson and Rachel Severson"
 output: beamer_presentation
 ---
 
