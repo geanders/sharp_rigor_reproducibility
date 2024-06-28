@@ -1,5 +1,5 @@
 ---
-title: "Lab---Leveraging File System Structure"
+title: "Lab 4---Leveraging File System Structure"
 author: "Brooke Anderson"
 output: html_document
 ---
@@ -10,10 +10,10 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, warning = FALSE)
 
 ## Reading in data from multiple files
 
-In an earlier lab, we looked at how we could write a function to read in and clean
-data from a file in a certain format. Here, we'll look at how we can pair that with 
-a mapping function from the `purrr` package, as well as with system calls in R and 
-the file system to work efficiently with data from many files.
+In an earlier lab, we looked at how we could write a function to read in and
+clean data from a file in a certain format. Here, we'll look at how we can pair
+that with a mapping function from the `purrr` package, as well as with system
+calls in R and the file system to work efficiently with data from many files.
 
 Here are the functions we defined in earlier labs: 
 
@@ -61,9 +61,9 @@ count_monthly_calls <- function(call_data) {
 }
 ```
 
-We have several files with a similar type of data. We have a file from each of the 
-five boroughs of New York. All files follow the same format (CSVs, same column types 
-with the same column names, etc.). The file names are: 
+We have several files with a similar type of data. We have a file from each of
+the five boroughs of New York. All files follow the same format (CSVs, same
+column types with the same column names, etc.). The file names are:
 
 - "Bronx_animal_response.csv"
 - "Brooklyn__animal_response.csv"
@@ -137,9 +137,10 @@ Notice, though, how often we're having to copy and paste this code, even when we
 use our function. We could remove a lot of this if we bind all the data together
 into one big dataframe after we read it in but before we do anything else.
 
-If you have several dataframes that all have the same format in terms of the number
-of columns, names of those columns, and types of data in those columns, you can join them
-into one big dataframe with the function `bind_rows` from the `dplyr` package:
+If you have several dataframes that all have the same format in terms of the
+number of columns, names of those columns, and types of data in those columns,
+you can join them into one big dataframe with the function `bind_rows` from the
+`dplyr` package:
 
 ```{r}
 library(dplyr)
@@ -170,8 +171,8 @@ ny_calls
 ```
 
 At this point, you could use grouping and mapping to get the monthly calls for
-reptiles and amphibians from each borough, directly after reading in the data from 
-each borough and binding them with `bind_rows`:
+reptiles and amphibians from each borough, directly after reading in the data
+from each borough and binding them with `bind_rows`:
 
 ```{r}
 library(tidyr)
@@ -307,27 +308,27 @@ ny_monthly_calls %>%
 This is more efficient that copying and pasting the full code for each borough.
 However, we can make it more efficient by leveraging the way we've organized our
 project directory, as well as system files. We can create a vector with all the
-file names and then use the idea of mapping functions from an earlier stage of the
-script to make the code more efficient. 
+file names and then use the idea of mapping functions from an earlier stage of
+the script to make the code more efficient.
 
-First, we have structured our project directory so that all the data files are in the 
-same directory, and they are the only files in that directory. Also, we've designed
-the filenames to start with the borough, so we can extract the borough information from 
-the filenames. 
+First, we have structured our project directory so that all the data files are
+in the same directory, and they are the only files in that directory. Also,
+we've designed the filenames to start with the borough, so we can extract the
+borough information from the filenames.
 
-In R, the `list.files` function works as a system call that will list all the files in 
-a given directory. To list all the files in a directory called "data" that is a 
-subdirectory of the parent directory you're working in, you can run: 
+In R, the `list.files` function works as a system call that will list all the
+files in a given directory. To list all the files in a directory called "data"
+that is a subdirectory of the parent directory you're working in, you can run:
 
 ```{r}
 list.files(path = "../data")
 ```
 
-As a note, this call assumes that you have the files within a subdirectory of the parent
-directory of your current working directory, and that the subdirectory is named "data". 
-If you're unfamiliar with relative filepaths like this and are getting an error, let 
-us know and we'll have you make sure you have your directory arranged correctly for 
-this and the following code to work. 
+As a note, this call assumes that you have the files within a subdirectory of
+the parent directory of your current working directory, and that the
+subdirectory is named "data". If you're unfamiliar with relative filepaths like
+this and are getting an error, let us know and we'll have you make sure you have
+your directory arranged correctly for this and the following code to work.
 
 We can use this `list.files` call to create a vector with the filenames of the
 files for all boroughs:
@@ -337,21 +338,21 @@ borough_files <- list.files(path = "../data")
 borough_files
 ```
 
-If the files are in a different directory than your working directory, you'll want
-to make sure they are listed with their full pathname if we want to work with them 
-in further code, which you can do with the parameter `full.names`: 
+If the files are in a different directory than your working directory, you'll
+want to make sure they are listed with their full pathname if we want to work
+with them in further code, which you can do with the parameter `full.names`:
 
 ```{r}
 borough_files <- list.files(path = "../data", full.names = TRUE)
 borough_files
 ```
 
-Now that we have these as a vector, we can map over that vector to read in all the files. 
-We'll make one change in our function to read and clean the data. We want to make sure
-the filenames are included when we read in the data, so we can change the `read_csv`
-call in the function, using its `id` parameter to include the filename as a column in 
-the final data (we'll also need to make sure we select this column when we clean out
-the columns we don't need):
+Now that we have these as a vector, we can map over that vector to read in all
+the files. We'll make one change in our function to read and clean the data. We
+want to make sure the filenames are included when we read in the data, so we can
+change the `read_csv` call in the function, using its `id` parameter to include
+the filename as a column in the final data (we'll also need to make sure we
+select this column when we clean out the columns we don't need):
 
 ```{r}
 # To run this function, you will need to have the following functions installed:
@@ -407,8 +408,8 @@ ny_calls <- ny_calls %>%
   bind_rows()
 ```
 
-We can use regular expressions to extract the borough name from the "filename" column. 
-Here's an example of what the values in the filename look like: 
+We can use regular expressions to extract the borough name from the "filename"
+column. Here's an example of what the values in the filename look like:
 
 ```{r}
 ny_calls %>% 
@@ -442,8 +443,8 @@ ny_calls %>%
   sample(10)
 ```
 
-Now we can proceed with the code to analyze the full dataset. With these changes, 
-our full script would look like this: 
+Now we can proceed with the code to analyze the full dataset. With these
+changes, our full script would look like this:
 
 ```{r eval = FALSE}
 # Load required libraries ##############################################################
@@ -529,17 +530,17 @@ ny_monthly_calls %>%
   facet_wrap(~ borough)
 ```
 
-Amazingly, this script isn't much longer than our earlier script where we were only 
-working with data from a single borough, using a single data file. This solution avoids
-a lot of copying and pasting. As you work with more and more files, this type of 
-solution will become even more helpful (imagine, for example, if you were working
-with files for all 50 states). 
+Amazingly, this script isn't much longer than our earlier script where we were
+only working with data from a single borough, using a single data file. This
+solution avoids a lot of copying and pasting. As you work with more and more
+files, this type of solution will become even more helpful (imagine, for
+example, if you were working with files for all 50 states).
 
 By using this functional programming solution, we've created a code script that
 is concise and will be easier to maintain, since we can make a change that
 applied to the data from all boroughs in a single place, rather than needing to
-make sure that, when we want to make a change in the code, we fix the code everywhere 
-we've copy-and-pasted it throughout the script.
+make sure that, when we want to make a change in the code, we fix the code
+everywhere we've copy-and-pasted it throughout the script.
 
 # Session info
 
