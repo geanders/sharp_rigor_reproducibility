@@ -11,9 +11,9 @@ library(dplyr)
 
 # Introduction to this lab
 
-In this lab, we're going to revisit some of our code from the earlier labs. We'll 
-identify a kluge (check the previous lecture for the definition of this) and see if
-we can find and adapt example code to fix it. 
+In this lab, we're going to revisit some of our code from the earlier labs.
+We'll identify a kluge (check the previous lecture for the definition of this)
+and see if we can find and adapt example code to fix it.
 
 This lab is long, and it's created that way intentionally. This first major
 section of the lab walks through how you can dissect and understand a code
@@ -116,19 +116,19 @@ monthly_man_animal_response
 # Identifying a kluge in our code
 
 In that last lab, one of the tasks that we did was create a way to get a summary
-of counts of calls by months that included rows with zeros. We ultimately did that
-using a function we created called `count_monthly_calls`. 
+of counts of calls by months that included rows with zeros. We ultimately did
+that using a function we created called `count_monthly_calls`.
 
-This function seems to work pretty well to complete that task. However, there are a 
-couple of issues with the way we've tackled that problem. First, the logic of the 
-code isn't as clearly linked to the logic of the task as we might want (in other 
-words, the solution is currently a bit of a kluge). The code will be easier to 
-understand and maintain if we can find a better way to link its logic with the logic 
-of the task. 
+This function seems to work pretty well to complete that task. However, there
+are a couple of issues with the way we've tackled that problem. First, the logic
+of the code isn't as clearly linked to the logic of the task as we might want
+(in other words, the solution is currently a bit of a kluge). The code will be
+easier to understand and maintain if we can find a better way to link its logic
+with the logic of the task.
 
-Second, while the code works well for the table we created, once we try to plot the
-data, we might not be completely happy with how it works. Let's take a look at 
-plotting the monthly counts as a bar chart: 
+Second, while the code works well for the table we created, once we try to plot
+the data, we might not be completely happy with how it works. Let's take a look
+at plotting the monthly counts as a bar chart:
 
 ```{r}
 library(ggplot2)
@@ -137,12 +137,13 @@ monthly_man_animal_response %>%
   geom_col()
 ```
 
-This creates a bar chart, but take a look at the y-axis: the months are in alphabetical
-order. The visualization would be much better if the months show up in the order they 
-occur in the year. This would help to identify seasonal patterns. As we work through 
-this problem, we'll see that it's somewhat related to the fact that our current solution
-is a kluge---when we link the logic of this part of the code more closely to the task
-we're doing, we'll be able to sort out this problem.
+This creates a bar chart, but take a look at the y-axis: the months are in
+alphabetical order. The visualization would be much better if the months show up
+in the order they occur in the year. This would help to identify seasonal
+patterns. As we work through this problem, we'll see that it's somewhat related
+to the fact that our current solution is a kluge---when we link the logic of
+this part of the code more closely to the task we're doing, we'll be able to
+sort out this problem.
 
 Let's start by trying to search for some examples of how to do this task. We'll
 then dissect one of the code examples and adapt it to our current task. Our aim
@@ -155,9 +156,9 @@ best solution for your task.
 
 ## Finding example code
 
-We'll start by trying to find some advice and examples of how we can solve the task. 
-A reasonable Google search to start with is something like, "R count rows by group include
-levels with no counts". 
+We'll start by trying to find some advice and examples of how we can solve the
+task. A reasonable Google search to start with is something like, "R count rows
+by group include levels with no counts".
 
 Here are some promising leads that come up with that search:
 
@@ -168,14 +169,14 @@ Examples that says "When factors are involved, `.drop = FALSE` can be used to re
 levels that don't appear in the data"
 - https://kieranhealy.org/blog/archives/2018/11/19/zero-counts-in-dplyr/
 
-Notice that these come from a variety of sources. They include examples from help forums
-like StackOverflow, but also a blog post and information from the help documentation 
-for a package. It is often the case that you can find helpful example code across these
-different types of resources.
+Notice that these come from a variety of sources. They include examples from
+help forums like StackOverflow, but also a blog post and information from the
+help documentation for a package. It is often the case that you can find helpful
+example code across these different types of resources.
 
-We won't have the chance to work through all of these in the lab today. Let's try out 
-the first one. You're welcome to try out the approaches we'll cover with some of the 
-other examples after the workshop. 
+We won't have the chance to work through all of these in the lab today. Let's
+try out the first one. You're welcome to try out the approaches we'll cover with
+some of the other examples after the workshop.
 
 ## Dissecting code
 
@@ -184,7 +185,7 @@ We're going to work through the example solution in the Stack Overflow thread
 This example comes from an online help forum where someone posted a reproducible
 example of their problem and then other people responded with potential
 solutions. We'll first dissect the code, and then we'll adapt it to our own
-task. 
+task.
 
 The example code in the question is:
 
@@ -198,18 +199,20 @@ dat %>%
 
 This is followed by the question: 
 
-> "I have the above code which creates a random sample of letters. However can I make the summarised output show all count levels even when there is zero.
+> "I have the above code which creates a random sample of letters. However can I
+make the summarised output show all count levels even when there is zero.
 
-> When I run the above code sometimes I get 20 rows and sometimes I get 25, etc. I want this to return 26 rows every time."
+> When I run the above code sometimes I get 20 rows and sometimes I get 25, etc.
+I want this to return 26 rows every time."
 
-Let's try out the example code and see what happens. First, try running the whole piece of 
-code. Does it work on your computer? If not, are there packages that it uses that you 
-don't have installed or loaded? Let us know if you're having problems getting the code 
-to run before you start dissecting it. 
+Let's try out the example code and see what happens. First, try running the
+whole piece of code. Does it work on your computer? If not, are there packages
+that it uses that you don't have installed or loaded? Let us know if you're
+having problems getting the code to run before you start dissecting it.
 
-Next, let's dissect the code line by line. With each step, we'll make sure that we 
-understand what the function call is doing and how it's advancing us toward the 
-solution. The code first sets a seed:
+Next, let's dissect the code line by line. With each step, we'll make sure that
+we understand what the function call is doing and how it's advancing us toward
+the solution. The code first sets a seed:
 
 ```{r}
 set.seed(1)
@@ -240,31 +243,34 @@ You can check to see what the created dataframe looks like:
 head(dat)
 ```
 
-You can see that this has created a dataframe with a single column called "ID". This column
-has a letter in it for each row. This column was created with a piece of code that 
-was embedded in the line we just looked at, specifically, 
+You can see that this has created a dataframe with a single column called "ID".
+This column has a letter in it for each row. This column was created with a
+piece of code that was embedded in the line we just looked at, specifically,
 
 ```{r eval = FALSE}
 sample(letters,50,rep=TRUE)
 ```
 
-Let's dissect this to see what it's doing. It's often helpful to start from the inside
-and work out. At the inside of this function is a call to `letters`. This looks like
-an object, but the person who posted the question doesn't have any code that defines
-this object before we use it. Let's check out that object to see what's going on: 
+Let's dissect this to see what it's doing. It's often helpful to start from the
+inside and work out. At the inside of this function is a call to `letters`. This
+looks like an object, but the person who posted the question doesn't have any
+code that defines this object before we use it. Let's check out that object to
+see what's going on:
 
 ```{r}
 letters
 ```
 
-This seems to be an object with the 26 lowercase letters in the Roman alphabet. It must
-be an object that comes with base R, because we haven't done anything to create the object. 
-If it is, it will probably have a helpfile, so let's try to pull that up with `?letters`. 
+This seems to be an object with the 26 lowercase letters in the Roman alphabet.
+It must be an object that comes with base R, because we haven't done anything to
+create the object. If it is, it will probably have a helpfile, so let's try to
+pull that up with `?letters`.
 
-That call pulls up a helpfile that confirms that this is a built-in constant that comes
-with base R. When people write code questions, they'll often use something like these
-built-in constants, or a dataframe that comes with a package that the question uses, 
-because that helps set up the example code in the question as quickly as possible.
+That call pulls up a helpfile that confirms that this is a built-in constant
+that comes with base R. When people write code questions, they'll often use
+something like these built-in constants, or a dataframe that comes with a
+package that the question uses, because that helps set up the example code in
+the question as quickly as possible.
 
 Now let's look at how that object's being used to make the column in the example 
 dataframe: 
@@ -273,18 +279,19 @@ dataframe:
 sample(letters,50,rep=TRUE)
 ```
 
-This call looks like it's pulling a sample from `letters`, so we end up with a sample 
-of 50 lowercase letters. If you're not familiar with the `sample` function, you can 
-pull up the help function for `sample`. 
+This call looks like it's pulling a sample from `letters`, so we end up with a
+sample of 50 lowercase letters. If you're not familiar with the `sample`
+function, you can pull up the help function for `sample`.
 
-From that helpfile, you can confirm that the `sample` function takes a sample from 
-a vector (in this case, from the `letters` vector). We can also use that helpfile to
-figure out what the parameters are doing (the `50` and the `rep=TRUE`). The `50` is 
-put in the second position of the function call, so it will be the value given for 
-the second argument of the function call. Based on the Usage section of the helpfile, 
-that argument is `size`. If you look for `size` under Arguments, you can see that this
-argument sets how many values to sample from the vector. This makes sense: we saw when
-we ran the code that it's sampling 50 values from the set of letters. 
+From that helpfile, you can confirm that the `sample` function takes a sample
+from a vector (in this case, from the `letters` vector). We can also use that
+helpfile to figure out what the parameters are doing (the `50` and the
+`rep=TRUE`). The `50` is put in the second position of the function call, so it
+will be the value given for the second argument of the function call. Based on
+the Usage section of the helpfile, that argument is `size`. If you look for
+`size` under Arguments, you can see that this argument sets how many values to
+sample from the vector. This makes sense: we saw when we ran the code that it's
+sampling 50 values from the set of letters.
 
 The other argument in the call in the example is `rep=TRUE`. If we look through
 the Arguments section, there is not an argument called "rep". However, there is
@@ -295,10 +302,10 @@ with those letters. Also, it can make it harder to understand what the call is
 doing ("replace" is clearer, for example, than "rep"). If we look at the
 Arguments section, we can see that `replace` is used to say whether the object
 should be sampled with replacement. In other words, in our example should we be
-able to have more than one copy of the same letter in the vector we're
-creating? For our example, we have to allow replacement in the sampling, because 
-there are only 26 letters in `letters` and we want to make a vector that has
-50 values, so there will have to be some letters that show up more than once. 
+able to have more than one copy of the same letter in the vector we're creating?
+For our example, we have to allow replacement in the sampling, because there are
+only 26 letters in `letters` and we want to make a vector that has 50 values, so
+there will have to be some letters that show up more than once.
 
 Now we can revisit how this is creating the example dataframe: 
 
@@ -307,15 +314,16 @@ set.seed(1)
 dat <- data.frame(ID = sample(letters,50,rep=TRUE))
 ```
 
-Again, if you aren't clear on how the `data.frame` function works, or what `ID = `
-is doing in this call, you can use helpfiles to help figure it out. 
+Again, if you aren't clear on how the `data.frame` function works, or what 
+`ID =` is doing in this call, you can use helpfiles to help figure it out.
 
-We've now determined that the example code has created a simple dataframe with a single
-column, called "ID", that has a sample of 50 letters, where some letters show up 
-more than once and some may never show up. Since it includes random number generation 
-(in `sample`), the exact letters that show up would change if we didn't set the seed, 
-but if we set the same seed right before we run the function call, we'll get the same
-dataframe of `dat` as the person who posted the question. 
+We've now determined that the example code has created a simple dataframe with a
+single column, called "ID", that has a sample of 50 letters, where some letters
+show up more than once and some may never show up. Since it includes random
+number generation (in `sample`), the exact letters that show up would change if
+we didn't set the seed, but if we set the same seed right before we run the
+function call, we'll get the same dataframe of `dat` as the person who posted
+the question.
 
 Now let's look at the next part of the code: 
 
@@ -325,9 +333,9 @@ dat %>%
   summarise(no_rows = length(ID))
 ```
 
-This looks like it's very similar to what we're trying to do when we run the `count`
-function in our code. In fact, if we look up the help file for `count` and read the 
-Description, it states that: 
+This looks like it's very similar to what we're trying to do when we run the
+`count` function in our code. In fact, if we look up the help file for `count`
+and read the Description, it states that:
 
 > "`df %>% count(a, b)` is roughly equivalent to `df %>% group_by(a, b) %>% summarise(n = n())`"
 
@@ -341,23 +349,24 @@ dat %>%
   summarise(no_rows = length(ID))
 ```
 
-We can see that this is counting up the number of times that each letter shows up 
-in the `ID` column in the dataframe. If you look through the data (and set the same 
-seed as the example), you can see that it's missing some of the letters, including
-"l" and "p".
+We can see that this is counting up the number of times that each letter shows
+up in the `ID` column in the dataframe. If you look through the data (and set
+the same seed as the example), you can see that it's missing some of the
+letters, including "l" and "p".
 
-This is good---we have found an answered question that tackles the same task we're 
-trying to do. In this case, we're looking at a dataframe with a column that has 
-the possibility of taking 26 different values (the 26 letters), but has some that didn't
-show up in the sample, and these are missed when counting the values. This is 
-analogous to our task---we have a column (`call_month`) that can in theory take 
-12 different values (the months and then year), but in practice sometimes no calls are
-reported in one of those months, and we would like the summary to still list those months
-with a count of 0 rather than exclude those months from the summary. 
+This is good---we have found an answered question that tackles the same task
+we're trying to do. In this case, we're looking at a dataframe with a column
+that has the possibility of taking 26 different values (the 26 letters), but has
+some that didn't show up in the sample, and these are missed when counting the
+values. This is analogous to our task---we have a column (`call_month`) that can
+in theory take 12 different values (the months and then year), but in practice
+sometimes no calls are reported in one of those months, and we would like the
+summary to still list those months with a count of 0 rather than exclude those
+months from the summary.
 
-Now let's look at the top-ranked solutions that was provided (the solution that starts, 
-"In the accepted answer by akrun ..."). It repeats the set-up of the `dat` dataframe and
-then has the following code: 
+Now let's look at the top-ranked solutions that was provided (the solution that
+starts, "In the accepted answer by akrun ..."). It repeats the set-up of the
+`dat` dataframe and then has the following code:
 
 ```{r eval = FALSE}
 dat %>%
@@ -366,52 +375,55 @@ dat %>%
   print.data.frame()
 ```
 
-Let's work out way through this code to understand how it works. Then we'll see 
+Let's work our way through this code to understand how it works. Then we'll see 
 if we can apply it to our question. 
 
-This piece of code is a pipeline---it uses the pipe symbol (`%>%`) to chain together
-several calls, sending the output from one as input into the next. This type of 
-pipeline can be a great way to include code in your script, as we discussed in the
-lecture on editing code. However, when you dissect code that's in a pipeline like 
-this, you'll want to tease it apart so you can understand each step. 
+This piece of code is a pipeline---it uses the pipe symbol (`%>%`) to chain
+together several calls, sending the output from one as input into the next. This
+type of pipeline can be a great way to include code in your script, as we
+discussed in the lecture on editing code. However, when you dissect code that's
+in a pipeline like this, you'll want to tease it apart so you can understand
+each step.
 
-Let's take the pipeline apart and look at it piece by piece. Let's start by looking
-at only the first function call in the pipeline. The dataframe `dat` is piped into 
-a `mutate` call, and a `factor` call is nested within the `mutate`. 
+Let's take the pipeline apart and look at it piece by piece. Let's start by
+looking at only the first function call in the pipeline. The dataframe `dat` is
+piped into a `mutate` call, and a `factor` call is nested within the `mutate`.
 
 ```{r eval = FALSE}
 dat %>%
   mutate(ID = factor(ID, levels = letters))
 ```
 
-Let's work from the inside out for the function call. The innermost call is to `factor`. 
-Let's use the helpfile to see what that does (`?factor`).
+Let's work from the inside out for the function call. The innermost call is to
+`factor`. Let's use the helpfile to see what that does (`?factor`).
 
-Based on the helpfile, the `factor` function will input a vector and change it to a 
-factor. This is one of the classes of data that values in a vector can have in R 
-(others include numeric, character strings, dates, date-times, and so on). If you 
-aren't familiar with factors and how they work, there is a chapter in **R for Data 
-Science** that you might find very helpful (https://r4ds.had.co.nz/factors.html). 
+Based on the helpfile, the `factor` function will input a vector and change it
+to a factor. This is one of the classes of data that values in a vector can have
+in R (others include numeric, character strings, dates, date-times, and so on).
+If you aren't familiar with factors and how they work, there is a chapter in **R
+for Data Science** that you might find very helpful
+(https://r4ds.had.co.nz/factors.html).
 
-Factors are very helpful when you have a variable that can only take one of a set of 
-values. As one example, the original data for the animal response calls includes 
-a variable with the animal's age, which can only be "Juvenile" or "Adult". In the
-StackOverflow example we're looking at here, the values in the sample of letters can
-only be one of the 26 lowercase letters in the Roman alphabet. In the task we're 
-trying to write a function for, the variable can only take one of twelve values, 
-the twelve months in the year. 
+Factors are very helpful when you have a variable that can only take one of a
+set of values. As one example, the original data for the animal response calls
+include a variable with the animal's age, which can only be "Juvenile" or
+"Adult". In the StackOverflow example we're looking at here, the values in the
+sample of letters can only be one of the 26 lowercase letters in the Roman
+alphabet. In the task we're trying to write a function for, the variable can
+only take one of twelve values, the twelve months in the year.
 
-It is a good strategy, when dissecting code, to look carefully at the object 
-that the function call operates on, carefully comparing what it looks like before
-and after the function call. Here, the larger function call is `mutate`, which 
-operates on the `dat` object. However, right now we're focusing on the call of 
-the `factor` function, which is nested inside the `mutate`. That call operates
-on one of the columns in the `dat` dataframe, specifically the `ID` column. 
+It is a good strategy, when dissecting code, to look carefully at the object
+that the function call operates on, carefully comparing what it looks like
+before and after the function call. Here, the larger function call is `mutate`,
+which operates on the `dat` object. However, right now we're focusing on the
+call of the `factor` function, which is nested inside the `mutate`. That call
+operates on one of the columns in the `dat` dataframe, specifically the `ID`
+column.
 
 It may be helpful if we zoom in to look at just that column, before and after
-the `factor` call. We can extract the column either with the `$` operator (e.g., 
-`dat$ID`) or with the `pull` function from `dplyr`. I'll use the second so you can
-try that, if you're not familiar with it:
+the `factor` call. We can extract the column either with the `$` operator (e.g.,
+`dat$ID`) or with the `pull` function from `dplyr`. I'll use the second so you
+can try that, if you're not familiar with it:
 
 ```{r}
 # Look at the ID column from dat before we run the factor call
@@ -424,48 +436,54 @@ dat %>%
   factor(levels = letters)
 ```
 
-Before the `factor` call, this column is a character string, with each value in quotation
-marks (you could also use the `class` function to check that the column is stored 
-as character strings at this point). After we run the call, the column is a factor 
-class. You can tell that because the quotation marks are gone, and also R records it 
-not only with the values for each element of the vector, but also includes a "Levels" 
-section, where it lists all the values that the factor is allowed to have. 
+Before the `factor` call, this column is a character string, with each value in
+quotation marks (you could also use the `class` function to check that the
+column is stored as character strings at this point). After we run the call, the
+column is a factor class. You can tell that because the quotation marks are
+gone, and also R records it not only with the values for each element of the
+vector, but also includes a "Levels" section, where it lists all the values that
+the factor is allowed to have.
 
-This is great, because it establishes a "memory" of all the possible values of the factor. 
-This is what R can draw on to include values with counts of zero when we want to 
-summarize the counts later. 
+This is great, because it establishes a "memory" of all the possible values of
+the factor. This is what R can draw on to include values with counts of zero
+when we want to summarize the counts later.
 
-Let's see how this function call was able to provide the information about the levels---notice
-that the "Levels" include letters (like "m") that aren't included as values in the 
-vector itself. 
+Let's see how this function call was able to provide the information about the
+levels---notice that the "Levels" include letters (like "m") that aren't
+included as values in the vector itself.
 
-The `factor` call includes one argument in addition to the vector that we're asking it 
-to change to a factor. Specifically, it includes the argument `levels = letters`. We 
-already know that `letters` is a built-in vector in R that gives the 26 lowercase letters. 
-To figure out the `levels` part, we can take a look at the helpfile for `factor` and 
-scroll down to the Arguments section. Under `levels`, it says: 
+The `factor` call includes one argument in addition to the vector that we're
+asking it to change to a factor. Specifically, it includes the argument `levels
+= letters`. We already know that `letters` is a built-in vector in R that gives
+the 26 lowercase letters. To figure out the `levels` part, we can take a look at
+the helpfile for `factor` and scroll down to the Arguments section. Under
+`levels`, it says:
 
-> "`levels`: an optional vector of the unique values (as character strings) that x might have taken. The default is the unique set of values taken by as.character(x), sorted into increasing order of x. Note that this set can be specified as smaller than sort(unique(x))."
+> "`levels`: an optional vector of the unique values (as character strings) that
+x might have taken. The default is the unique set of values taken by
+as.character(x), sorted into increasing order of x. Note that this set can be
+specified as smaller than sort(unique(x))."
 
-Based on this, the function call is using the built-it `letters` vector to tell R which 
-set of values the new factor could take, forcing it to include ones like "m" that aren't
-listed in the data but are possible. This also says that, if we don't include this, 
-the levels will be set as the unique values in the data---in other words, if we didn't 
-include this part, the factor levels would not have included missing but possible values
-like "m". 
+Based on this, the function call is using the built-it `letters` vector to tell
+R which set of values the new factor could take, forcing it to include ones like
+"m" that aren't listed in the data but are possible. This also says that, if we
+don't include this, the levels will be set as the unique values in the data---in
+other words, if we didn't include this part, the factor levels would not have
+included missing but possible values like "m".
 
-This seems like it will be very helpful with our task---we want R to "remember" that 
-animal calls could be reported in any of the twelve months, and then provide a 0 value
-for months without calls, rather than dropping them out from the summary. 
+This seems like it will be very helpful with our task---we want R to "remember"
+that animal calls could be reported in any of the twelve months, and then
+provide a 0 value for months without calls, rather than dropping them out from
+the summary.
 
-Now that we know what the `factor` call is doing, it's pretty straightforward to 
-figure out what the `mutate` call that it's nested in is doing. The `mutate` function 
-is typically used to create a new column or change an existing one. In this case, 
-it's changing the `ID` column in the `dat` dataframe, converting it from a character
-class to a factor class, where the factor has as levels the 26 lowercase letters in the 
-`letters` vector. Again, we can run the object that's being operated on (`dat` in this
-case) before and after the function call to compare and make sure we understand
-what's going on:
+Now that we know what the `factor` call is doing, it's pretty straightforward to
+figure out what the `mutate` call that it's nested in is doing. The `mutate`
+function is typically used to create a new column or change an existing one. In
+this case, it's changing the `ID` column in the `dat` dataframe, converting it
+from a character class to a factor class, where the factor has as levels the 26
+lowercase letters in the `letters` vector. Again, we can run the object that's
+being operated on (`dat` in this case) before and after the function call to
+compare and make sure we understand what's going on:
 
 ```{r}
 # Check the dat dataframe before the mutate call
@@ -476,15 +494,16 @@ dat %>%
   mutate(ID = factor(ID, levels = letters))
 ```
 
-In the handout for this lab, you might not see much of a difference between these two 
-printouts. Sometimes, it can be subtle to identify a change in the class of the object.
+In the handout for this lab, you might not see much of a difference between
+these two printouts. Sometimes, it can be subtle to identify a change in the
+class of the object.
 
-However, if you open the RMarkdown file for this lab and run the code in that, or 
-run it from a console, you should be able to see that it prints out the class of the column
-right below the column name. From this annotation, you can see that the column is 
-changing from a character class (`<chr>`) to a factor class (`<fctr>`). You can also use 
-the `summary` function to get information about all columns in a dataframe, including
-their class of data: 
+However, if you open the RMarkdown file for this lab and run the code in that,
+or run it from a console, you should be able to see that it prints out the class
+of the column right below the column name. From this annotation, you can see
+that the column is changing from a character class (`<chr>`) to a factor class
+(`<fctr>`). You can also use the `summary` function to get information about all
+columns in a dataframe, including their class of data:
 
 ```{r}
 # Check the dat dataframe before the mutate call
@@ -505,14 +524,15 @@ dat %>%
   count(ID, name = "no_rows", .drop = F)
 ```
 
-This is using a `count` function. We already know, from our original function, that 
-this function will count up the number of observations in each group within a dataset. 
-This call is using some arguments that we didn't use in our earlier code, though. 
-Specifically, it uses `name = "no_rows"` and `.drop = F`. Let's figure out what 
-each of those are doing before we try to adapt this code for our own task. 
+This is using a `count` function. We already know, from our original function,
+that this function will count up the number of observations in each group within
+a dataset. This call is using some arguments that we didn't use in our earlier
+code, though. Specifically, it uses `name = "no_rows"` and `.drop = F`. Let's
+figure out what each of those are doing before we try to adapt this code for our
+own task.
 
-First, let's look at `names = "no_rows"`. Let's start by comparing the output when 
-we include this argument versus when we leave it out: 
+First, let's look at `names = "no_rows"`. Let's start by comparing the output
+when we include this argument versus when we leave it out:
 
 ```{r}
 # Check count call output when including `name = "no_rows"`
@@ -526,20 +546,23 @@ dat %>%
   count(ID, .drop = F)
 ```
 
-It looks like the output is very similar. In both cases, we get the counts by letter. The
-output is a dataframe with a column with the letter (`ID`, which was the name of the letter
-column in the input dataframe) and a column with the count for that letter. The only 
-difference is that the column is generically named `n` when we don't include the 
-argument `names = "no_rows"`, but set to `no_rows` when we do include that argument. 
+It looks like the output is very similar. In both cases, we get the counts by
+letter. The output is a dataframe with a column with the letter (`ID`, which was
+the name of the letter column in the input dataframe) and a column with the
+count for that letter. The only difference is that the column is generically
+named `n` when we don't include the argument `names = "no_rows"`, but set to
+`no_rows` when we do include that argument.
 
-Based on this, it looks like the `names` argument lets us set the name of the column that
-gives the counts from the `count` call. If we look at the helpfile for the `count` function
-(`?count`), we can confirm this. It says: 
+Based on this, it looks like the `names` argument lets us set the name of the
+column that gives the counts from the `count` call. If we look at the helpfile
+for the `count` function (`?count`), we can confirm this. It says:
 
-> "`name`: The name of the new column in the output. If omitted, it will default to n. If there's already a column called n, it will use nn. If there's a column called n and nn, it'll use nnn, and so on, adding ns until it gets a new name."
+> "`name`: The name of the new column in the output. If omitted, it will default
+to n. If there's already a column called n, it will use nn. If there's a column
+called n and nn, it'll use nnn, and so on, adding ns until it gets a new name."
 
-Now let's do the same assessment for the other argument, `.drop = F`. First, let's compare
-the output with and without this argument in the call: 
+Now let's do the same assessment for the other argument, `.drop = F`. First,
+let's compare the output with and without this argument in the call:
 
 ```{r}
 # Check count call output when including `.drop = FALSE`
@@ -553,24 +576,26 @@ dat %>%
   count(ID, name = "no_rows")
 ```
 
-These outputs look pretty similar, as both give a dataframe that summarizes the count 
-by row. However, if we look carefully, we see that one has more rows that the other. 
-The output has 26 rows when we include `.drop = F`, but only 22 when we don't. 
+These outputs look pretty similar, as both give a dataframe that summarizes the
+count by row. However, if we look carefully, we see that one has more rows that
+the other. The output has 26 rows when we include `.drop = F`, but only 22 when
+we don't.
 
-We know that there are 26 possible values (the 26 letters) for the thing we're counting, 
-so we want a dataframe of counts with a row for each possible value. However, we also
-know that there are some possible values that don't show up in the dataframe that we're 
-counting. Maybe these are the rows that are missing when we exclude `.drop = FALSE`?
-We can check by looking at a letter that we know is missing in the data, "m". Sure enough, 
-there's a row for "m" when we include `.drop = F`, with a count of 0, but not a row
-when we don't include that argument. Since we want to include all months in our summary
-counts, even if there were no animal calls recorded in that month, we will want to 
-include `.drop = F` in our own code.
+We know that there are 26 possible values (the 26 letters) for the thing we're
+counting, so we want a dataframe of counts with a row for each possible value.
+However, we also know that there are some possible values that don't show up in
+the dataframe that we're counting. Maybe these are the rows that are missing
+when we exclude `.drop = FALSE`? We can check by looking at a letter that we
+know is missing in the data, "m". Sure enough, there's a row for "m" when we
+include `.drop = F`, with a count of 0, but not a row when we don't include that
+argument. Since we want to include all months in our summary counts, even if
+there were no animal calls recorded in that month, we will want to include
+`.drop = F` in our own code.
 
-We're now at the final step of the pipeline in the example solution. In this case, 
-it's a fairly straightforward call to print out the dataset. This is helpful to demonstrate
-the full dataset in this StackOverflow question, but we likely won't need this last
-step in our own code function: 
+We're now at the final step of the pipeline in the example solution. In this
+case, it's a fairly straightforward call to print out the dataset. This is
+helpful to demonstrate the full dataset in this StackOverflow question, but we
+likely won't need this last step in our own code function:
 
 ```{r}
 dat %>%
@@ -581,8 +606,8 @@ dat %>%
 
 ## Adapting code
 
-Now, we're ready to adapt this example to our own task. As a reminder, here's our current
-function to do this task: 
+Now, we're ready to adapt this example to our own task. As a reminder, here's
+our current function to do this task:
 
 ```{r}
 count_monthly_calls <- function(call_data) {
@@ -604,8 +629,9 @@ count_monthly_calls <- function(call_data) {
 }
 ```
 
-Let's pull out the code within the function and set the input parameter (`call_data`)
-to a good example object. This will let us work line-by-line as we adapt the code.
+Let's pull out the code within the function and set the input parameter
+(`call_data`) to a good example object. This will let us work line-by-line as we
+adapt the code.
 
 ```{r}
 # Rerun the code at the start of this lab if needed to set up the `man_animal_response`
@@ -630,29 +656,31 @@ monthly_calls <- dplyr::full_join(monthly_calls, all_months, by = "month") %>%
   dplyr::select(-order)
 ```
 
-Once we've figured out how to adapt the code for our task, we'll use what we've found to 
-update our function. 
+Once we've figured out how to adapt the code for our task, we'll use what we've
+found to update our function.
 
-Let's see if we can adapt the example solution to the kluge-y part of our code. First, 
-let's find the part of our code that's a kluge. It's the code where we're trying
-to make sure that all the months get reported in the final summary, even if they had no 
-animal calls (in which case we want them reported with a count of 0). 
+Let's see if we can adapt the example solution to the kluge-y part of our code.
+First, let's find the part of our code that's a kluge. It's the code where we're
+trying to make sure that all the months get reported in the final summary, even
+if they had no animal calls (in which case we want them reported with a count of
+0).
 
-In our current code, we do that by making a dataframe called `all_months` that lists
-all of the months and their order over the year. We then use a `full_join` function 
-to force this dataset to be merged with our monthly call counts, and then we use the
-`order` column to reorder this dataframe so it follows the day in the year. 
+In our current code, we do that by making a dataframe called `all_months` that
+lists all of the months and their order over the year. We then use a `full_join`
+function to force this dataset to be merged with our monthly call counts, and
+then we use the `order` column to reorder this dataframe so it follows the
+timing in the year.
 
-This solution is kluge-y because the logic in the code doesn't follow the logic of 
-the problem. The problem is that we have a variable that can take a discrete set of 
-ordered values, and we want R to remember those possible values and use them when we
-work with that variable. Right now, we've got code that instead tries to artificially 
-make a completely new dataframe, tack on some numbers for the order, and use a `full_join` 
-function and an `arrange` function to force the information into our summary and use 
-it to reorder by time in the year. 
+This solution is kluge-y because the logic in the code doesn't follow the logic
+of the problem. The problem is that we have a variable that can take a discrete
+set of ordered values, and we want R to remember those possible values and use
+them when we work with that variable. Right now, we've got code that instead
+tries to artificially make a completely new dataframe, tack on some numbers for
+the order, and use a `full_join` function and an `arrange` function to force the
+information into our summary and use it to reorder by time in the year.
 
-Let's look at the code again and identify all the lines that are part of our kluge 
-(I've added the comment `#kluge` at the end of each of those lines): 
+Let's look at the code again and identify all the lines that are part of our
+kluge (I've added the comment `#kluge` at the end of each of those lines):
 
 ```{r}
 # Code in the interior of the function 
@@ -676,8 +704,8 @@ code much easier to understand and debug if we can find a solution that matches
 the logic of our task better. Keep in mind that we might also end up editing
 some of the code that's outside the kluge as we work towards our solution.
 
-Let's go back now and look at the code for the example solution, which we understand
-very well now that we've dissected it: 
+Let's go back now and look at the code for the example solution, which we
+understand very well now that we've dissected it:
 
 ```{r eval = FALSE}
 dat %>%
@@ -689,8 +717,7 @@ dat %>%
 A good first step in adapting this code is to compare the objects that we start
 with, comparing the input for our task with the input for the solution. In our
 task, we're working with the object `call_data`. In the example code, the input
-is the dataframe `dat`. Let's
-look at the beginning of each of those dataframes:
+is the dataframe `dat`. Let's look at the beginning of each of those dataframes:
 
 ```{r}
 head(call_data)
@@ -698,12 +725,12 @@ head(call_data)
 head(dat)
 ```
 
-Both are dataframes, although if you look carefully at `call_data` (you can use the `class`
-function), you'll see that it's a more specialized type of dataframe called a "tibble"
-(abbreviated with `"tbl_df"` in the output from `class(call_data)`). In many cases, a 
-tibble works just like you'd expect a dataframe to, but this is something we should 
-keep in mind as we adapt the code, as sometimes small differences like that can cause 
-problems. 
+Both are dataframes, although if you look carefully at `call_data` (you can use
+the `class` function), you'll see that it's a more specialized type of dataframe
+called a "tibble" (abbreviated with `"tbl_df"` in the output from
+`class(call_data)`). In many cases, a tibble works just like you'd expect a
+dataframe to, but this is something we should keep in mind as we adapt the code,
+as sometimes small differences like that can cause problems.
 
 Next, let's look at what's inside the two dataframes. The `dat` dataframe has a
 single column called `ID`, which is currently in a character class. This is the
@@ -723,24 +750,25 @@ dat %>%
   mutate(ID = factor(ID, levels = letters))
 ```
 
-If we compare the output to the original version of `dat`, we can see it's changed 
-the class of the `ID` column to a factor. When we compared `dat` and `call_data` 
-earlier, we saw that we might already have the column that we want to work with in 
-a factor class. Let's take a closer look at the `call_month` column:
+If we compare the output to the original version of `dat`, we can see it's
+changed the class of the `ID` column to a factor. When we compared `dat` and
+`call_data` earlier, we saw that we might already have the column that we want
+to work with in a factor class. Let's take a closer look at the `call_month`
+column:
 
 ```{r}
 call_data %>% 
  pull(call_month)
 ```
 
-This looks good! The column already is a type of factor, so we don't need to convert it
-to one. Also, it lists as levels all twelve months of the year, so we won't need to 
-make a change to that---R will "remember" all the months, even if one or more don't have
-any calls. Even better, since it's an ordered factor, R is "remembering" the yearly 
-order of the factor levels (in other words, that January comes before February). 
-If we can maintain this memory throughout our code, this might solve the problem we
-had about month order when we plot the monthly counts data when we use our current version
-of the code. 
+This looks good! The column already is a type of factor, so we don't need to
+convert it to one. Also, it lists as levels all twelve months of the year, so we
+won't need to make a change to that---R will "remember" all the months, even if
+one or more don't have any calls. Even better, since it's an ordered factor, R
+is "remembering" the yearly order of the factor levels (in other words, that
+January comes before February). If we can maintain this memory throughout our
+code, this might solve the problem we had about month order when we plot the
+monthly counts data when we use our current version of the code.
 
 Now let's move to the next line in the solution: 
 
@@ -750,12 +778,13 @@ dat %>%
   count(ID, name = "no_rows", .drop = F) %>%
 ```
 
-We can skip the `mutate`, as we just saw (since our column is already a factor with all 
-the possible levels). We'll move to the `count` function call. Here, we'll need to adapt
-the column name (`ID` will change to `call_month`). In our earlier code, we ended up 
-with "n" as the name of the column that is created with the number of monthly counts. 
-We can change the `name` argument to use that column name, at least for now. That way, we 
-won't have to change downstream code in our longer pipeline. 
+We can skip the `mutate`, as we just saw (since our column is already a factor
+with all the possible levels). We'll move to the `count` function call. Here,
+we'll need to adapt the column name (`ID` will change to `call_month`). In our
+earlier code, we ended up with "n" as the name of the column that is created
+with the number of monthly counts. We can change the `name` argument to use that
+column name, at least for now. That way, we won't have to change downstream code
+in our longer pipeline.
 
 The adapted code will look like this:
 
@@ -764,8 +793,8 @@ call_data %>%
   count(call_month, name = "n", .drop = F)
 ```
 
-This gives us what we want! Now let's go back and update the full set of code for this 
-part of our pipeline: 
+This gives us what we want! Now let's go back and update the full set of code
+for this part of our pipeline:
 
 ```{r}
 # Original 
@@ -788,12 +817,13 @@ monthly_calls <- call_data %>%
   count(call_month, name = "n", .drop = F)
 ```
 
-This update has helped us clean out a lot of code, and it's maintained R's "memory" 
-of the order of the months, since the `call_month` column in the output is now an 
-ordered factor rather than a character. This should solve the problem we had with 
-the axis order when we plotted the output. 
+This update has helped us clean out a lot of code, and it's maintained R's
+"memory" of the order of the months, since the `call_month` column in the output
+is now an ordered factor rather than a character. This should solve the problem
+we had with the axis order when we plotted the output.
 
-Let's use this solution now to update the function that we built to count monthly calls: 
+Let's use this solution now to update the function that we built to count
+monthly calls:
 
 ```{r}
 # Original function definition
@@ -824,10 +854,10 @@ count_monthly_calls <- function(call_data) {
 }
 ```
 
-At this point, we could make a few more minor edits if we wanted. First, 
-we could check that we're following style guidelines. Some style guidelines recommend
-that you always spell out `TRUE` and `FALSE`, rather than abbreviating them. We could
-change that, making the new function: 
+At this point, we could make a few more minor edits if we wanted. First, we
+could check that we're following style guidelines. Some style guidelines
+recommend that you always spell out `TRUE` and `FALSE`, rather than abbreviating
+them. We could change that, making the new function:
 
 ```{r}
 count_monthly_calls <- function(call_data) {
@@ -838,15 +868,16 @@ count_monthly_calls <- function(call_data) {
 }
 ```
 
-Second, we can check to make sure that all the arguments in the `count` function are
-necessary. We know that `.drop = FALSE` is necessary, because we learned when we 
-dissected the example code that it's used to include values of the call month for 
-which there were no calls in the data. 
+Second, we can check to make sure that all the arguments in the `count` function
+are necessary. We know that `.drop = FALSE` is necessary, because we learned
+when we dissected the example code that it's used to include values of the call
+month for which there were no calls in the data.
 
-Do we need `name = "n"`, though? If you look at the helpful for `count`, under the
-Argument `name`, you'll see that the default for this parameter is "n". This means that, 
-if we want to name the column "n", we can just leave out this parameter and it will 
-use that name as the default. That change makes the function: 
+Do we need `name = "n"`, though? If you look at the helpful for `count`, under
+the Argument `name`, you'll see that the default for this parameter is "n". This
+means that, if we want to name the column "n", we can just leave out this
+parameter and it will use that name as the default. That change makes the
+function:
 
 ```{r}
 count_monthly_calls <- function(call_data) {
@@ -869,11 +900,11 @@ count_monthly_calls <- function(call_data) {
 ```
 
 
-To wrap up, let's go back to our full code pipeline, including the plot, and 
-see how it works with our updated function. It should, although your output with now
-have a column named `call_month` instead of `month`, so you'll need to change that 
-name in the `ggplot2` function call (or you could change the function in the code 
-to rename the column to match the name we used before): 
+To wrap up, let's go back to our full code pipeline, including the plot, and see
+how it works with our updated function. It should, although your output with now
+have a column named `call_month` instead of `month`, so you'll need to change
+that name in the `ggplot2` function call (or you could change the function in
+the code to rename the column to match the name we used before):
 
 ```{r}
 # Load required libraries
